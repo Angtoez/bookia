@@ -1,0 +1,8 @@
+node_modules
+coverage
+dist
+specs
+.specify
+.claude
+**/*.md
+package-lock.json
