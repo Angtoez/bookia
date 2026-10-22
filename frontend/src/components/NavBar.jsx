@@ -59,6 +59,12 @@ export function NavBar() {
           <NavLink to="/admin/reservations" className={linkClass}>
             Reservas
           </NavLink>
+          <NavLink to="/admin/users" className={linkClass}>
+            Usuarios
+          </NavLink>
+          <NavLink to="/admin/audit" className={linkClass}>
+            Auditoría
+          </NavLink>
         </>
       )}
       {user && (

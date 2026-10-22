@@ -1,6 +1,6 @@
 # Bookia
 
-Aplicación web para consultar libros y saber en qué puntos de venta están disponibles. Este repositorio contiene la **API REST** (Node.js + Express 5 + Mongoose 8 sobre MongoDB Atlas) y la **SPA** (React 19 + Vite + React Router 7 + Tailwind 4), que está en desarrollo.
+Aplicación web para consultar libros y saber en qué puntos de venta están disponibles. Este repositorio contiene la **API REST** (Node.js + Express 5 + Mongoose 8 sobre MongoDB Atlas) y la **SPA** (React 19 + Vite + React Router 7 + Tailwind 4). Las siete historias de la feature `001` están implementadas en ambos lados.
 
 - Constitución del proyecto: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 - Especificación, modelo de datos y contrato: [`specs/001-book-catalog-stores/`](specs/001-book-catalog-stores/)
@@ -26,7 +26,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | SPA: establecimientos e inventario (stock y precio propio en línea, alta con buscador de libros) (US3) | ✅ |
 | SPA: reservas (botón Reservar en el detalle, Mis reservas y gestión por el administrador) (US5) | ✅ |
 | SPA: favoritos (corazón en tarjetas y detalle, y Mis favoritos con disponibilidad) (US6) | ✅ |
-| SPA: usuarios y auditoría (US7) | ⏳ pendiente |
+| SPA: gestión de usuarios (rol y estado) y consulta de la auditoría con el detalle de cada cambio (US7) | ✅ |
+| Pulido transversal (fase 10: pruebas de autorización y rendimiento, CI, revisión de accesibilidad) | ⏳ pendiente |
 
 ## Modelo de datos
 

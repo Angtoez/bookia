@@ -6,6 +6,8 @@ import { RequireAuth } from './components/RequireAuth.jsx';
 import { AdminBooksPage } from './pages/admin/AdminBooksPage.jsx';
 import { AdminReservationsPage } from './pages/admin/AdminReservationsPage.jsx';
 import { AdminStoresPage } from './pages/admin/AdminStoresPage.jsx';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage.jsx';
+import { AuditLogPage } from './pages/admin/AuditLogPage.jsx';
 import { BookFormPage } from './pages/admin/BookFormPage.jsx';
 import { StoreFormPage } from './pages/admin/StoreFormPage.jsx';
 import { StoreInventoryPage } from './pages/admin/StoreInventoryPage.jsx';
@@ -45,6 +47,8 @@ export const routes = [
           { path: 'stores/:id/edit', element: <StoreFormPage /> },
           { path: 'stores/:id/books', element: <StoreInventoryPage /> },
           { path: 'reservations', element: <AdminReservationsPage /> },
+          { path: 'users', element: <AdminUsersPage /> },
+          { path: 'audit', element: <AuditLogPage /> },
         ],
       },
       { path: '*', element: <NotFoundPage /> },

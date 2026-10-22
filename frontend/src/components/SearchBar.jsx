@@ -3,7 +3,12 @@ import { useEffect, useId, useState } from 'react';
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
-export function SearchBar({ value, onChange, label = 'Buscar por título o autor' }) {
+export function SearchBar({
+  value,
+  onChange,
+  label = 'Buscar por título o autor',
+  placeholder = 'Por ejemplo: cien años',
+}) {
   const id = useId();
   const [text, setText] = useState(value);
   const [external, setExternal] = useState(value);
@@ -31,7 +36,7 @@ export function SearchBar({ value, onChange, label = 'Buscar por título o autor
         value={text}
         maxLength={100}
         onChange={(event) => setText(event.target.value)}
-        placeholder="Por ejemplo: cien años"
+        placeholder={placeholder}
         className="block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700"
       />
     </div>

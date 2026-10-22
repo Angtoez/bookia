@@ -14,6 +14,8 @@ const { createBook, deleteBook, getBook, getBookDeletionImpact, listBooks, updat
 const storesService = await import('../../src/services/storesService.js');
 const reservationsService = await import('../../src/services/reservationsService.js');
 const favoritesService = await import('../../src/services/favoritesService.js');
+const usersService = await import('../../src/services/usersService.js');
+const auditLogsService = await import('../../src/services/auditLogsService.js');
 
 beforeEach(() => {
   apiRequest.mockReset();
@@ -158,6 +160,20 @@ describe('favoritesService', () => {
       ['/favorites', { query: { page: 2, limit: undefined } }],
       ['/favorites/b1', { method: 'PUT' }],
       ['/favorites/b1', { method: 'DELETE' }],
+    ]);
+  });
+});
+
+describe('usersService y auditLogsService', () => {
+  it('llaman a sus rutas', async () => {
+    apiRequest.mockResolvedValue(null);
+    await usersService.listUsers({ q: 'ana', page: 2 });
+    await usersService.updateUser('u1', { role: 'admin' });
+    await auditLogsService.listAuditLogs({ entity_type: 'book', page: 1 });
+    expect(apiRequest.mock.calls).toEqual([
+      ['/users', { query: { q: 'ana', page: 2, limit: undefined } }],
+      ['/users/u1', { method: 'PATCH', body: { role: 'admin' } }],
+      ['/auditLogs', { query: { entity_type: 'book', page: 1, limit: undefined } }],
     ]);
   });
 });
