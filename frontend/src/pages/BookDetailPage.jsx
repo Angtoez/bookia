@@ -1,7 +1,10 @@
-// Detalle público de un libro y su disponibilidad en cada tienda (US1, escenarios 4 y 5).
-import { useEffect } from 'react';
+// Detalle público de un libro y su disponibilidad en cada tienda (US1, escenarios 4 y 5), con el
+// botón Reservar de cada tienda (US5).
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import { Notice } from '../components/Notice.jsx';
+import { ReserveButton } from '../components/ReserveButton.jsx';
 import { Spinner } from '../components/Spinner.jsx';
 import { StoreAvailabilityList } from '../components/StoreAvailabilityList.jsx';
 import { useBook } from '../hooks/useBook.js';
@@ -25,16 +28,23 @@ export function BookDetailPage() {
   const catalogSearch = location.state?.catalogSearch;
   const backTo =
     typeof catalogSearch === 'string' && catalogSearch.startsWith('?') ? `/${catalogSearch}` : '/';
-  const { book, loading, error, notFound, reload } = useBook(id);
+  const { book, error, notFound, reload } = useBook(id);
   const config = useConfig();
+  const [reserved, setReserved] = useState(null);
 
   useEffect(() => {
     if (book) document.title = `${book.title} · Bookia`;
   }, [book]);
 
   if (notFound) return <NotFoundPage message="Este libro no existe o se ha eliminado." />;
-  if (error) return <ErrorMessage error={error} onRetry={reload} />;
-  if (loading || !book) return <Spinner label="Cargando el libro…" />;
+  if (error && !book) return <ErrorMessage error={error} onRetry={reload} />;
+  if (!book) return <Spinner label="Cargando el libro…" />;
+
+  const handleReserved = (reservation) => {
+    setReserved(reservation);
+    // Las unidades disponibles han cambiado.
+    reload();
+  };
 
   return (
     <article className="space-y-8">
@@ -73,12 +83,37 @@ export function BookDetailPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-stone-900">Dónde encontrarlo</h2>
+        <Notice
+          message={
+            reserved && (
+              <>
+                Has reservado «{reserved.book_title}» en {reserved.store_name}. Puedes seguirla en{' '}
+                <Link to="/me/reservations" className="font-medium underline underline-offset-2">
+                  Mis reservas
+                </Link>
+                .
+              </>
+            )
+          }
+          onDismiss={() => setReserved(null)}
+        />
         {book.stores.length === 0 ? (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900">
             Este libro no está disponible en ningún establecimiento.
           </p>
         ) : (
-          <StoreAvailabilityList stores={book.stores} currency={config?.currency} />
+          <StoreAvailabilityList
+            stores={book.stores}
+            currency={config?.currency}
+            renderActions={(store) => (
+              <ReserveButton
+                book={book}
+                store={store}
+                config={config}
+                onReserved={handleReserved}
+              />
+            )}
+          />
         )}
       </section>
     </article>

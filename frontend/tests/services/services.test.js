@@ -12,6 +12,7 @@ const { getConfig, listGenres, resetConfigCache } =
 const { createBook, deleteBook, getBook, getBookDeletionImpact, listBooks, updateBook } =
   await import('../../src/services/booksService.js');
 const storesService = await import('../../src/services/storesService.js');
+const reservationsService = await import('../../src/services/reservationsService.js');
 
 beforeEach(() => {
   apiRequest.mockReset();
@@ -119,6 +120,29 @@ describe('storesService', () => {
       ['/stores/s1/books', { method: 'POST', body: { book_id: 'b1', stock: 2 } }],
       ['/stores/s1/books/b1', { method: 'PATCH', body: { store_price_cents: null } }],
       ['/stores/s1/books/b1', { method: 'DELETE' }],
+    ]);
+  });
+});
+
+describe('reservationsService', () => {
+  it('llama a las rutas de reservas', async () => {
+    apiRequest.mockResolvedValue(null);
+    await reservationsService.createReservation({ bookId: 'b1', storeId: 's1' });
+    await reservationsService.listMyReservations({ status: 'ready', page: 2 });
+    await reservationsService.cancelReservation('r1');
+    await reservationsService.listReservations({ status: 'pending', store_id: 's1', page: 1 });
+    await reservationsService.markReady('r1');
+    await reservationsService.markPickedUp('r1');
+    expect(apiRequest.mock.calls).toEqual([
+      ['/reservations', { method: 'POST', body: { book_id: 'b1', store_id: 's1' } }],
+      ['/reservations/mine', { query: { status: 'ready', page: 2, limit: undefined } }],
+      ['/reservations/r1/cancel', { method: 'POST' }],
+      [
+        '/reservations',
+        { query: { status: 'pending', store_id: 's1', page: 1, limit: undefined } },
+      ],
+      ['/reservations/r1/ready', { method: 'POST' }],
+      ['/reservations/r1/pickup', { method: 'POST' }],
     ]);
   });
 });

@@ -1,8 +1,10 @@
-// Tabla de rutas de la SPA (contracts/ui-routes.md). Las de administración van dentro de
-// RequireAdmin; la autorización real la aplica la API.
+// Tabla de rutas de la SPA (contracts/ui-routes.md). Las de usuario van dentro de RequireAuth y
+// las de administración dentro de RequireAdmin; la autorización real la aplica la API.
 import { Layout } from './components/Layout.jsx';
 import { RequireAdmin } from './components/RequireAdmin.jsx';
+import { RequireAuth } from './components/RequireAuth.jsx';
 import { AdminBooksPage } from './pages/admin/AdminBooksPage.jsx';
+import { AdminReservationsPage } from './pages/admin/AdminReservationsPage.jsx';
 import { AdminStoresPage } from './pages/admin/AdminStoresPage.jsx';
 import { BookFormPage } from './pages/admin/BookFormPage.jsx';
 import { StoreFormPage } from './pages/admin/StoreFormPage.jsx';
@@ -10,6 +12,7 @@ import { StoreInventoryPage } from './pages/admin/StoreInventoryPage.jsx';
 import { BookDetailPage } from './pages/BookDetailPage.jsx';
 import { CatalogPage } from './pages/CatalogPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { MyReservationsPage } from './pages/MyReservationsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
 
@@ -22,6 +25,11 @@ export const routes = [
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       {
+        path: 'me',
+        element: <RequireAuth />,
+        children: [{ path: 'reservations', element: <MyReservationsPage /> }],
+      },
+      {
         path: 'admin',
         element: <RequireAdmin />,
         children: [
@@ -32,6 +40,7 @@ export const routes = [
           { path: 'stores/new', element: <StoreFormPage /> },
           { path: 'stores/:id/edit', element: <StoreFormPage /> },
           { path: 'stores/:id/books', element: <StoreInventoryPage /> },
+          { path: 'reservations', element: <AdminReservationsPage /> },
         ],
       },
       { path: '*', element: <NotFoundPage /> },

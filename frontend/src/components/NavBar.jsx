@@ -38,6 +38,11 @@ export function NavBar() {
           </NavLink>
         </>
       )}
+      {user && (
+        <NavLink to="/me/reservations" className={linkClass}>
+          Mis reservas
+        </NavLink>
+      )}
       {user?.role === 'admin' && (
         <>
           <NavLink to="/admin/books" className={linkClass}>
@@ -45,6 +50,9 @@ export function NavBar() {
           </NavLink>
           <NavLink to="/admin/stores" className={linkClass}>
             Establecimientos
+          </NavLink>
+          <NavLink to="/admin/reservations" className={linkClass}>
+            Reservas
           </NavLink>
         </>
       )}
