@@ -24,3 +24,11 @@ export async function authenticate(req, res, next) {
   req.user = user;
   next();
 }
+
+/** Como authenticate, pero sin fallar: sin sesión válida deja req.user = null. */
+export async function optionalAuthenticate(req, res, next) {
+  const user = await loadSessionUser(req);
+  if (!user && req.cookies?.[SESSION_COOKIE]) clearSessionCookie(res);
+  req.user = user;
+  next();
+}

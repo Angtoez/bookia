@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Estado del proyecto
 
 - Existen la constitución y la feature `001-book-catalog-stores` (spec, plan y tareas). Todavía no hay repositorio git.
-- Backend implementado parcialmente: base (config, conexión, errores, validación), sesión y roles, auditoría, catálogo (US1) y CRUD de libros, tiendas e inventario (US2, US3), registro y bloqueo de cuentas (US4) y reservas (US5). Faltan US6–US7 y el frontend. Detalle en `README.md`.
+- Backend implementado parcialmente: base (config, conexión, errores, validación), sesión y roles, auditoría, catálogo (US1) y CRUD de libros, tiendas e inventario (US2, US3), registro y bloqueo de cuentas (US4), reservas (US5) y favoritos (US6). Faltan US7 y el frontend. Detalle en `README.md`.
 - Este directorio (`bookia/`) es la raíz del proyecto Spec Kit: ejecuta aquí los scripts y crea aquí el código. Desde el directorio padre, `Get-RepoRoot` resuelve una ruta equivocada.
 
 ## Fuentes de verdad (por orden de prioridad)

@@ -6,7 +6,7 @@ import {
   updateBook,
 } from '../controllers/adminBooksController.js';
 import { getBook, listBooks } from '../controllers/booksController.js';
-import { authenticate } from '../middlewares/authenticate.js';
+import { authenticate, optionalAuthenticate } from '../middlewares/authenticate.js';
 import { requireRole } from '../middlewares/requireRole.js';
 import { validate } from '../middlewares/validate.js';
 import {
@@ -20,9 +20,9 @@ export function createBooksRouter() {
   const router = Router();
   const admin = [authenticate, requireRole('admin')];
 
-  // Catálogo público.
-  router.get('/', validate({ query: listBooksQuerySchema }), listBooks);
-  router.get('/:id', validate({ params: idParamSchema }), getBook);
+  // Catálogo público; con sesión añade is_favorite.
+  router.get('/', optionalAuthenticate, validate({ query: listBooksQuerySchema }), listBooks);
+  router.get('/:id', optionalAuthenticate, validate({ params: idParamSchema }), getBook);
 
   // Gestión (solo administradores).
   router.post('/', ...admin, validate({ body: createBookSchema }), createBook);

@@ -17,7 +17,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | Seeds idempotentes (`seed` y `seed:demo`) | ✅ |
 | Registro de cuentas y bloqueo 15 min tras 5 fallos seguidos (US4, backend) | ✅ |
 | Reservas sin sobrerreserva, gestión por el administrador, caducidad automática y cancelación en cascada (US5, backend) | ✅ |
-| Favoritos (US6), usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
+| Favoritos con disponibilidad actual, e `is_favorite` en el catálogo con sesión (US6, backend) | ✅ |
+| Usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
 | Frontend React | ⏳ pendiente |
 
 ## Modelo de datos
@@ -27,6 +28,7 @@ Colecciones independientes relacionadas por referencias (`ObjectId`) de Mongoose
 ```text
 genres 1───* books 1───* store_books *───1 stores
 users 1───* reservations (libro + tienda, con copia de título, tienda y precio)
+users *───* books, a través de favorites
 users ── audit_logs (quién hizo cada alta, cambio o baja)
 ```
 
@@ -34,6 +36,7 @@ users ── audit_logs (quién hizo cada alta, cambio o baja)
 - **`stores`**: los puntos de venta (nombre, dirección, horario y teléfono opcional).
 - **`store_books`**: la relación N:M entre libros y tiendas, con el stock y un precio propio opcional.
 - **`reservations`**: una unidad de un libro en una tienda, con estado (`pending` → `ready` → `picked_up`, o `cancelled` / `expired`) y copia del título, la tienda y el precio al reservar.
+- **`favorites`**: los libros que cada usuario marca como favoritos; se borran al borrar el libro.
 - El detalle completo está en [`data-model.md`](specs/001-book-catalog-stores/data-model.md).
 
 ## Requisitos
@@ -216,6 +219,18 @@ curl.exe -b cookies.txt -X POST http://localhost:3000/api/reservations/<id>/pick
 
 Las reservas que vencen pasan solas a `expired` y liberan la unidad. Borrar un libro o una tienda cancela sus reservas activas.
 
+### Favoritos
+
+Con la sesión de un usuario:
+
+```powershell
+curl.exe -b usuario.txt -X PUT http://localhost:3000/api/favorites/<id libro>      # marcar → 204 (idempotente)
+curl.exe -b usuario.txt http://localhost:3000/api/favorites                         # mis favoritos, con stores_available
+curl.exe -b usuario.txt -X DELETE http://localhost:3000/api/favorites/<id libro>   # desmarcar → 204
+```
+
+Con sesión, `GET /api/books` y `GET /api/books/<id>` añaden `is_favorite` a cada libro.
+
 ### Errores
 
 Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`: `400 VALIDATION_ERROR` (con `details` por campo), `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND` y `409` (`EMAIL_TAKEN`, `ISBN_TAKEN`, `ALREADY_ASSOCIATED`, `STOCK_BELOW_RESERVED`, `HAS_ACTIVE_RESERVATIONS`, `OUT_OF_STOCK`, `DUPLICATE_RESERVATION`, `RESERVATION_LIMIT` o `INVALID_TRANSITION`). El contrato completo está en [`contracts/rest-api.md`](specs/001-book-catalog-stores/contracts/rest-api.md).
@@ -232,8 +247,8 @@ bookia/
     ├── src/
     │   ├── app.js, server.js
     │   ├── config/         # env.js (dotenv + zod), db.js (conexión única)
-    │   ├── models/         # User, Genre, Book, Store, StoreBook, Reservation, AuditLog
-    │   ├── controllers/    # auth, config, books, adminBooks, stores, storeBooks, reservations
+    │   ├── models/         # User, Genre, Book, Store, StoreBook, Reservation, Favorite, AuditLog
+    │   ├── controllers/    # auth, config, books, adminBooks, stores, storeBooks, reservations, favorites
     │   ├── routes/         # un router por recurso, montados en /api
     │   ├── middlewares/    # authenticate, requireRole, validate, rateLimit, errorHandler, notFound
     │   ├── services/       # transaction, auditService, cascadeService, reservationService, reservationTransitions

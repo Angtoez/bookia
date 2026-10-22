@@ -1,6 +1,7 @@
 // Bajas en cascada de libros y tiendas, auditadas en la misma transacción (research R10).
 // Las reservas activas se cancelan antes de borrar los StoreBook, para liberar sus contadores.
 import { Book } from '../models/Book.js';
+import { Favorite } from '../models/Favorite.js';
 import { Store } from '../models/Store.js';
 import { StoreBook } from '../models/StoreBook.js';
 import { notFound } from '../utils/httpError.js';
@@ -31,7 +32,8 @@ export async function deleteBookCascade(bookId, actorId, session) {
   const book = await Book.findById(bookId).session(session);
   if (!book) throw notFound('Libro no encontrado');
   await cancelActiveFor({ book_id: book._id }, 'book_deleted', actorId, session);
-  // Punto de extensión (US6): borrar los favoritos del libro.
+  // Un libro borrado desaparece de los favoritos (FR-022i).
+  await Favorite.deleteMany({ book_id: book._id }).session(session);
   await deleteStoreBooks({ book_id: book._id }, actorId, () => book.title, session);
   await Book.deleteOne({ _id: book._id }).session(session);
   await record(
