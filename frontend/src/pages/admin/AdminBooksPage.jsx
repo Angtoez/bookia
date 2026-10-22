@@ -1,5 +1,5 @@
 // Gestión del catálogo: listado con búsqueda, y alta, edición y baja de libros (US2).
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
 import { ErrorMessage } from '../../components/ErrorMessage.jsx';
@@ -9,6 +9,7 @@ import { SearchBar } from '../../components/SearchBar.jsx';
 import { Spinner } from '../../components/Spinner.jsx';
 import { useAdminList } from '../../hooks/useAdminList.js';
 import { useConfig } from '../../hooks/useConfig.js';
+import { useConfirmDelete } from '../../hooks/useConfirmDelete.js';
 import { useNotice } from '../../hooks/useNotice.js';
 import { deleteBook, getBookDeletionImpact, listBooks } from '../../services/booksService.js';
 import { formatPrice } from '../../utils/formatPrice.js';
@@ -46,37 +47,24 @@ export function AdminBooksPage() {
   const { q, page, data, error, loading, reload, setQuery, setPage } = useAdminList(listBooks);
   const config = useConfig();
   const [notice, setNotice] = useNotice();
-  // {book, impact?, error?, busy?}: el libro que se va a borrar y el estado del diálogo.
-  const [pending, setPending] = useState(null);
+  const { pending, ask, dialogProps } = useConfirmDelete({
+    getImpact: (book) => getBookDeletionImpact(book.id),
+    remove: (book) => deleteBook(book.id),
+    onDeleted: (book) => {
+      setNotice(`Se ha eliminado «${book.title}».`);
+      // Si era el último de la página, vuelve a la anterior.
+      if (data.items.length === 1 && page > 1) setPage(page - 1);
+      else reload();
+    },
+  });
 
   useEffect(() => {
     document.title = 'Libros · Administración · Bookia';
   }, []);
 
-  const askDelete = async (book) => {
+  const askDelete = (book) => {
     setNotice(null);
-    setPending({ book, busy: true });
-    try {
-      const impact = await getBookDeletionImpact(book.id);
-      setPending({ book, impact });
-    } catch (err) {
-      setPending({ book, error: err });
-    }
-  };
-
-  const confirmDelete = async () => {
-    const { book } = pending;
-    setPending({ ...pending, busy: true, error: null });
-    try {
-      await deleteBook(book.id);
-      setPending(null);
-      setNotice(`Se ha eliminado «${book.title}».`);
-      // Si era el último de la página, vuelve a la anterior.
-      if (data.items.length === 1 && page > 1) setPage(page - 1);
-      else reload();
-    } catch (err) {
-      setPending({ ...pending, busy: false, error: err });
-    }
+    ask(book);
   };
 
   let content;
@@ -138,7 +126,7 @@ export function AdminBooksPage() {
                       <button
                         type="button"
                         onClick={() => askDelete(book)}
-                        disabled={pending?.book.id === book.id}
+                        disabled={pending?.item.id === book.id}
                         aria-label={`Eliminar «${book.title}»`}
                         className={`${ACTION} border border-red-300 text-red-800 hover:bg-red-50 focus-visible:outline-red-700`}
                       >
@@ -174,15 +162,10 @@ export function AdminBooksPage() {
       {content}
 
       <ConfirmDialog
-        open={Boolean(pending && (pending.impact || pending.error))}
-        title={pending ? `¿Eliminar «${pending.book.title}»?` : ''}
+        {...dialogProps}
+        title={pending ? `¿Eliminar «${pending.item.title}»?` : ''}
         confirmLabel="Eliminar"
         tone="danger"
-        busy={Boolean(pending?.busy)}
-        // Sin el impacto no se ha avisado de lo que se perderá: no se puede confirmar.
-        confirmDisabled={!pending?.impact}
-        onConfirm={confirmDelete}
-        onCancel={() => setPending(null)}
       >
         {pending?.impact && <ImpactSummary impact={pending.impact} />}
         {pending?.impact && <p>Esta acción no se puede deshacer.</p>}

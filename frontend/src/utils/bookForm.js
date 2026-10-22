@@ -1,5 +1,6 @@
 // Formulario de libro: conversión entre BookDetail, los campos del formulario y BookInput,
 // y validación previa con las mismas reglas que la API (backend/src/validators/bookValidators.js).
+import { apiFieldErrors, lengthError, requiredError } from './formHelpers.js';
 import { isValidIsbn } from './isbn.js';
 import { centsToAmountInput, parseAmountToCents } from './money.js';
 
@@ -45,19 +46,6 @@ export function formToInput(form) {
   };
 }
 
-/** Solo los campos que cambian respecto al libro original (para el PATCH). */
-export function changedFields(input, original) {
-  return Object.fromEntries(
-    Object.entries(input).filter(([key, value]) => value !== original[key]),
-  );
-}
-
-const lengthError = (value, max, label) =>
-  value.trim().length > max ? `${label} admite como máximo ${max} caracteres` : null;
-
-const requiredError = (value, max, label) =>
-  value.trim() ? lengthError(value, max, label) : `${label} es obligatorio`;
-
 /** Errores por campo del formulario, o {} si es válido. */
 export function validateBookForm(form, now = new Date()) {
   const errors = {};
@@ -92,10 +80,5 @@ export function validateBookForm(form, now = new Date()) {
 /** Errores por campo a partir de un ApiError; `general` si no encaja en ningún campo. */
 export function bookApiErrors(error) {
   if (error.code === 'ISBN_TAKEN') return { fields: { isbn: error.message }, general: null };
-  const fields = {};
-  for (const [field, message] of Object.entries(error.fieldErrors ?? {})) {
-    const name = API_FIELD_TO_FORM[field] ?? field;
-    if (name in EMPTY_BOOK_FORM) fields[name] = message;
-  }
-  return { fields, general: Object.keys(fields).length > 0 ? null : error };
+  return apiFieldErrors(error, Object.keys(EMPTY_BOOK_FORM), API_FIELD_TO_FORM);
 }

@@ -11,6 +11,7 @@ const { getConfig, listGenres, resetConfigCache } =
   await import('../../src/services/configService.js');
 const { createBook, deleteBook, getBook, getBookDeletionImpact, listBooks, updateBook } =
   await import('../../src/services/booksService.js');
+const storesService = await import('../../src/services/storesService.js');
 
 beforeEach(() => {
   apiRequest.mockReset();
@@ -90,6 +91,34 @@ describe('booksService', () => {
       ['/books/b1', { method: 'PATCH', body: { price_cents: 100 } }],
       ['/books/b1/deletionImpact'],
       ['/books/b1', { method: 'DELETE' }],
+    ]);
+  });
+});
+
+describe('storesService', () => {
+  it('llama a las rutas de tiendas e inventario', async () => {
+    apiRequest.mockResolvedValue(null);
+    await storesService.listStores({ page: 2 });
+    await storesService.getStore('s1');
+    await storesService.createStore({ name: 'A' });
+    await storesService.updateStore('s1', { phone: null });
+    await storesService.getStoreDeletionImpact('s1');
+    await storesService.deleteStore('s1');
+    await storesService.listStoreBooks('s1', { page: 1 });
+    await storesService.addStoreBook('s1', { book_id: 'b1', stock: 2 });
+    await storesService.updateStoreBook('s1', 'b1', { store_price_cents: null });
+    await storesService.removeStoreBook('s1', 'b1');
+    expect(apiRequest.mock.calls).toEqual([
+      ['/stores', { query: { page: 2, limit: undefined } }],
+      ['/stores/s1'],
+      ['/stores', { method: 'POST', body: { name: 'A' } }],
+      ['/stores/s1', { method: 'PATCH', body: { phone: null } }],
+      ['/stores/s1/deletionImpact'],
+      ['/stores/s1', { method: 'DELETE' }],
+      ['/stores/s1/books', { query: { page: 1, limit: undefined } }],
+      ['/stores/s1/books', { method: 'POST', body: { book_id: 'b1', stock: 2 } }],
+      ['/stores/s1/books/b1', { method: 'PATCH', body: { store_price_cents: null } }],
+      ['/stores/s1/books/b1', { method: 'DELETE' }],
     ]);
   });
 });

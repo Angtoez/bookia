@@ -12,10 +12,10 @@ import {
   EMPTY_BOOK_FORM,
   bookApiErrors,
   bookToForm,
-  changedFields,
   formToInput,
   validateBookForm,
 } from '../../utils/bookForm.js';
+import { changedFields } from '../../utils/formHelpers.js';
 import { NotFoundPage } from '../NotFoundPage.jsx';
 
 const FIELD_ORDER = Object.keys(EMPTY_BOOK_FORM);

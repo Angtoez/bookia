@@ -3,11 +3,11 @@ import {
   EMPTY_BOOK_FORM,
   bookApiErrors,
   bookToForm,
-  changedFields,
   formToInput,
   validateBookForm,
 } from '../../src/utils/bookForm.js';
 import { ApiError } from '../../src/services/apiClient.js';
+import { changedFields } from '../../src/utils/formHelpers.js';
 import { isValidIsbn, normalizeIsbn } from '../../src/utils/isbn.js';
 import { centsToAmountInput, parseAmountToCents } from '../../src/utils/money.js';
 import { plural } from '../../src/utils/plural.js';
