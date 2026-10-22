@@ -6,7 +6,7 @@ const BUTTON =
 
 /**
  * @param {{open: boolean, title: string, children?: React.ReactNode, confirmLabel?: string,
- *   cancelLabel?: string, tone?: 'danger'|'default', busy?: boolean,
+ *   cancelLabel?: string, tone?: 'danger'|'default', busy?: boolean, confirmDisabled?: boolean,
  *   onConfirm: () => void, onCancel: () => void}} props
  */
 export function ConfirmDialog({
@@ -17,6 +17,7 @@ export function ConfirmDialog({
   cancelLabel = 'Cancelar',
   tone = 'default',
   busy = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }) {
@@ -78,7 +79,7 @@ export function ConfirmDialog({
             <button
               type="button"
               onClick={onConfirm}
-              disabled={busy}
+              disabled={busy || confirmDisabled}
               className={`${BUTTON} ${confirmTone}`}
             >
               {busy ? 'Procesando…' : confirmLabel}

@@ -38,6 +38,11 @@ export function NavBar() {
           </NavLink>
         </>
       )}
+      {user?.role === 'admin' && (
+        <NavLink to="/admin/books" className={linkClass}>
+          Libros
+        </NavLink>
+      )}
       {user && (
         <>
           <span className="px-3 py-2 text-sm text-teal-100" title={user.email}>

@@ -1,0 +1,193 @@
+// Gestión del catálogo: listado con búsqueda, y alta, edición y baja de libros (US2).
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { ConfirmDialog } from '../../components/ConfirmDialog.jsx';
+import { ErrorMessage } from '../../components/ErrorMessage.jsx';
+import { Notice } from '../../components/Notice.jsx';
+import { Pagination } from '../../components/Pagination.jsx';
+import { SearchBar } from '../../components/SearchBar.jsx';
+import { Spinner } from '../../components/Spinner.jsx';
+import { useAdminList } from '../../hooks/useAdminList.js';
+import { useConfig } from '../../hooks/useConfig.js';
+import { useNotice } from '../../hooks/useNotice.js';
+import { deleteBook, getBookDeletionImpact, listBooks } from '../../services/booksService.js';
+import { formatPrice } from '../../utils/formatPrice.js';
+import { plural } from '../../utils/plural.js';
+
+const ACTION =
+  'rounded-md px-3 py-1.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60';
+
+/** Explica qué se perderá al borrar, a partir de deletionImpact (historia 2, escenario 4). */
+function ImpactSummary({ impact }) {
+  const lines = [
+    impact.stores > 0
+      ? `Se quitará de ${plural(impact.stores, 'establecimiento')}.`
+      : 'No está en ningún establecimiento.',
+  ];
+  if (impact.active_reservations > 0) {
+    const verb = impact.active_reservations === 1 ? 'Se cancelará' : 'Se cancelarán';
+    lines.push(
+      `${verb} ${plural(impact.active_reservations, 'reserva activa', 'reservas activas')}.`,
+    );
+  }
+  if (impact.favorites > 0) {
+    lines.push(`Desaparecerá de ${plural(impact.favorites, 'lista', 'listas')} de favoritos.`);
+  }
+  return (
+    <ul className="list-disc space-y-1 pl-5">
+      {lines.map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
+  );
+}
+
+export function AdminBooksPage() {
+  const { q, page, data, error, loading, reload, setQuery, setPage } = useAdminList(listBooks);
+  const config = useConfig();
+  const [notice, setNotice] = useNotice();
+  // {book, impact?, error?, busy?}: el libro que se va a borrar y el estado del diálogo.
+  const [pending, setPending] = useState(null);
+
+  useEffect(() => {
+    document.title = 'Libros · Administración · Bookia';
+  }, []);
+
+  const askDelete = async (book) => {
+    setNotice(null);
+    setPending({ book, busy: true });
+    try {
+      const impact = await getBookDeletionImpact(book.id);
+      setPending({ book, impact });
+    } catch (err) {
+      setPending({ book, error: err });
+    }
+  };
+
+  const confirmDelete = async () => {
+    const { book } = pending;
+    setPending({ ...pending, busy: true, error: null });
+    try {
+      await deleteBook(book.id);
+      setPending(null);
+      setNotice(`Se ha eliminado «${book.title}».`);
+      // Si era el último de la página, vuelve a la anterior.
+      if (data.items.length === 1 && page > 1) setPage(page - 1);
+      else reload();
+    } catch (err) {
+      setPending({ ...pending, busy: false, error: err });
+    }
+  };
+
+  let content;
+  if (error) content = <ErrorMessage error={error} onRetry={reload} />;
+  else if (!data) content = <Spinner label="Cargando los libros…" />;
+  else if (data.items.length === 0) {
+    content = (
+      <p className="rounded-xl border border-dashed border-stone-300 bg-white px-6 py-10 text-center text-stone-700">
+        {q ? 'No hay libros que coincidan con la búsqueda.' : 'Todavía no hay libros.'}
+      </p>
+    );
+  } else {
+    content = (
+      <>
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table aria-busy={loading} className="w-full min-w-[40rem] text-left text-sm">
+            <caption className="sr-only">Libros del catálogo</caption>
+            <thead className="bg-stone-100 text-xs tracking-wide text-stone-600 uppercase">
+              <tr>
+                <th scope="col" className="px-4 py-3">
+                  Título
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  Autor
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  ISBN
+                </th>
+                <th scope="col" className="px-4 py-3 text-right">
+                  Precio
+                </th>
+                <th scope="col" className="px-4 py-3 text-right">
+                  <span className="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y divide-stone-200 ${loading ? 'opacity-60' : ''}`}>
+              {data.items.map((book) => (
+                <tr key={book.id}>
+                  <th scope="row" className="px-4 py-3 font-medium text-stone-900">
+                    <Link to={`/books/${book.id}`} className="hover:underline">
+                      {book.title}
+                    </Link>
+                  </th>
+                  <td className="px-4 py-3 text-stone-700">{book.author}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-stone-700">{book.isbn}</td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap text-stone-900">
+                    {formatPrice(book.price_cents, config?.currency)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        to={`/admin/books/${book.id}/edit`}
+                        aria-label={`Editar «${book.title}»`}
+                        className={`${ACTION} border border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-teal-700`}
+                      >
+                        Editar
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => askDelete(book)}
+                        disabled={pending?.book.id === book.id}
+                        aria-label={`Eliminar «${book.title}»`}
+                        className={`${ACTION} border border-red-300 text-red-800 hover:bg-red-50 focus-visible:outline-red-700`}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Pagination page={data.page} totalPages={data.total_pages} onPageChange={setPage} />
+      </>
+    );
+  }
+
+  return (
+    <section className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-stone-900">Libros</h1>
+        <Link
+          to="/admin/books/new"
+          className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+        >
+          Nuevo libro
+        </Link>
+      </div>
+      <Notice message={notice} onDismiss={() => setNotice(null)} />
+      <search>
+        <SearchBar value={q} onChange={setQuery} />
+      </search>
+      {content}
+
+      <ConfirmDialog
+        open={Boolean(pending && (pending.impact || pending.error))}
+        title={pending ? `¿Eliminar «${pending.book.title}»?` : ''}
+        confirmLabel="Eliminar"
+        tone="danger"
+        busy={Boolean(pending?.busy)}
+        // Sin el impacto no se ha avisado de lo que se perderá: no se puede confirmar.
+        confirmDisabled={!pending?.impact}
+        onConfirm={confirmDelete}
+        onCancel={() => setPending(null)}
+      >
+        {pending?.impact && <ImpactSummary impact={pending.impact} />}
+        {pending?.impact && <p>Esta acción no se puede deshacer.</p>}
+        <ErrorMessage error={pending?.error} />
+      </ConfirmDialog>
+    </section>
+  );
+}

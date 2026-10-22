@@ -9,7 +9,8 @@ const { ApiError, apiRequest } = await import('../../src/services/apiClient.js')
 const authService = await import('../../src/services/authService.js');
 const { getConfig, listGenres, resetConfigCache } =
   await import('../../src/services/configService.js');
-const { getBook, listBooks } = await import('../../src/services/booksService.js');
+const { createBook, deleteBook, getBook, getBookDeletionImpact, listBooks, updateBook } =
+  await import('../../src/services/booksService.js');
 
 beforeEach(() => {
   apiRequest.mockReset();
@@ -75,6 +76,20 @@ describe('booksService', () => {
     expect(apiRequest.mock.calls).toEqual([
       ['/books', { query: { q: 'cien', genre: 'novela', page: 2, limit: undefined } }],
       ['/books/a%2Fb'],
+    ]);
+  });
+
+  it('gestión de libros: POST, PATCH, deletionImpact y DELETE', async () => {
+    apiRequest.mockResolvedValue(null);
+    await createBook({ title: 'A' });
+    await updateBook('b1', { price_cents: 100 });
+    await getBookDeletionImpact('b1');
+    await deleteBook('b1');
+    expect(apiRequest.mock.calls).toEqual([
+      ['/books', { method: 'POST', body: { title: 'A' } }],
+      ['/books/b1', { method: 'PATCH', body: { price_cents: 100 } }],
+      ['/books/b1/deletionImpact'],
+      ['/books/b1', { method: 'DELETE' }],
     ]);
   });
 });

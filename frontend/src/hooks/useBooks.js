@@ -2,12 +2,8 @@
 import { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { listBooks } from '../services/booksService.js';
+import { applyParamChanges, readPage } from '../utils/searchParams.js';
 import { useApiQuery } from './useApiQuery.js';
-
-function readPage(value) {
-  const page = Number.parseInt(value ?? '', 10);
-  return Number.isInteger(page) && page >= 1 ? page : 1;
-}
 
 export function useBooks() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,18 +19,7 @@ export function useBooks() {
 
   /** Cambia parámetros de la URL; cambiar q o genre vuelve a la primera página. */
   const setParams = useCallback(
-    (changes) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        for (const [key, value] of Object.entries(changes)) {
-          const empty = value === '' || value == null || (key === 'page' && value === 1);
-          if (empty) next.delete(key);
-          else next.set(key, String(value));
-        }
-        if (!('page' in changes) && ('q' in changes || 'genre' in changes)) next.delete('page');
-        return next;
-      });
-    },
+    (changes) => setSearchParams((prev) => applyParamChanges(prev, changes)),
     [setSearchParams],
   );
 

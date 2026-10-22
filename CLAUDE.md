@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Estado del proyecto
 
 - Existen la constitución y la feature `001-book-catalog-stores` (spec, plan y tareas). El repositorio git trabaja en la rama `master`.
-- Backend implementado: base (config, conexión, errores, validación), sesión y roles, auditoría, catálogo (US1) y CRUD de libros, tiendas e inventario (US2, US3), registro y bloqueo de cuentas (US4), reservas (US5), favoritos (US6) y usuarios y auditoría (US7). Frontend: base de la SPA, login, catálogo (US1) y registro (US4); faltan las páginas de US2, US3, US5, US6 y US7. Detalle en `README.md`.
+- Backend implementado: base (config, conexión, errores, validación), sesión y roles, auditoría, catálogo (US1) y CRUD de libros, tiendas e inventario (US2, US3), registro y bloqueo de cuentas (US4), reservas (US5), favoritos (US6) y usuarios y auditoría (US7). Frontend: base de la SPA, login, catálogo (US1), registro (US4) y administración de libros (US2); faltan las páginas de US3, US5, US6 y US7. Detalle en `README.md`.
 - Este directorio (`bookia/`) es la raíz del proyecto Spec Kit: ejecuta aquí los scripts y crea aquí el código. Desde el directorio padre, `Get-RepoRoot` resuelve una ruta equivocada.
 
 ## Fuentes de verdad (por orden de prioridad)
@@ -40,3 +40,4 @@ Definidos en `specs/001-book-catalog-stores/plan.md`. Hoy existen `dev`, `start`
   - `react-router` se mantiene en la 7.x, como fija el plan, aunque ya exista la 8.
   - No se usa `eslint-plugin-react` porque no admite ESLint 10. La prohibición del atributo `style` se hace con `no-restricted-syntax` en `eslint.config.js`, y las reglas de hooks vienen de `eslint-plugin-react-hooks`.
   - Las lecturas de la API pasan por `hooks/useApiQuery.js`, que deriva `loading` sin actualizar el estado dentro de `useEffect`, como exigen las reglas de `react-hooks` 7.
+  - Los importes se escriben en la moneda de `GET /api/config`, que no tiene por qué ser el euro, y se convierten a céntimos con `utils/money.js`, sin coma flotante. `utils/isbn.js` y `utils/passwordPolicy.js` repiten las reglas del backend: si cambian en un lado, hay que cambiarlas en el otro.
