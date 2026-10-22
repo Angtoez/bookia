@@ -18,7 +18,7 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | Registro de cuentas y bloqueo 15 min tras 5 fallos seguidos (US4, backend) | ✅ |
 | Reservas sin sobrerreserva, gestión por el administrador, caducidad automática y cancelación en cascada (US5, backend) | ✅ |
 | Favoritos con disponibilidad actual, e `is_favorite` en el catálogo con sesión (US6, backend) | ✅ |
-| Usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
+| Gestión de usuarios (rol y estado, siempre con un administrador activo) y consulta de la auditoría (US7, backend) | ✅ |
 | Frontend React | ⏳ pendiente |
 
 ## Modelo de datos
@@ -231,9 +231,22 @@ curl.exe -b usuario.txt -X DELETE http://localhost:3000/api/favorites/<id libro>
 
 Con sesión, `GET /api/books` y `GET /api/books/<id>` añaden `is_favorite` a cada libro.
 
+### Usuarios y auditoría (administrador)
+
+Con la sesión de administrador (`cookies.txt`):
+
+```powershell
+curl.exe -b cookies.txt "http://localhost:3000/api/users?q=perez"                       # buscar por nombre o correo
+'{"role": "admin"}' | Out-File -Encoding ascii rol.json
+curl.exe -b cookies.txt -X PATCH -H "Content-Type: application/json" -d "@rol.json" http://localhost:3000/api/users/<id>   # cambiar rol o estado → 200
+curl.exe -b cookies.txt "http://localhost:3000/api/auditLogs?entity_type=user"          # auditoría, de la más reciente a la más antigua
+```
+
+El cuerpo del `PATCH` admite `role` (`user` o `admin`) y `status` (`active` o `disabled`). Los cambios se aplican en la siguiente petición del usuario afectado. Desactivar una cuenta corta su sesión y cancela sus reservas activas. Si el cambio dejaría el sistema sin administradores activos, la API responde `409 LAST_ADMIN`. La auditoría es de solo lectura: no hay rutas para modificarla ni borrarla.
+
 ### Errores
 
-Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`: `400 VALIDATION_ERROR` (con `details` por campo), `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND` y `409` (`EMAIL_TAKEN`, `ISBN_TAKEN`, `ALREADY_ASSOCIATED`, `STOCK_BELOW_RESERVED`, `HAS_ACTIVE_RESERVATIONS`, `OUT_OF_STOCK`, `DUPLICATE_RESERVATION`, `RESERVATION_LIMIT` o `INVALID_TRANSITION`). El contrato completo está en [`contracts/rest-api.md`](specs/001-book-catalog-stores/contracts/rest-api.md).
+Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`: `400 VALIDATION_ERROR` (con `details` por campo), `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND` y `409` (`EMAIL_TAKEN`, `ISBN_TAKEN`, `ALREADY_ASSOCIATED`, `STOCK_BELOW_RESERVED`, `HAS_ACTIVE_RESERVATIONS`, `OUT_OF_STOCK`, `DUPLICATE_RESERVATION`, `RESERVATION_LIMIT`, `INVALID_TRANSITION` o `LAST_ADMIN`). El contrato completo está en [`contracts/rest-api.md`](specs/001-book-catalog-stores/contracts/rest-api.md).
 
 ## Estructura
 

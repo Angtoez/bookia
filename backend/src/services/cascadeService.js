@@ -1,4 +1,4 @@
-// Bajas en cascada de libros y tiendas, auditadas en la misma transacción (research R10).
+// Bajas en cascada de libros, tiendas y cuentas, auditadas en la misma transacción (research R10).
 // Las reservas activas se cancelan antes de borrar los StoreBook, para liberar sus contadores.
 import { Book } from '../models/Book.js';
 import { Favorite } from '../models/Favorite.js';
@@ -47,6 +47,11 @@ export async function deleteBookCascade(bookId, actorId, session) {
     },
     session,
   );
+}
+
+/** Al desactivar una cuenta, sus reservas activas se cancelan y liberan las unidades (FR-022f). */
+export function deactivateUserCascade(userId, actorId, session) {
+  return cancelActiveFor({ user_id: userId }, 'account_deactivated', actorId, session);
 }
 
 /** Borra una tienda y sus asociaciones, sin borrar los libros (FR-021). */

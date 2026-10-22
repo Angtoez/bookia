@@ -77,3 +77,31 @@ export function toStoreBookItem(storeBook, book) {
 export function toUserMe(user) {
   return { id: String(user._id), name: user.name, email: user.email, role: user.role };
 }
+
+/** Usuario en la gestión de administración: nunca incluye la contraseña. */
+export function toUserAdmin(user) {
+  return {
+    id: String(user._id),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status,
+    created_at: user.created_at,
+  };
+}
+
+/** AuditLogItem: requiere user_id poblado con el nombre; null si la acción es del sistema. */
+export function toAuditLog(log) {
+  const user = log.user_id?._id ? { id: String(log.user_id._id), name: log.user_id.name } : null;
+  return {
+    id: String(log._id),
+    user,
+    action: log.action,
+    entity_type: log.entity_type,
+    entity_id: String(log.entity_id),
+    entity_label: log.entity_label,
+    before: log.before,
+    after: log.after,
+    created_at: log.created_at,
+  };
+}
