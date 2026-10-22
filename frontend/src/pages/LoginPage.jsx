@@ -1,6 +1,6 @@
 // Inicio de sesión con correo y contraseña; vuelve a `next` o al catálogo.
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate, useSearchParams } from 'react-router';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { FormField } from '../components/FormField.jsx';
 import { useAuth } from '../hooks/useAuth.js';
@@ -70,6 +70,15 @@ export function LoginPage() {
           {submitting ? 'Entrando…' : 'Entrar'}
         </button>
       </form>
+      <p className="text-center text-sm text-stone-700">
+        ¿No tienes cuenta?{' '}
+        <Link
+          to={searchParams.get('next') ? `/register?next=${encodeURIComponent(next)}` : '/register'}
+          className="font-medium text-teal-800 underline underline-offset-2"
+        >
+          Crea una
+        </Link>
+      </p>
     </section>
   );
 }

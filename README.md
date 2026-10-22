@@ -21,7 +21,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | Gestión de usuarios (rol y estado, siempre con un administrador activo) y consulta de la auditoría (US7, backend) | ✅ |
 | SPA: base (sesión, rutas protegidas, componentes comunes) e inicio de sesión | ✅ |
 | SPA: catálogo con búsqueda, filtro y paginación en la URL, y detalle con tiendas (US1) | ✅ |
-| SPA: resto de páginas (US2 a US7) | ⏳ pendiente |
+| SPA: registro de cuentas con la política de contraseñas en el cliente (US4) | ✅ |
+| SPA: resto de páginas (US2, US3, US5, US6 y US7) | ⏳ pendiente |
 
 ## Modelo de datos
 
@@ -283,6 +284,6 @@ bookia/
     │   ├── services/       # apiClient (fetch + ApiError) y un servicio por recurso
     │   ├── components/     # Layout, NavBar, RequireAuth, RequireAdmin, FormField, ConfirmDialog…
     │   ├── pages/          # una página por ruta; admin/ para la administración
-    │   └── utils/          # formatPrice, formatDate, safeNext
+    │   └── utils/          # formatPrice, formatDate, safeNext, passwordPolicy
     └── tests/              # services, utils, hooks y páginas con Testing Library
 ```

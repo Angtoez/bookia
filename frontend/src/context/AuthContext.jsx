@@ -46,6 +46,13 @@ export function AuthProvider({ children, onUnauthorized }) {
     return current;
   }, []);
 
+  const register = useCallback(async (data) => {
+    const current = await authService.register(data);
+    setUser(current);
+    setStatus('authenticated');
+    return current;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authService.logout();
@@ -55,15 +62,14 @@ export function AuthProvider({ children, onUnauthorized }) {
     }
   }, []);
 
-  // Tras un registro, la API ya devuelve la cookie y el usuario.
   const updateUser = useCallback((current) => {
     setUser(current);
     setStatus(current ? 'authenticated' : 'anonymous');
   }, []);
 
   const value = useMemo(
-    () => ({ user, status, login, logout, setUser: updateUser }),
-    [user, status, login, logout, updateUser],
+    () => ({ user, status, login, register, logout, setUser: updateUser }),
+    [user, status, login, register, logout, updateUser],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

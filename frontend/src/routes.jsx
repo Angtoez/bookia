@@ -5,6 +5,7 @@ import { BookDetailPage } from './pages/BookDetailPage.jsx';
 import { CatalogPage } from './pages/CatalogPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { RegisterPage } from './pages/RegisterPage.jsx';
 
 export const routes = [
   {
@@ -13,6 +14,7 @@ export const routes = [
       { index: true, element: <CatalogPage /> },
       { path: 'books/:id', element: <BookDetailPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

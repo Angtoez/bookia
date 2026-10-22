@@ -7,9 +7,14 @@ describe('safeNext', () => {
   });
 
   it('rechaza destinos externos, vacíos o el propio login', () => {
-    for (const value of [null, '', 'https://evil.example', '//evil.example', '/\\evil', '/login']) {
+    const rejected = [null, '', 'https://evil.example', '//evil.example', '/\\evil', '/login'];
+    for (const value of [...rejected, '/login?next=/x', '/register', '/register?next=%2F']) {
       expect(safeNext(value)).toBe('/');
     }
+  });
+
+  it('no confunde rutas que solo empiezan igual', () => {
+    expect(safeNext('/loginhelp')).toBe('/loginhelp');
   });
 });
 

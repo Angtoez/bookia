@@ -29,9 +29,14 @@ export function NavBar() {
         Catálogo
       </NavLink>
       {status === 'anonymous' && (
-        <NavLink to="/login" className={linkClass}>
-          Iniciar sesión
-        </NavLink>
+        <>
+          <NavLink to="/login" className={linkClass}>
+            Iniciar sesión
+          </NavLink>
+          <NavLink to="/register" className={linkClass}>
+            Crear cuenta
+          </NavLink>
+        </>
       )}
       {user && (
         <>

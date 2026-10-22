@@ -3,7 +3,8 @@ export function safeNext(value, fallback = '/') {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) {
     return fallback;
   }
-  if (value.startsWith('/\\') || value.startsWith('/login')) return fallback;
+  // Volver al login o al registro tras entrar no tendría sentido.
+  if (value.startsWith('/\\') || /^\/(login|register)(?:[/?#]|$)/.test(value)) return fallback;
   return value;
 }
 

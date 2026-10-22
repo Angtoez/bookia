@@ -29,6 +29,15 @@ describe('authService', () => {
     ]);
   });
 
+  it('register envía solo nombre, correo y contraseña', async () => {
+    apiRequest.mockResolvedValue({ id: 'u1', role: 'user' });
+    await authService.register({ name: 'Ana', email: 'a@b.com', password: 'x1', role: 'admin' });
+    expect(apiRequest).toHaveBeenCalledWith('/auth/register', {
+      method: 'POST',
+      body: { name: 'Ana', email: 'a@b.com', password: 'x1' },
+    });
+  });
+
   it('me devuelve null sin sesión y propaga otros errores', async () => {
     apiRequest.mockRejectedValueOnce(new ApiError(401, 'UNAUTHENTICATED', 'x'));
     expect(await authService.me()).toBeNull();
