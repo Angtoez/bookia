@@ -4,6 +4,10 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../src/services/booksService.js', () => ({ listBooks: vi.fn(), getBook: vi.fn() }));
+// BookCard muestra el corazón de favoritos, que depende de la sesión: aquí, un visitante.
+vi.mock('../../src/hooks/useAuth.js', () => ({
+  useAuth: () => ({ status: 'anonymous', user: null }),
+}));
 vi.mock('../../src/services/configService.js', () => ({
   getConfig: vi.fn(),
   listGenres: vi.fn(),

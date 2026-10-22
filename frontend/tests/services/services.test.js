@@ -13,6 +13,7 @@ const { createBook, deleteBook, getBook, getBookDeletionImpact, listBooks, updat
   await import('../../src/services/booksService.js');
 const storesService = await import('../../src/services/storesService.js');
 const reservationsService = await import('../../src/services/reservationsService.js');
+const favoritesService = await import('../../src/services/favoritesService.js');
 
 beforeEach(() => {
   apiRequest.mockReset();
@@ -143,6 +144,20 @@ describe('reservationsService', () => {
       ],
       ['/reservations/r1/ready', { method: 'POST' }],
       ['/reservations/r1/pickup', { method: 'POST' }],
+    ]);
+  });
+});
+
+describe('favoritesService', () => {
+  it('llama a las rutas de favoritos', async () => {
+    apiRequest.mockResolvedValue(null);
+    await favoritesService.listFavorites({ page: 2 });
+    await favoritesService.addFavorite('b1');
+    await favoritesService.removeFavorite('b1');
+    expect(apiRequest.mock.calls).toEqual([
+      ['/favorites', { query: { page: 2, limit: undefined } }],
+      ['/favorites/b1', { method: 'PUT' }],
+      ['/favorites/b1', { method: 'DELETE' }],
     ]);
   });
 });

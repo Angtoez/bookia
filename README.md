@@ -25,7 +25,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | SPA: administración de libros (listado, alta, edición y baja con aviso del impacto) (US2) | ✅ |
 | SPA: establecimientos e inventario (stock y precio propio en línea, alta con buscador de libros) (US3) | ✅ |
 | SPA: reservas (botón Reservar en el detalle, Mis reservas y gestión por el administrador) (US5) | ✅ |
-| SPA: resto de páginas (US6 y US7) | ⏳ pendiente |
+| SPA: favoritos (corazón en tarjetas y detalle, y Mis favoritos con disponibilidad) (US6) | ✅ |
+| SPA: usuarios y auditoría (US7) | ⏳ pendiente |
 
 ## Modelo de datos
 
@@ -283,7 +284,7 @@ bookia/
     ├── src/
     │   ├── main.jsx, routes.jsx     # router en modo data y tabla de rutas
     │   ├── context/        # AuthContext (sesión)
-    │   ├── hooks/          # useAuth, useApiQuery, useConfig, useBooks, useBook, useAdminList, useNotice, useConfirmDelete, useReservations
+    │   ├── hooks/          # useAuth, useApiQuery, useConfig, useBooks, useBook, useAdminList, useNotice, useConfirmDelete, useReservations, useFavorites
     │   ├── services/       # apiClient (fetch + ApiError) y un servicio por recurso
     │   ├── components/     # Layout, NavBar, RequireAuth, RequireAdmin, FormField, ConfirmDialog…
     │   ├── pages/          # una página por ruta; admin/ para la administración

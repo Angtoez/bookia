@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import { FavoriteButton } from '../components/FavoriteButton.jsx';
 import { Notice } from '../components/Notice.jsx';
 import { ReserveButton } from '../components/ReserveButton.jsx';
 import { Spinner } from '../components/Spinner.jsx';
@@ -61,8 +62,13 @@ export function BookDetailPage() {
             {book.genre.name}
           </p>
         )}
-        <h1 className="text-3xl font-bold text-stone-900">{book.title}</h1>
-        <p className="text-lg text-stone-700">{book.author}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-stone-900">{book.title}</h1>
+            <p className="text-lg text-stone-700">{book.author}</p>
+          </div>
+          <FavoriteButton book={book} />
+        </div>
       </header>
 
       <dl className="grid grid-cols-1 gap-4 rounded-xl border border-stone-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">

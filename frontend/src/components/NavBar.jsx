@@ -39,9 +39,14 @@ export function NavBar() {
         </>
       )}
       {user && (
-        <NavLink to="/me/reservations" className={linkClass}>
-          Mis reservas
-        </NavLink>
+        <>
+          <NavLink to="/me/reservations" className={linkClass}>
+            Mis reservas
+          </NavLink>
+          <NavLink to="/me/favorites" className={linkClass}>
+            Mis favoritos
+          </NavLink>
+        </>
       )}
       {user?.role === 'admin' && (
         <>
