@@ -1,6 +1,6 @@
 # Bookia
 
-Aplicación web para consultar libros y saber en qué puntos de venta están disponibles. Este repositorio contiene, por ahora, la **API REST** (Node.js + Express 5 + Mongoose 8 sobre MongoDB Atlas). La SPA en React llegará en una fase posterior.
+Aplicación web para consultar libros y saber en qué puntos de venta están disponibles. Este repositorio contiene la **API REST** (Node.js + Express 5 + Mongoose 8 sobre MongoDB Atlas) y la **SPA** (React 19 + Vite + React Router 7 + Tailwind 4), que está en desarrollo.
 
 - Constitución del proyecto: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 - Especificación, modelo de datos y contrato: [`specs/001-book-catalog-stores/`](specs/001-book-catalog-stores/)
@@ -19,7 +19,9 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | Reservas sin sobrerreserva, gestión por el administrador, caducidad automática y cancelación en cascada (US5, backend) | ✅ |
 | Favoritos con disponibilidad actual, e `is_favorite` en el catálogo con sesión (US6, backend) | ✅ |
 | Gestión de usuarios (rol y estado, siempre con un administrador activo) y consulta de la auditoría (US7, backend) | ✅ |
-| Frontend React | ⏳ pendiente |
+| SPA: base (sesión, rutas protegidas, componentes comunes) e inicio de sesión | ✅ |
+| SPA: catálogo con búsqueda, filtro y paginación en la URL, y detalle con tiendas (US1) | ✅ |
+| SPA: resto de páginas (US2 a US7) | ⏳ pendiente |
 
 ## Modelo de datos
 
@@ -84,12 +86,14 @@ Si falta una variable obligatoria o no es válida, la API no arranca e indica cu
 Todos los comandos se ejecutan desde `bookia/`:
 
 ```powershell
-npm install          # dependencias del monorepo (workspace backend)
+npm install          # dependencias del monorepo (workspaces backend y frontend)
 npm run db:check     # comprueba la conexión, el replica set y las transacciones (no escribe nada)
 npm run seed         # crea colecciones e índices, los 20 géneros y el administrador inicial
 npm run seed:demo    # opcional: libros de ejemplo y 4 tiendas ficticias en Huauchinango, Puebla
-npm run dev          # API en http://localhost:3000/api con recarga automática
+npm run dev          # API en http://localhost:3000/api y SPA en http://localhost:5173, con recarga automática
 ```
+
+En desarrollo, Vite reenvía `/api` a `http://localhost:3000`, así que la SPA y la API comparten origen y la cookie de sesión (`sameSite: 'strict'`) funciona sin configurar CORS. `npm run build` genera la SPA de producción en `frontend/dist/`.
 
 Los dos *seeds* son idempotentes: puedes ejecutarlos varias veces. Solo insertan lo que falta (géneros por `slug`, libros por ISBN, tiendas por nombre y asociaciones por tienda y libro) y nunca sobrescriben datos editados. `seed:demo` se niega a ejecutarse con `NODE_ENV=production`. Las tiendas de demostración son ficticias (llevan "(demo)" en el nombre y tienen direcciones de ejemplo) y los ISBN son de ejemplo.
 
@@ -97,7 +101,7 @@ Los dos *seeds* son idempotentes: puedes ejecutarlos varias veces. Solo insertan
 
 ```powershell
 npm run lint         # ESLint + Prettier, sin advertencias
-npm test             # Vitest + Supertest contra un replica set de MongoDB en memoria, con cobertura ≥ 70 %
+npm test             # backend: Vitest + Supertest contra un replica set en memoria; frontend: Vitest + Testing Library con jsdom; cobertura ≥ 70 %
 npm run licenses     # licencias de las dependencias según la constitución
 ```
 
@@ -253,7 +257,7 @@ Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`
 ```text
 bookia/
 ├── package.json            # workspaces y scripts
-├── eslint.config.js, .prettierrc
+├── eslint.config.js, .prettierrc   # ESLint para backend y frontend (JSX y react-hooks)
 ├── scripts/checkLicenses.js
 └── backend/
     ├── .env.example
@@ -270,4 +274,15 @@ bookia/
     │   ├── utils/          # isbn, búsqueda, paginación, cookie de sesión, presenters
     │   └── scripts/        # seed, seedDemo, checkDb
     └── tests/              # unit/ (con mocks) e integration/ (Supertest + MongoMemoryReplSet)
+└── frontend/
+    ├── index.html, vite.config.js   # proxy de /api y configuración de Vitest
+    ├── src/
+    │   ├── main.jsx, routes.jsx     # router en modo data y tabla de rutas
+    │   ├── context/        # AuthContext (sesión)
+    │   ├── hooks/          # useAuth, useApiQuery, useConfig, useBooks, useBook
+    │   ├── services/       # apiClient (fetch + ApiError) y un servicio por recurso
+    │   ├── components/     # Layout, NavBar, RequireAuth, RequireAdmin, FormField, ConfirmDialog…
+    │   ├── pages/          # una página por ruta; admin/ para la administración
+    │   └── utils/          # formatPrice, formatDate, safeNext
+    └── tests/              # services, utils, hooks y páginas con Testing Library
 ```
