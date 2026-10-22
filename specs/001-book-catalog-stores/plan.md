@@ -65,7 +65,7 @@ Ninguna incógnita queda abierta: todas se resolvieron en [research.md](./resear
 | V. Código y estructura | Rutas en `camelCase`, componentes en `PascalCase`, campos en `snake_case` y variables de entorno en `SCREAMING_SNAKE_CASE`. Identificadores en inglés y comentarios en español. ESLint + Prettier. Máximo 300 líneas por archivo. Carpetas obligatorias del backend y del frontend presentes (ver estructura). | ✅ |
 | VI. Testing ≥ 70 % | Pruebas unitarias de controladores con mocks de Mongoose y de integración de los endpoints principales; umbral de cobertura en la configuración (R13). | ✅ |
 | VII. Auditoría | `audit_logs` con `user_id`, `action` y `created_at`, escrito dentro de la transacción de cada operación crítica; también se auditan reservas, inventario y usuarios (R11). | ✅ |
-| Licencias (constitución 1.0.1) | Las dependencias directas son MIT o Apache-2.0, salvo `dotenv`, que es la excepción expresa de la constitución. Las transitivas se comprueban contra la lista permisiva con `npm run licenses` (R15). | ✅ |
+| Licencias (constitución 1.0.2) | Las dependencias directas son MIT o Apache-2.0, salvo `dotenv`, que es la excepción expresa de la constitución. Las transitivas se comprueban contra la lista permisiva con `npm run licenses` (R15). | ✅ |
 | Privacidad (GDPR) | Solo se guardan el nombre y el correo, las contraseñas van con hash y la serialización nunca expone `password_hash`. | ✅ |
 | Context API / Zustand, no Redux | Solo `AuthContext`; el resto del estado es local en hooks (R14). | ✅ |
 | CI | `npm run lint` y `npm test` en la raíz, sin servicios externos (Mongo en memoria). | ✅ |

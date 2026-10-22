@@ -1,13 +1,15 @@
 <!--
 Sync Impact Report
 ==================
-Versión: 1.0.0 → 1.0.1
-Tipo de cambio: PATCH (aclaración del alcance de la regla de licencias; sin cambios de principios)
+Versión: 1.0.1 → 1.0.2
+Tipo de cambio: PATCH (precisión de la regla de licencias para las transitivas; sin cambios de principios)
 Principios modificados: ninguno
 Secciones modificadas:
-  - Cumplimiento, Licencias y Decisiones Descartadas: la regla MIT/Apache-2.0 aplica a las
-    dependencias directas; las transitivas deben ser permisivas; se exceptúa dotenv, exigido
-    por el principio II
+  - Cumplimiento, Licencias y Decisiones Descartadas: se admiten MIT-0, CC0-1.0 y BlueOak-1.0.0
+    entre las transitivas permisivas, y se exceptúan lightningcss (MPL-2.0) y caniuse-lite
+    (CC-BY-4.0), que trae el stack obligatorio del principio I. Las directas no cambian.
+Motivo: `npm run licenses` ya fallaba con minimatch (BlueOak, vía ESLint) y lightningcss (vía
+  Vite); el frontend añade caniuse-lite, mdn-data (CC0), @csstools/* (MIT-0) y lru-cache (BlueOak).
 Secciones añadidas: ninguna
 Secciones eliminadas: ninguna
 Plantillas revisadas: plan-template.md, spec-template.md y tasks-template.md (sin cambios necesarios)
@@ -116,9 +118,17 @@ normativo.
 - Privacidad: el tratamiento de datos de usuarios MUST cumplir las políticas de privacidad
   aplicables; si se capturan datos personales en formularios, MUST respetarse los principios del
   GDPR y la normativa local vigente.
-- Licencias: las dependencias npm directas MUST tener licencia MIT o Apache 2.0. Las
-  dependencias transitivas MUST tener licencias permisivas (MIT, Apache-2.0, ISC, BSD-2-Clause,
-  BSD-3-Clause o 0BSD). Se exceptúa `dotenv` (BSD-2-Clause), exigido por el principio II.
+- Licencias: las dependencias npm directas MUST tener licencia MIT o Apache 2.0. Se exceptúa
+  `dotenv` (BSD-2-Clause), exigido por el principio II. Las dependencias transitivas MUST tener
+  licencias permisivas (MIT, MIT-0, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0 o
+  BlueOak-1.0.0). Se exceptúan solo estas transitivas, que trae el stack obligatorio del
+  principio I y no tienen sustituto:
+  - `lightningcss` y sus binarios por plataforma (`lightningcss-*`, MPL-2.0), vía Vite y
+    Tailwind CSS 4. Se usan sin modificar como herramienta de compilación y no se distribuyen
+    en la SPA generada.
+  - `caniuse-lite` (CC-BY-4.0), datos de compatibilidad de navegadores, vía browserslist.
+
+  Cualquier otra excepción MUST aprobarse con una enmienda de esta constitución.
 - Decisiones descartadas:
   - MUST NOT usarse SQL ni bases de datos relacionales.
   - MUST NOT usarse Next.js ni arquitecturas SSR; el frontend es React puro (Vite + React Router)
@@ -153,4 +163,4 @@ Full Stack I.
   el plan de la feature.
 - La guía operativa de desarrollo está en `CLAUDE.md` y `../AGENTS.md`.
 
-**Version**: 1.0.1 | **Ratified**: 2026-10-13 | **Last Amended**: 2026-10-13
+**Version**: 1.0.2 | **Ratified**: 2026-10-13 | **Last Amended**: 2026-10-22

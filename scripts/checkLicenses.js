@@ -1,6 +1,7 @@
-// Comprueba las licencias según la constitución 1.0.1:
+// Comprueba las licencias según la constitución 1.0.2:
 // - dependencias directas: MIT o Apache-2.0 (excepción: dotenv, BSD-2-Clause);
-// - dependencias transitivas: MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause o 0BSD.
+// - dependencias transitivas: MIT, MIT-0, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD,
+//   CC0-1.0 o BlueOak-1.0.0 (excepciones: lightningcss y sus binarios, y caniuse-lite).
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -9,12 +10,18 @@ const DIRECT_ALLOWED = new Set(['MIT', 'Apache-2.0']);
 const DIRECT_EXCEPTIONS = new Set(['dotenv']);
 const TRANSITIVE_ALLOWED = new Set([
   'MIT',
+  'MIT-0',
   'Apache-2.0',
   'ISC',
   'BSD-2-Clause',
   'BSD-3-Clause',
   '0BSD',
+  'CC0-1.0',
+  'BlueOak-1.0.0',
 ]);
+// Transitivas del stack obligatorio sin sustituto, exceptuadas expresamente por la constitución.
+const isTransitiveException = (name) =>
+  name === 'lightningcss' || name.startsWith('lightningcss-') || name === 'caniuse-lite';
 
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'));
 
@@ -81,6 +88,7 @@ const installed = new Map();
 for (const dir of workspaces) collectInstalled(join(dir, 'node_modules'), installed);
 const offenders = [...installed.values()]
   .filter(({ name }) => !direct.has(name) && !name.startsWith('@bookia/'))
+  .filter(({ name }) => !isTransitiveException(name))
   .filter(({ license }) => !satisfies(license, TRANSITIVE_ALLOWED));
 const unique = [...new Map(offenders.map((o) => [`${o.name}:${o.license}`, o])).values()];
 

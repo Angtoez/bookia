@@ -114,7 +114,7 @@ Cada decisión resuelve una incógnita del Technical Context o concreta cómo cu
   - Todas las dependencias directas son MIT o Apache-2.0: express, mongoose, mongodb (Apache-2.0), jsonwebtoken, bcrypt, cookie-parser, helmet, express-rate-limit, zod, react, react-dom, react-router, vite, tailwindcss, vitest, supertest, mongodb-memory-server, @testing-library/react, eslint y prettier.
   - También cumplen: cors, concurrently, @vitejs/plugin-react, @tailwindcss/vite, jsdom, @testing-library/user-event, @testing-library/jest-dom y @vitest/coverage-v8 (todas MIT).
   - `dotenv` (BSD-2-Clause) es la excepción que recoge expresamente la constitución 1.0.1.
-  - Las dependencias transitivas deben tener licencias permisivas (MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause o 0BSD), según la constitución 1.0.1.
+  - Las dependencias transitivas deben tener licencias permisivas (MIT, MIT-0, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0 o BlueOak-1.0.0), según la constitución 1.0.2. Se exceptúan `lightningcss` (MPL-2.0, vía Vite y Tailwind 4) y `caniuse-lite` (CC-BY-4.0, vía browserslist), que trae el stack obligatorio.
   - El script `npm run licenses` comprueba las directas contra MIT/Apache-2.0 (salvo `dotenv`) y las transitivas contra la lista permisiva.
 - **Rationale**: aplica literalmente la regla de licencias de la constitución 1.0.1, enmendada para resolver el choque entre la regla original y el principio II.
 - **Alternatives considered**: `process.loadEnvFile()` nativo de Node 24, que evitaría `dotenv`; se descartó al enmendar la constitución porque obligaba a cambiar el principio II.
