@@ -11,6 +11,12 @@ const DUPLICATE_CODES = [
     code: 'ALREADY_ASSOCIATED',
     message: 'El libro ya está asociado a este establecimiento',
   },
+  // Índice único parcial de las reservas activas (los campos van ordenados).
+  {
+    fields: ['book_id', 'store_id', 'user_id'],
+    code: 'DUPLICATE_RESERVATION',
+    message: 'Ya tienes una reserva activa de este libro en este establecimiento',
+  },
 ];
 
 function fromDuplicateKey(err) {

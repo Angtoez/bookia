@@ -1,11 +1,14 @@
 // Fábricas de datos para las pruebas de integración.
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import request from 'supertest';
 import { Book } from '../../src/models/Book.js';
 import { Genre } from '../../src/models/Genre.js';
 import { Store } from '../../src/models/Store.js';
 import { StoreBook } from '../../src/models/StoreBook.js';
 import { User } from '../../src/models/User.js';
+import { ENV } from '../../src/config/env.js';
+import { SESSION_COOKIE } from '../../src/utils/sessionCookie.js';
 
 export const DEFAULT_PASSWORD = 'secreto123';
 let seq = 0;
@@ -69,4 +72,13 @@ export async function loginAs(app, user, password = DEFAULT_PASSWORD) {
   const res = await request(app).post('/api/auth/login').send({ email: user.email, password });
   if (res.status !== 200) throw new Error(`loginAs falló con ${res.status}`);
   return res.headers['set-cookie'][0].split(';')[0];
+}
+
+/** Cookie de sesión firmada sin pasar por /login (útil cuando el límite por IP estorba). */
+export function sessionCookieFor(user) {
+  const token = jwt.sign({ sub: String(user._id) }, ENV.JWT_SECRET, {
+    algorithm: 'HS256',
+    expiresIn: '1h',
+  });
+  return `${SESSION_COOKIE}=${token}`;
 }

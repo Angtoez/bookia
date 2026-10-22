@@ -2,6 +2,7 @@
 import { createApp } from './app.js';
 import { ENV } from './config/env.js';
 import { connectDb, describeConnection, disconnectDb } from './config/db.js';
+import { startExpirationJob } from './jobs/expireReservations.js';
 
 async function main() {
   try {
@@ -12,6 +13,7 @@ async function main() {
     process.exit(1);
   }
   console.info(`MongoDB conectado (${describeConnection()})`);
+  const stopExpirationJob = startExpirationJob();
 
   const server = createApp().listen(ENV.PORT, () => {
     console.info(`API de Bookia escuchando en http://localhost:${ENV.PORT}/api`);
@@ -22,6 +24,7 @@ async function main() {
     if (closing) return;
     closing = true;
     console.info(`${signal} recibido: cerrando el servidor…`);
+    stopExpirationJob();
     server.close(async () => {
       await disconnectDb();
       console.info('Conexión a MongoDB cerrada');

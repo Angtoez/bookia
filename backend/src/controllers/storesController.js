@@ -1,4 +1,5 @@
 // Gestión de puntos de venta por el administrador, con auditoría transaccional (US3).
+import { Reservation } from '../models/Reservation.js';
 import { Store } from '../models/Store.js';
 import { StoreBook } from '../models/StoreBook.js';
 import { record } from '../services/auditService.js';
@@ -68,9 +69,11 @@ export async function updateStore(req, res) {
 export async function getDeletionImpact(req, res) {
   const { id } = req.validated.params;
   if (!(await Store.exists({ _id: id }))) throw storeNotFound();
-  const books = await StoreBook.countDocuments({ store_id: id });
-  // Las reservas se implementan en US5.
-  res.json({ books, active_reservations: 0 });
+  const [books, activeReservations] = await Promise.all([
+    StoreBook.countDocuments({ store_id: id }),
+    Reservation.countDocuments({ store_id: id, is_active: true }),
+  ]);
+  res.json({ books, active_reservations: activeReservations });
 }
 
 export async function deleteStore(req, res) {

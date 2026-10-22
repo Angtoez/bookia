@@ -2,11 +2,12 @@
 import { AuditLog } from './AuditLog.js';
 import { Book } from './Book.js';
 import { Genre } from './Genre.js';
+import { Reservation } from './Reservation.js';
 import { Store } from './Store.js';
 import { StoreBook } from './StoreBook.js';
 import { User } from './User.js';
 
-export const ALL_MODELS = [User, Genre, Book, Store, StoreBook, AuditLog];
+export const ALL_MODELS = [User, Genre, Book, Store, StoreBook, Reservation, AuditLog];
 
 /** Crea las colecciones y los índices declarados en los esquemas (principio IV). */
 export async function syncAllIndexes() {
@@ -16,4 +17,4 @@ export async function syncAllIndexes() {
   }
 }
 
-export { AuditLog, Book, Genre, Store, StoreBook, User };
+export { AuditLog, Book, Genre, Reservation, Store, StoreBook, User };

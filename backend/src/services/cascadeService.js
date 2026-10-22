@@ -1,9 +1,11 @@
 // Bajas en cascada de libros y tiendas, auditadas en la misma transacción (research R10).
+// Las reservas activas se cancelan antes de borrar los StoreBook, para liberar sus contadores.
 import { Book } from '../models/Book.js';
 import { Store } from '../models/Store.js';
 import { StoreBook } from '../models/StoreBook.js';
 import { notFound } from '../utils/httpError.js';
 import { record } from './auditService.js';
+import { cancelActiveFor } from './reservationTransitions.js';
 
 async function deleteStoreBooks(filter, actorId, labelOf, session) {
   const storeBooks = await StoreBook.find(filter).session(session);
@@ -28,7 +30,8 @@ async function deleteStoreBooks(filter, actorId, labelOf, session) {
 export async function deleteBookCascade(bookId, actorId, session) {
   const book = await Book.findById(bookId).session(session);
   if (!book) throw notFound('Libro no encontrado');
-  // Punto de extensión (US5 y US6): cancelar reservas activas y borrar favoritos.
+  await cancelActiveFor({ book_id: book._id }, 'book_deleted', actorId, session);
+  // Punto de extensión (US6): borrar los favoritos del libro.
   await deleteStoreBooks({ book_id: book._id }, actorId, () => book.title, session);
   await Book.deleteOne({ _id: book._id }).session(session);
   await record(
@@ -48,7 +51,7 @@ export async function deleteBookCascade(bookId, actorId, session) {
 export async function deleteStoreCascade(storeId, actorId, session) {
   const store = await Store.findById(storeId).session(session);
   if (!store) throw notFound('Establecimiento no encontrado');
-  // Punto de extensión (US5): cancelar las reservas activas en la tienda.
+  await cancelActiveFor({ store_id: store._id }, 'store_deleted', actorId, session);
   await deleteStoreBooks({ store_id: store._id }, actorId, () => store.name, session);
   await Store.deleteOne({ _id: store._id }).session(session);
   await record(

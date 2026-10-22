@@ -1,6 +1,7 @@
 // Gestión de libros por el administrador, con auditoría transaccional (US2).
 import { Book } from '../models/Book.js';
 import { Genre } from '../models/Genre.js';
+import { Reservation } from '../models/Reservation.js';
 import { StoreBook } from '../models/StoreBook.js';
 import { record } from '../services/auditService.js';
 import { deleteBookCascade } from '../services/cascadeService.js';
@@ -64,9 +65,12 @@ export async function getDeletionImpact(req, res) {
   const { id } = req.validated.params;
   const exists = await Book.exists({ _id: id });
   if (!exists) throw notFound('Libro no encontrado');
-  const stores = await StoreBook.countDocuments({ book_id: id });
-  // Reservas y favoritos se implementan en US5 y US6.
-  res.json({ stores, active_reservations: 0, favorites: 0 });
+  const [stores, activeReservations] = await Promise.all([
+    StoreBook.countDocuments({ book_id: id }),
+    Reservation.countDocuments({ book_id: id, is_active: true }),
+  ]);
+  // Los favoritos se implementan en US6.
+  res.json({ stores, active_reservations: activeReservations, favorites: 0 });
 }
 
 export async function deleteBook(req, res) {

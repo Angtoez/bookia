@@ -16,7 +16,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | CRUD de libros, de puntos de venta y de su inventario (solo administradores, auditado) | ✅ |
 | Seeds idempotentes (`seed` y `seed:demo`) | ✅ |
 | Registro de cuentas y bloqueo 15 min tras 5 fallos seguidos (US4, backend) | ✅ |
-| Reservas (US5), favoritos (US6), usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
+| Reservas sin sobrerreserva, gestión por el administrador, caducidad automática y cancelación en cascada (US5, backend) | ✅ |
+| Favoritos (US6), usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
 | Frontend React | ⏳ pendiente |
 
 ## Modelo de datos
@@ -25,12 +26,14 @@ Colecciones independientes relacionadas por referencias (`ObjectId`) de Mongoose
 
 ```text
 genres 1───* books 1───* store_books *───1 stores
+users 1───* reservations (libro + tienda, con copia de título, tienda y precio)
 users ── audit_logs (quién hizo cada alta, cambio o baja)
 ```
 
 - **`books`**: título, autor, ISBN único (ISBN-10 o ISBN-13 válido), precio de referencia, `genre_id` → `genres`, y descripción, editorial y año opcionales. Autor y editorial son texto dentro del libro, como fija la spec.
 - **`stores`**: los puntos de venta (nombre, dirección, horario y teléfono opcional).
 - **`store_books`**: la relación N:M entre libros y tiendas, con el stock y un precio propio opcional.
+- **`reservations`**: una unidad de un libro en una tienda, con estado (`pending` → `ready` → `picked_up`, o `cancelled` / `expired`) y copia del título, la tienda y el precio al reservar.
 - El detalle completo está en [`data-model.md`](specs/001-book-catalog-stores/data-model.md).
 
 ## Requisitos
@@ -66,6 +69,9 @@ Edita `backend/.env` (está en `.gitignore`, así que nunca se sube):
 | `PORT` | no | Por defecto 3000. |
 | `CURRENCY` | no | `MXN` en el ejemplo. |
 | `CORS_ORIGIN` | no | Solo si un frontend en otro origen llama a la API. |
+| `MAX_ACTIVE_RESERVATIONS` | no | Reservas activas por usuario (por defecto 5). |
+| `PENDING_TTL_DAYS`, `PICKUP_TTL_DAYS` | no | Días hasta que caduca una reserva pendiente (7) o lista para recoger (3). |
+| `EXPIRATION_INTERVAL_MS` | no | Cada cuánto revisa el job las reservas vencidas (por defecto 60 000). |
 | `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` | para el seed | Administrador inicial. La contraseña debe tener al menos 8 caracteres, con letras y números. |
 
 Si falta una variable obligatoria o no es válida, la API no arranca e indica cuál es.
@@ -182,9 +188,37 @@ curl.exe -b cookies.txt -X DELETE http://localhost:3000/api/stores/<id>/books/<b
 
 `stock.json` = `{ "stock": 8 }`. Con `{ "store_price_cents": null }` se quita el precio propio y se vuelve al de referencia.
 
+### Crear una cuenta
+
+`registro.json` = `{ "name": "Ana", "email": "ana@example.com", "password": "lectora2024" }`. La cuenta se crea siempre con rol `user` y queda con la sesión iniciada. Tras 5 contraseñas erróneas seguidas, la cuenta se bloquea 15 minutos.
+
+```powershell
+curl.exe -c usuario.txt -H "Content-Type: application/json" -d "@registro.json" http://localhost:3000/api/auth/register   # → 201
+```
+
+### Reservas
+
+Con la sesión de un usuario (`reserva.json` = `{ "book_id": "<id libro>", "store_id": "<id tienda>" }`):
+
+```powershell
+curl.exe -b usuario.txt -H "Content-Type: application/json" -d "@reserva.json" http://localhost:3000/api/reservations   # reservar → 201
+curl.exe -b usuario.txt http://localhost:3000/api/reservations/mine                                                     # mis reservas
+curl.exe -b usuario.txt -X POST http://localhost:3000/api/reservations/<id>/cancel                                      # cancelar
+```
+
+Con la sesión del administrador:
+
+```powershell
+curl.exe -b cookies.txt "http://localhost:3000/api/reservations?status=pending&store_id=<id tienda>"   # listar y filtrar
+curl.exe -b cookies.txt -X POST http://localhost:3000/api/reservations/<id>/ready                       # lista para recoger (3 días)
+curl.exe -b cookies.txt -X POST http://localhost:3000/api/reservations/<id>/pickup                      # recogida: descuenta el stock
+```
+
+Las reservas que vencen pasan solas a `expired` y liberan la unidad. Borrar un libro o una tienda cancela sus reservas activas.
+
 ### Errores
 
-Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`: `400 VALIDATION_ERROR` (con `details` por campo), `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND` y `409` (`ISBN_TAKEN`, `ALREADY_ASSOCIATED`, `STOCK_BELOW_RESERVED` o `HAS_ACTIVE_RESERVATIONS`). El contrato completo está en [`contracts/rest-api.md`](specs/001-book-catalog-stores/contracts/rest-api.md).
+Todos los errores siguen el formato `{"error": {"code", "message", "details?"}}`: `400 VALIDATION_ERROR` (con `details` por campo), `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND` y `409` (`EMAIL_TAKEN`, `ISBN_TAKEN`, `ALREADY_ASSOCIATED`, `STOCK_BELOW_RESERVED`, `HAS_ACTIVE_RESERVATIONS`, `OUT_OF_STOCK`, `DUPLICATE_RESERVATION`, `RESERVATION_LIMIT` o `INVALID_TRANSITION`). El contrato completo está en [`contracts/rest-api.md`](specs/001-book-catalog-stores/contracts/rest-api.md).
 
 ## Estructura
 
@@ -198,11 +232,12 @@ bookia/
     ├── src/
     │   ├── app.js, server.js
     │   ├── config/         # env.js (dotenv + zod), db.js (conexión única)
-    │   ├── models/         # User, Genre, Book, Store, StoreBook, AuditLog
-    │   ├── controllers/    # auth, config, books, adminBooks, stores, storeBooks
+    │   ├── models/         # User, Genre, Book, Store, StoreBook, Reservation, AuditLog
+    │   ├── controllers/    # auth, config, books, adminBooks, stores, storeBooks, reservations
     │   ├── routes/         # un router por recurso, montados en /api
     │   ├── middlewares/    # authenticate, requireRole, validate, rateLimit, errorHandler, notFound
-    │   ├── services/       # transaction, auditService, cascadeService
+    │   ├── services/       # transaction, auditService, cascadeService, reservationService, reservationTransitions
+    │   ├── jobs/           # expireReservations (caducidad periódica)
     │   ├── validators/     # esquemas zod
     │   ├── utils/          # isbn, búsqueda, paginación, cookie de sesión, presenters
     │   └── scripts/        # seed, seedDemo, checkDb
