@@ -15,7 +15,8 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | Catálogo público: listado, búsqueda por título o autor, filtro por género y detalle con tiendas | ✅ |
 | CRUD de libros, de puntos de venta y de su inventario (solo administradores, auditado) | ✅ |
 | Seeds idempotentes (`seed` y `seed:demo`) | ✅ |
-| Registro y bloqueo de cuentas (US4), reservas (US5), favoritos (US6), usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
+| Registro de cuentas y bloqueo 15 min tras 5 fallos seguidos (US4, backend) | ✅ |
+| Reservas (US5), favoritos (US6), usuarios y consulta de la auditoría (US7) | ⏳ pendiente |
 | Frontend React | ⏳ pendiente |
 
 ## Modelo de datos
