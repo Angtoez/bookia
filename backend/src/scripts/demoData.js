@@ -1,6 +1,7 @@
 // Datos de demostración. Los establecimientos son ficticios (marcados con "demo") y están
-// ubicados en Huauchinango, Puebla. Los ISBN tienen un dígito de control válido, pero son de
-// ejemplo: no garantizan corresponder a esa edición concreta.
+// ubicados en Huauchinango, Puebla. Los ISBN son de ediciones reales en español, comprobados en
+// Open Library, y la editorial es la de esa edición. El año es el de la obra original.
+import { CATALOG_BOOKS, CATALOG_STORE_BOOKS } from './demoCatalog.js';
 
 export const DEMO_STORES = [
   {
@@ -31,6 +32,7 @@ export const DEMO_STORES = [
 
 // genre: slug de scripts/genres.js. price_cents: precio de referencia en céntimos.
 export const DEMO_BOOKS = [
+  ...CATALOG_BOOKS,
   {
     title: 'Cien años de soledad',
     author: 'Gabriel García Márquez',
@@ -54,7 +56,7 @@ export const DEMO_BOOKS = [
     title: 'El llano en llamas',
     author: 'Juan Rulfo',
     genre: 'novela',
-    isbn: '9788437605180',
+    isbn: '9788437605128',
     price_cents: 19900,
     publisher: 'Cátedra',
     publication_year: 1953,
@@ -72,10 +74,10 @@ export const DEMO_BOOKS = [
     title: 'Don Quijote de la Mancha',
     author: 'Miguel de Cervantes',
     genre: 'novela',
-    isbn: '9788420412146',
+    isbn: '9786071653031',
     price_cents: 45900,
-    publisher: 'Alfaguara',
-    publication_year: 2004,
+    publisher: 'Fondo de Cultura Económica',
+    publication_year: 1605,
   },
   {
     title: 'El principito',
@@ -108,7 +110,7 @@ export const DEMO_BOOKS = [
     title: 'El laberinto de la soledad',
     author: 'Octavio Paz',
     genre: 'ensayo',
-    isbn: '9786071602312',
+    isbn: '9789681659707',
     price_cents: 22900,
     publisher: 'Fondo de Cultura Económica',
     publication_year: 1950,
@@ -126,7 +128,7 @@ export const DEMO_BOOKS = [
     title: 'La casa de los espíritus',
     author: 'Isabel Allende',
     genre: 'novela',
-    isbn: '9788497592208',
+    isbn: '9788466360081',
     price_cents: 31900,
     publisher: 'Debolsillo',
     publication_year: 1982,
@@ -138,27 +140,28 @@ export const DEMO_BOOKS = [
     genre: 'novela-historica',
     isbn: '9786073121040',
     price_cents: 15900,
-    publisher: 'Penguin Clásicos',
+    publisher: 'Penguin Books',
     publication_year: 1915,
   },
 ];
 
 // [índice de tienda, ISBN, stock, precio propio en céntimos o null].
 export const DEMO_STORE_BOOKS = [
+  ...CATALOG_STORE_BOOKS,
   [0, '9780307474728', 5, 29900],
   [1, '9780307474728', 2, null],
   [2, '9780307474728', 0, null], // agotado
   [0, '9788437604183', 4, null],
   [3, '9788437604183', 1, 20900],
-  [0, '9788437605180', 3, null],
+  [0, '9788437605128', 3, null],
   [1, '9780385721233', 6, null],
   [3, '9780385721233', 2, 25900],
-  [0, '9788420412146', 1, null],
+  [0, '9786071653031', 1, null],
   [1, '9788498381498', 10, 16900],
   [2, '9788498381498', 4, null],
   [3, '9788499089508', 2, null],
   [0, '9788437604572', 2, null],
-  [2, '9786071602312', 3, null],
+  [2, '9789681659707', 3, null],
   [3, '9788408163435', 5, null],
-  [1, '9788497592208', 3, 29900],
+  [1, '9788466360081', 3, 29900],
 ];

@@ -1,11 +1,11 @@
 // Catálogo público: búsqueda, filtro por género y paginación sincronizados con la URL (US1).
 import { useCallback, useEffect } from 'react';
 import { BookCard } from '../components/BookCard.jsx';
+import { BookGridSkeleton } from '../components/BookSkeletons.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { GenreFilter } from '../components/GenreFilter.jsx';
 import { Pagination } from '../components/Pagination.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
-import { Spinner } from '../components/Spinner.jsx';
 import { useBooks } from '../hooks/useBooks.js';
 import { useConfig } from '../hooks/useConfig.js';
 
@@ -34,7 +34,7 @@ export function CatalogPage() {
   if (error) {
     content = <ErrorMessage error={error} onRetry={reload} />;
   } else if (!data) {
-    content = <Spinner label="Cargando el catálogo…" />;
+    content = <BookGridSkeleton label="Cargando el catálogo…" />;
   } else if (data.items.length === 0) {
     content = (
       <div className="space-y-4 rounded-xl border border-dashed border-stone-300 bg-white px-6 py-12 text-center">

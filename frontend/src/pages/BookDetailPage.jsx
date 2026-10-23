@@ -2,11 +2,12 @@
 // botón Reservar de cada tienda (US5).
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router';
+import { BookCover } from '../components/BookCover.jsx';
+import { BookDetailSkeleton } from '../components/BookSkeletons.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { FavoriteButton } from '../components/FavoriteButton.jsx';
 import { Notice } from '../components/Notice.jsx';
 import { ReserveButton } from '../components/ReserveButton.jsx';
-import { Spinner } from '../components/Spinner.jsx';
 import { StoreAvailabilityList } from '../components/StoreAvailabilityList.jsx';
 import { useBook } from '../hooks/useBook.js';
 import { useConfig } from '../hooks/useConfig.js';
@@ -39,7 +40,7 @@ export function BookDetailPage() {
 
   if (notFound) return <NotFoundPage message="Este libro no existe o se ha eliminado." />;
   if (error && !book) return <ErrorMessage error={error} onRetry={reload} />;
-  if (!book) return <Spinner label="Cargando el libro…" />;
+  if (!book) return <BookDetailSkeleton label="Cargando el libro…" />;
 
   const handleReserved = (reservation) => {
     setReserved(reservation);
@@ -56,18 +57,21 @@ export function BookDetailPage() {
         ← Volver al catálogo
       </Link>
 
-      <header className="space-y-2">
-        {book.genre && (
-          <p className="text-sm font-semibold tracking-wide text-teal-700 uppercase">
-            {book.genre.name}
-          </p>
-        )}
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-stone-900">{book.title}</h1>
-            <p className="text-lg text-stone-700">{book.author}</p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+        <BookCover book={book} size="lg" />
+        <div className="flex-1 space-y-2">
+          {book.genre && (
+            <p className="text-sm font-semibold tracking-wide text-teal-700 uppercase">
+              {book.genre.name}
+            </p>
+          )}
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-stone-900">{book.title}</h1>
+              <p className="text-lg text-stone-700">{book.author}</p>
+            </div>
+            <FavoriteButton book={book} />
           </div>
-          <FavoriteButton book={book} />
         </div>
       </header>
 

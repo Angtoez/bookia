@@ -2,9 +2,9 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { BookCard } from '../components/BookCard.jsx';
+import { BookGridSkeleton } from '../components/BookSkeletons.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { Pagination } from '../components/Pagination.jsx';
-import { Spinner } from '../components/Spinner.jsx';
 import { useAdminList } from '../hooks/useAdminList.js';
 import { useConfig } from '../hooks/useConfig.js';
 import { listFavorites } from '../services/favoritesService.js';
@@ -39,7 +39,7 @@ export function MyFavoritesPage() {
 
   let content;
   if (error) content = <ErrorMessage error={error} onRetry={reload} />;
-  else if (!data) content = <Spinner label="Cargando tus favoritos…" />;
+  else if (!data) content = <BookGridSkeleton label="Cargando tus favoritos…" />;
   else if (data.items.length === 0) {
     content = (
       <div className="space-y-3 rounded-xl border border-dashed border-stone-300 bg-white px-6 py-10 text-center text-stone-700">
