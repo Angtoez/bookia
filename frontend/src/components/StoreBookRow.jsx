@@ -74,7 +74,7 @@ export function StoreBookRow({ item, currency, onSave, onRemove }) {
   const tone = (field) =>
     errors[field]
       ? 'border-red-500 focus-visible:outline-red-600'
-      : 'border-stone-300 focus-visible:outline-teal-700';
+      : 'border-stone-300 focus-visible:outline-primary-700';
   const describedBy = errors.stock || errors.price || rowError ? errorId : undefined;
 
   return (
@@ -126,7 +126,7 @@ export function StoreBookRow({ item, currency, onSave, onRemove }) {
             onClick={save}
             disabled={!dirty || saving}
             aria-label={`Guardar «${item.title}»`}
-            className={`${BUTTON} border-teal-700 bg-teal-700 text-white hover:bg-teal-800 focus-visible:outline-teal-700`}
+            className={`${BUTTON} border-primary-700 bg-primary-700 text-white hover:bg-primary-800 focus-visible:outline-primary-700`}
           >
             {saving ? 'Guardando…' : 'Guardar'}
           </button>

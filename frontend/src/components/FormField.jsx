@@ -16,7 +16,7 @@ export function FormField({ label, name, error, hint, as: Control = 'input', chi
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
   const tone = error
     ? 'border-red-500 focus-visible:outline-red-600'
-    : 'border-stone-300 focus-visible:outline-teal-700';
+    : 'border-stone-300 focus-visible:outline-primary-700';
 
   return (
     <div className="space-y-1">

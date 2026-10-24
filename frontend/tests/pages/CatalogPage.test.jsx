@@ -12,6 +12,11 @@ vi.mock('../../src/services/configService.js', () => ({
   getConfig: vi.fn(),
   listGenres: vi.fn(),
 }));
+// Las secciones de la portada tienen sus propias pruebas (HomeShelves.test.jsx).
+vi.mock('../../src/components/HomeShelves.jsx', () => ({
+  TopRatedShelf: () => <p>Sección: mejor valorados</p>,
+  ComicsMangaShelf: () => <p>Sección: cómics y manga</p>,
+}));
 
 const { listBooks } = await import('../../src/services/booksService.js');
 const { getConfig, listGenres } = await import('../../src/services/configService.js');
@@ -81,20 +86,39 @@ describe('CatalogPage', () => {
     expect(screen.getByText('2 libros')).toBeInTheDocument();
   });
 
-  it('la búsqueda actualiza la URL tras la espera y combina con el género', async () => {
-    const user = userEvent.setup();
+  it('sin filtros es la portada (banner, secciones y catálogo) y con filtros no', async () => {
     listBooks.mockResolvedValue(page([book(1)]));
+    const { unmount } = renderCatalog();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Descubre todos los libros de Bookia' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Destacados' })).toBeInTheDocument();
+    expect(screen.getByText('Sección: mejor valorados')).toBeInTheDocument();
+    expect(screen.getByText('Sección: cómics y manga')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Todos los libros | Explora la colección' }),
+    ).toBeInTheDocument();
+    expect(await screen.findAllByRole('article')).toHaveLength(1);
+    unmount();
+
     renderCatalog('/?genre=novela');
     await screen.findAllByRole('article');
+    expect(screen.queryByRole('region', { name: 'Destacados' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Sección: mejor valorados')).not.toBeInTheDocument();
+  });
 
-    await user.type(screen.getByRole('searchbox', { name: /buscar/i }), 'cien años');
-    await waitFor(() => expect(currentSearch).toBe('?genre=novela&q=cien+a%C3%B1os'));
-    await waitFor(() =>
-      expect(listBooks).toHaveBeenLastCalledWith({ q: 'cien años', genre: 'novela', page: 1 }),
-    );
+  it('filtra con q y genre de la URL, con el género como título y la búsqueda junto al total', async () => {
+    const user = userEvent.setup();
+    listBooks.mockResolvedValue(page([book(1)]));
+    renderCatalog('/?genre=poesia&q=cien+a%C3%B1os');
+    await screen.findAllByRole('article');
+    expect(listBooks).toHaveBeenLastCalledWith({ q: 'cien años', genre: 'poesia', page: 1 });
+    expect(await screen.findByRole('heading', { level: 1, name: 'Poesía' })).toBeInTheDocument();
+    expect(screen.getByText('1 libro para «cien años»')).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Género' }), 'poesia');
-    await waitFor(() => expect(currentSearch).toBe('?genre=poesia&q=cien+a%C3%B1os'));
+    await user.click(screen.getByRole('button', { name: 'Ver todos los géneros' }));
+    await waitFor(() => expect(currentSearch).toBe('?q=cien+a%C3%B1os'));
+    expect(screen.getByRole('heading', { level: 1, name: 'Catálogo' })).toBeInTheDocument();
   });
 
   it('sin resultados muestra el estado vacío y "Limpiar filtros" vacía la URL', async () => {
@@ -107,7 +131,6 @@ describe('CatalogPage', () => {
     await user.click(screen.getByRole('button', { name: 'Limpiar filtros' }));
     await waitFor(() => expect(currentSearch).toBe(''));
     expect(await screen.findByRole('link', { name: 'Libro 1' })).toBeInTheDocument();
-    expect(screen.getByRole('searchbox', { name: /buscar/i })).toHaveValue('');
   });
 
   it('pagina con la URL', async () => {

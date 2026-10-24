@@ -44,7 +44,7 @@ export function BookPicker({ onSelect, excludedIds = new Set() }) {
         value={text}
         maxLength={100}
         onChange={(event) => setText(event.target.value)}
-        className="block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700"
+        className="block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-700"
       />
       <p aria-live="polite" className="text-xs text-stone-600">
         {error ? error.message : status}
@@ -59,7 +59,7 @@ export function BookPicker({ onSelect, excludedIds = new Set() }) {
                   type="button"
                   onClick={() => onSelect(book)}
                   disabled={excluded}
-                  className="flex w-full flex-wrap items-baseline justify-between gap-x-3 px-3 py-2 text-left text-sm hover:bg-teal-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex w-full flex-wrap items-baseline justify-between gap-x-3 px-3 py-2 text-left text-sm hover:bg-primary-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <span>
                     <span className="font-medium text-stone-900">{book.title}</span>

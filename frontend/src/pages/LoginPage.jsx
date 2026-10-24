@@ -65,7 +65,7 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:opacity-60"
+          className="w-full rounded-md bg-primary-700 px-4 py-2 font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:opacity-60"
         >
           {submitting ? 'Entrando…' : 'Entrar'}
         </button>
@@ -74,7 +74,7 @@ export function LoginPage() {
         ¿No tienes cuenta?{' '}
         <Link
           to={searchParams.get('next') ? `/register?next=${encodeURIComponent(next)}` : '/register'}
-          className="font-medium text-teal-800 underline underline-offset-2"
+          className="font-medium text-primary-800 underline underline-offset-2"
         >
           Crea una
         </Link>

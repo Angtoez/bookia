@@ -10,7 +10,7 @@ import { ConfirmDialog } from './ConfirmDialog.jsx';
 import { ErrorMessage } from './ErrorMessage.jsx';
 
 const BUTTON =
-  'w-full rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 sm:w-auto';
+  'block w-full rounded-md bg-primary-700 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700';
 
 /**
  * @param {{book: {id: string, title: string}, store: object, config?: object,

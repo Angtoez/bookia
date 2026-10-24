@@ -15,11 +15,11 @@ export function BookCard({ book, currency, onFavoriteChange, children }) {
   // Solo el catálogo guarda su búsqueda para el enlace "Volver al catálogo" del detalle.
   const state = pathname === '/' && search ? { catalogSearch: search } : undefined;
   return (
-    <article className="group relative flex h-full gap-4 rounded-xl border border-stone-200 bg-white p-4 shadow-xs transition hover:border-teal-600 hover:shadow-md">
+    <article className="group relative flex h-full gap-4 rounded-xl border border-stone-200 bg-white p-4 shadow-xs transition hover:border-primary-600 hover:shadow-md">
       <BookCover book={book} />
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="mb-2 flex items-start justify-between gap-2">
-          <p className="pt-2 text-xs font-semibold tracking-wide text-teal-700 uppercase">
+          <p className="pt-2 text-xs font-semibold tracking-wide text-primary-700 uppercase">
             {book.genre?.name}
           </p>
           <FavoriteButton book={book} onChange={onFavoriteChange} />
@@ -28,7 +28,7 @@ export function BookCard({ book, currency, onFavoriteChange, children }) {
           <Link
             to={`/books/${book.id}`}
             state={state}
-            className="rounded-sm after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+            className="rounded-sm after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
           >
             {book.title}
           </Link>

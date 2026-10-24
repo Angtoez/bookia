@@ -46,7 +46,7 @@ export function MyFavoritesPage() {
         <p>Todavía no has guardado ningún libro. Pulsa el corazón de un libro para añadirlo.</p>
         <Link
           to="/"
-          className="inline-block font-medium text-teal-800 underline underline-offset-2"
+          className="inline-block font-medium text-primary-800 underline underline-offset-2"
         >
           Ir al catálogo
         </Link>

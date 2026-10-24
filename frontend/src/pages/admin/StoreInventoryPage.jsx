@@ -142,7 +142,7 @@ export function StoreInventoryPage() {
     <section className="space-y-6">
       <Link
         to="/admin/stores"
-        className="inline-block rounded-sm text-sm font-medium text-teal-800 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+        className="inline-block rounded-sm text-sm font-medium text-primary-800 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
       >
         ← Volver a establecimientos
       </Link>
@@ -160,7 +160,7 @@ export function StoreInventoryPage() {
               setNotice(null);
               setAdding(true);
             }}
-            className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+            className="rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
           >
             Añadir libro
           </button>

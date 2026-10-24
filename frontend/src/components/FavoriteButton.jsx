@@ -5,7 +5,7 @@ import { useFavoriteToggle } from '../hooks/useFavorites.js';
 import { loginPathFor } from '../utils/safeNext.js';
 
 const BASE =
-  'relative z-10 inline-flex size-10 items-center justify-center rounded-full border bg-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700';
+  'relative z-10 inline-flex size-10 items-center justify-center rounded-full border bg-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700';
 
 function HeartIcon({ filled }) {
   return (
@@ -22,11 +22,16 @@ function HeartIcon({ filled }) {
   );
 }
 
+// Con texto (en el detalle): un botón ancho en lugar del corazón redondo.
+const LABELED =
+  'relative z-10 inline-flex w-full items-center justify-center gap-2 rounded-md border bg-white px-3 py-2 text-sm font-semibold text-stone-800 shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700';
+
 /**
  * @param {{book: {id: string, title: string, is_favorite?: boolean},
- *   onChange?: (isFavorite: boolean) => void}} props
+ *   onChange?: (isFavorite: boolean) => void, withLabel?: boolean}} props
+ *   withLabel: muestra el texto junto al corazón.
  */
-export function FavoriteButton({ book, onChange }) {
+export function FavoriteButton({ book, onChange, withLabel = false }) {
   const { status } = useAuth();
   const location = useLocation();
   const { isFavorite, pending, error, toggle } = useFavoriteToggle(
@@ -41,25 +46,32 @@ export function FavoriteButton({ book, onChange }) {
         to={loginPathFor(location)}
         aria-label={`Inicia sesión para guardar «${book.title}» en favoritos`}
         title="Inicia sesión para guardar favoritos"
-        className={`${BASE} border-stone-300 hover:bg-stone-50`}
+        className={`${withLabel ? LABELED : BASE} border-stone-300 hover:bg-stone-50`}
       >
         <HeartIcon filled={false} />
+        {withLabel && <span aria-hidden="true">Guardar en favoritos</span>}
       </Link>
     );
   }
 
+  const label = isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos';
   return (
-    <span className="relative z-10 inline-flex flex-col items-end gap-1">
+    <span
+      className={`relative z-10 inline-flex flex-col gap-1 ${withLabel ? 'w-full items-stretch' : 'items-end'}`}
+    >
       <button
         type="button"
         onClick={toggle}
         disabled={pending}
         aria-pressed={isFavorite}
-        aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-        title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-        className={`${BASE} ${isFavorite ? 'border-rose-300 hover:bg-rose-50' : 'border-stone-300 hover:bg-stone-50'} disabled:opacity-70`}
+        aria-label={label}
+        title={label}
+        className={`${withLabel ? LABELED : BASE} ${isFavorite ? 'border-rose-300 hover:bg-rose-50' : 'border-stone-300 hover:bg-stone-50'} disabled:opacity-70`}
       >
         <HeartIcon filled={isFavorite} />
+        {withLabel && (
+          <span aria-hidden="true">{isFavorite ? 'En tus favoritos' : 'Guardar en favoritos'}</span>
+        )}
       </button>
       {error && (
         <span role="alert" className="max-w-48 text-right text-xs text-red-700">

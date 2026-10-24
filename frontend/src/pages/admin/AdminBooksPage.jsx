@@ -119,7 +119,7 @@ export function AdminBooksPage() {
                       <Link
                         to={`/admin/books/${book.id}/edit`}
                         aria-label={`Editar «${book.title}»`}
-                        className={`${ACTION} border border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-teal-700`}
+                        className={`${ACTION} border border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-primary-700`}
                       >
                         Editar
                       </Link>
@@ -150,7 +150,7 @@ export function AdminBooksPage() {
         <h1 className="text-2xl font-bold text-stone-900">Libros</h1>
         <Link
           to="/admin/books/new"
-          className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+          className="rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
         >
           Nuevo libro
         </Link>
