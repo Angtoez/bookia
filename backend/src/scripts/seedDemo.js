@@ -1,6 +1,7 @@
 // Seed de demostración: libros, puntos de venta de Huauchinango y su inventario.
 // Es idempotente: identifica libros por ISBN, tiendas por nombre y asociaciones por
-// (tienda, libro), y solo inserta lo que falta; nunca sobrescribe datos editados.
+// (tienda, libro), y solo inserta lo que falta; nunca sobrescribe datos editados. La única
+// excepción es la sinopsis: si un libro existente no tiene, se le añade la de demostración.
 import { ENV } from '../config/env.js';
 import { connectDb, describeConnection, disconnectDb } from '../config/db.js';
 import { Book, Genre, Store, StoreBook, syncAllIndexes } from '../models/index.js';
@@ -26,6 +27,7 @@ async function upsertBooks() {
   const genres = new Map((await Genre.find().lean()).map((g) => [g.slug, g._id]));
   const booksByIsbn = new Map();
   let created = 0;
+  let described = 0;
   for (const { genre, ...data } of DEMO_BOOKS) {
     const genreId = genres.get(genre);
     if (!genreId) throw new Error(`El género "${genre}" no existe`);
@@ -35,10 +37,15 @@ async function upsertBooks() {
       // create() pasa por las validaciones y calcula los campos de búsqueda.
       book = await Book.create({ ...data, genre_id: genreId });
       created += 1;
+    } else if (!book.description && data.description) {
+      // Rellenar una sinopsis vacía no pisa nada editado: solo completa el libro.
+      book.description = data.description;
+      await book.save();
+      described += 1;
     }
     booksByIsbn.set(isbn, book);
   }
-  return { booksByIsbn, created };
+  return { booksByIsbn, created, described };
 }
 
 async function upsertStoreBooks(stores, booksByIsbn) {
@@ -63,11 +70,12 @@ async function main() {
   await syncAllIndexes();
   await seedGenres();
   const { stores, created: storesCreated } = await upsertStores();
-  const { booksByIsbn, created: booksCreated } = await upsertBooks();
+  const { booksByIsbn, created: booksCreated, described } = await upsertBooks();
   const storeBooksCreated = await upsertStoreBooks(stores, booksByIsbn);
   console.info(
     `Demo: ${storesCreated} tiendas, ${booksCreated} libros y ` +
-      `${storeBooksCreated} asociaciones nuevas (lo existente no se ha modificado).`,
+      `${storeBooksCreated} asociaciones nuevas; ${described} sinopsis añadidas a libros ` +
+      'que no tenían (lo demás no se ha modificado).',
   );
 }
 

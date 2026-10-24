@@ -16,6 +16,7 @@ export const GENRE_NAMES = [
   'Infantil',
   'Juvenil',
   'Cómic y novela gráfica',
+  'Manga',
   'Autoayuda',
   'Ciencia y divulgación',
   'Historia',
