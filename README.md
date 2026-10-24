@@ -4,6 +4,7 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 
 - Constitución del proyecto: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 - Especificación, modelo de datos y contrato: [`specs/001-book-catalog-stores/`](specs/001-book-catalog-stores/)
+- Guía de arranque y escenarios de validación manual: [`quickstart.md`](specs/001-book-catalog-stores/quickstart.md). Las secciones 1 a 4 de este README la resumen.
 
 ## Estado de la implementación
 
@@ -27,7 +28,11 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | SPA: reservas (botón Reservar en el detalle, Mis reservas y gestión por el administrador) (US5) | ✅ |
 | SPA: favoritos (corazón en tarjetas y detalle, y Mis favoritos con disponibilidad) (US6) | ✅ |
 | SPA: gestión de usuarios (rol y estado) y consulta de la auditoría con el detalle de cada cambio (US7) | ✅ |
-| Pulido transversal (fase 10: pruebas de autorización y rendimiento, CI, revisión de accesibilidad) | ⏳ pendiente |
+| SPA: cabecera con búsqueda y menú lateral (con los géneros), portada de estilo editorial (banner y carruseles) y ficha del libro en tres columnas con sinopsis | ✅ |
+| Pulido transversal (fase 10): lint, cobertura, licencias, accesibilidad y móvil a 360 px, y este README | ✅ |
+| Pulido transversal (fase 10): pruebas de autorización por rol y de rendimiento, y recorrido manual de `quickstart.md` | ⏳ pendiente |
+
+Las valoraciones con estrellas (carrusel «Los mejor valorados» y ficha del libro) son **provisionales**: Bookia aún no tiene reseñas propias y usa valoraciones reales de Open Library guardadas en `frontend/src/services/topRatedSample.js`. Cuando exista el endpoint de reseñas, solo hay que cambiar `reviewsService.js`.
 
 ## Modelo de datos
 
@@ -94,14 +99,14 @@ Todos los comandos se ejecutan desde `bookia/`:
 ```powershell
 npm install          # dependencias del monorepo (workspaces backend y frontend)
 npm run db:check     # comprueba la conexión, el replica set y las transacciones (no escribe nada)
-npm run seed         # crea colecciones e índices, los 20 géneros y el administrador inicial
-npm run seed:demo    # opcional: libros de ejemplo y 4 tiendas ficticias en Huauchinango, Puebla
+npm run seed         # crea colecciones e índices, los 21 géneros y el administrador inicial
+npm run seed:demo    # opcional: 194 libros con sinopsis y 4 tiendas ficticias en Huauchinango, Puebla
 npm run dev          # API en http://localhost:3000/api y SPA en http://localhost:5173, con recarga automática
 ```
 
 En desarrollo, Vite reenvía `/api` a `http://localhost:3000`, así que la SPA y la API comparten origen y la cookie de sesión (`sameSite: 'strict'`) funciona sin configurar CORS. `npm run build` genera la SPA de producción en `frontend/dist/`.
 
-Los dos *seeds* son idempotentes: puedes ejecutarlos varias veces. Solo insertan lo que falta (géneros por `slug`, libros por ISBN, tiendas por nombre y asociaciones por tienda y libro) y nunca sobrescriben datos editados. `seed:demo` se niega a ejecutarse con `NODE_ENV=production`. Las tiendas de demostración son ficticias (llevan "(demo)" en el nombre y tienen direcciones de ejemplo) y los ISBN son de ejemplo.
+Los dos *seeds* son idempotentes: puedes ejecutarlos varias veces. Solo insertan lo que falta (géneros por `slug`, libros por ISBN, tiendas por nombre y asociaciones por tienda y libro) y nunca sobrescriben datos editados; la única excepción es que `seed:demo` añade la sinopsis a los libros de demostración que no la tienen. `seed:demo` se niega a ejecutarse con `NODE_ENV=production`. Las tiendas de demostración son ficticias (llevan "(demo)" en el nombre y tienen direcciones de ejemplo). Los libros, en cambio, usan ISBN de ediciones reales, con su portada en Open Library, y sinopsis breves escritas para Bookia.
 
 ## 4. Calidad
 
@@ -278,7 +283,7 @@ bookia/
     │   ├── jobs/           # expireReservations (caducidad periódica)
     │   ├── validators/     # esquemas zod
     │   ├── utils/          # isbn, búsqueda, paginación, cookie de sesión, presenters
-    │   └── scripts/        # seed, seedDemo, checkDb
+    │   └── scripts/        # seed, seedDemo, checkDb y los datos de demostración (demo*.js)
     └── tests/              # unit/ (con mocks) e integration/ (Supertest + MongoMemoryReplSet)
 └── frontend/
     ├── index.html, vite.config.js   # proxy de /api y configuración de Vitest
@@ -286,8 +291,8 @@ bookia/
     │   ├── main.jsx, routes.jsx     # router en modo data y tabla de rutas
     │   ├── context/        # AuthContext (sesión)
     │   ├── hooks/          # useAuth, useApiQuery, useConfig, useBooks, useBook, useAdminList, useNotice, useConfirmDelete, useReservations, useFavorites
-    │   ├── services/       # apiClient (fetch + ApiError) y un servicio por recurso
-    │   ├── components/     # Layout, NavBar, RequireAuth, RequireAdmin, FormField, ConfirmDialog…
+    │   ├── services/       # apiClient (fetch + ApiError), un servicio por recurso y reviewsService (provisional)
+    │   ├── components/     # Layout, NavBar, NavSearch, HomeHero, BookShelf, BookAvailabilityBox, ConfirmDialog…
     │   ├── pages/          # una página por ruta; admin/ para la administración
     │   └── utils/          # formatPrice, formatDate, safeNext, passwordPolicy, money, isbn, bookForm…
     └── tests/              # services, utils, hooks y páginas con Testing Library
