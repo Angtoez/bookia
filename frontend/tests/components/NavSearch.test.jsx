@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
+import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { NavSearch } from '../../src/components/NavSearch.jsx';
 
@@ -60,6 +60,24 @@ describe('NavSearch', () => {
     await user.click(screen.getByRole('button', { name: 'Buscar libros' }));
     await user.type(screen.getByRole('searchbox'), 'Naruto{Enter}');
     expect(current).toBe('/?q=Naruto');
+  });
+
+  it('se pliega al salir del catálogo con una búsqueda y tiene botón de cerrar', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/?q=dune']}>
+        <NavSearch />
+        <Link to="/books/b1">Abrir libro</Link>
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('searchbox')).toHaveValue('dune');
+    await user.click(screen.getByRole('link', { name: 'Abrir libro' }));
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Buscar libros' }));
+    await user.click(screen.getByRole('button', { name: 'Cerrar la búsqueda' }));
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Buscar libros' })).toHaveFocus();
   });
 
   it('con una búsqueda en la URL aparece desplegado y con su texto', () => {

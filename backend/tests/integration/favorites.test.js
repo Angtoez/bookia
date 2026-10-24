@@ -83,6 +83,16 @@ describe('favoritos', () => {
     expect((await list(other)).body.items.map((i) => i.id)).toEqual([String(theirs._id)]);
   });
 
+  it('un administrador también guarda, consulta y quita sus favoritos', async () => {
+    const book = await createBook();
+    const admin = sessionCookieFor(await createAdmin());
+    expect((await put(book._id, admin)).status).toBe(204);
+    expect((await list(admin)).body.items.map((i) => i.id)).toEqual([String(book._id)]);
+    const del = await request(app).delete(`/api/favorites/${book._id}`).set('Cookie', admin);
+    expect(del.status).toBe(204);
+    expect((await list(admin)).body.total).toBe(0);
+  });
+
   it('un anónimo recibe 401', async () => {
     const book = await createBook();
     expect((await request(app).get('/api/favorites')).status).toBe(401);

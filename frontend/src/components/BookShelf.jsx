@@ -69,7 +69,7 @@ function ShelfSkeleton() {
   return (
     <ul aria-hidden="true" className="flex gap-6 overflow-hidden pt-5">
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <li key={i} className="w-36 shrink-0 space-y-3 sm:w-44 lg:w-[calc((100%-7.5rem)/6)]">
+        <li key={i} className="w-[40%] shrink-0 space-y-3 sm:w-44 lg:w-[calc((100%-7.5rem)/6)]">
           <div className="aspect-[2/3] animate-pulse rounded-md bg-stone-200" />
           <div className="h-4 w-3/4 animate-pulse rounded bg-stone-200" />
           <div className="h-3 w-1/2 animate-pulse rounded bg-stone-200" />
@@ -169,7 +169,8 @@ export function BookShelf({ id, title, subtitle, tone = 'white', items, actions 
                 {items.map(({ book, badge, meta }) => (
                   <li
                     key={book.id}
-                    className="w-36 shrink-0 snap-start sm:w-44 lg:w-[calc((100%-7.5rem)/6)]"
+                    // En móvil, 40 % del ancho: asoma la tercera tarjeta y se ve que hay más.
+                    className="w-[40%] shrink-0 snap-start sm:w-44 lg:w-[calc((100%-7.5rem)/6)]"
                   >
                     <ShelfCard book={book} badge={badge} meta={meta} />
                   </li>

@@ -180,11 +180,15 @@ export function NavBar() {
                     </NavLink>
                   </Section>
                 )}
-                {user && user.role !== 'admin' && (
+                {/* Los favoritos son de cualquier cuenta (FR-022i); el administrador gestiona
+                    las reservas desde Administración. */}
+                {user && (
                   <Section title="Mi cuenta">
-                    <NavLink to="/me/reservations" className={linkClass}>
-                      Mis reservas
-                    </NavLink>
+                    {user.role !== 'admin' && (
+                      <NavLink to="/me/reservations" className={linkClass}>
+                        Mis reservas
+                      </NavLink>
+                    )}
                     <NavLink to="/me/favorites" className={linkClass}>
                       Mis favoritos
                     </NavLink>

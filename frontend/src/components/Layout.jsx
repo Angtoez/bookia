@@ -16,7 +16,8 @@ export function Layout({ children }) {
       >
         Saltar al contenido
       </a>
-      <header className="bg-primary-700 text-white shadow-sm">
+      {/* relative: en móvil, la búsqueda abierta se superpone a toda la barra (NavSearch). */}
+      <header className="relative bg-primary-700 text-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center gap-1 px-4 py-3 sm:gap-2">
           <NavBar />
           {/* Hueco del logotipo de Bookia, cuando exista. */}

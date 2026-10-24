@@ -36,7 +36,10 @@ export function NavSearch() {
   if (urlQ !== external) {
     setExternal(urlQ);
     setText(urlQ);
+    // Al salir del catálogo con una búsqueda (p. ej. al abrir un libro), el campo se pliega; en
+    // el catálogo sigue abierto aunque se borre el texto, porque se está escribiendo en él.
     if (urlQ) setOpen(true);
+    else if (!onCatalog) setOpen(false);
   }
 
   useEffect(() => {
@@ -68,10 +71,26 @@ export function NavSearch() {
     if (!text && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
   };
 
+  const closeAndRefocus = () => {
+    close();
+    setRefocus(true);
+  };
+
+  // En pantallas estrechas, abierto ocupa toda la barra de la cabecera (que es `relative`) y
+  // lleva su propio botón de cerrar; desde sm vuelve a ser un campo junto al usuario.
+  const overlay = open
+    ? 'absolute inset-0 z-20 gap-2 bg-primary-700 px-4 sm:static sm:inset-auto sm:bg-transparent sm:px-0'
+    : '';
+
   return (
-    <form role="search" onSubmit={handleSubmit} onBlur={handleBlur} className="flex items-center">
+    <form
+      role="search"
+      onSubmit={handleSubmit}
+      onBlur={handleBlur}
+      className={`flex items-center ${overlay}`}
+    >
       {open ? (
-        <div className="relative">
+        <div className="relative flex-1 sm:flex-none">
           <label htmlFor={id} className="sr-only">
             Buscar por título o autor
           </label>
@@ -84,13 +103,10 @@ export function NavSearch() {
             maxLength={100}
             onChange={(event) => setText(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === 'Escape') {
-                close();
-                setRefocus(true);
-              }
+              if (event.key === 'Escape') closeAndRefocus();
             }}
             placeholder="Título o autor"
-            className="w-28 rounded-full bg-white py-1.5 pr-3 pl-9 text-sm text-stone-900 placeholder:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-56"
+            className="w-full rounded-full bg-white py-1.5 pr-3 pl-9 text-sm text-stone-900 placeholder:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-56"
           />
           <button
             type="submit"
@@ -100,8 +116,30 @@ export function NavSearch() {
             <span className="sr-only">Buscar</span>
           </button>
         </div>
+      ) : null}
+      {/* Claves distintas: si React reutilizara el mismo <button>, el autoFocus de la lupa no
+          se aplicaría al cerrar. */}
+      {open ? (
+        <button
+          key="cerrar"
+          type="button"
+          onClick={closeAndRefocus}
+          className="rounded-md p-2 text-primary-50 hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:hidden"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="size-6 fill-none stroke-current"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+          <span className="sr-only">Cerrar la búsqueda</span>
+        </button>
       ) : (
         <button
+          key="lupa"
           type="button"
           // Tras cerrar con Esc, el foco vuelve a la lupa en vez de perderse.
           autoFocus={refocus}
