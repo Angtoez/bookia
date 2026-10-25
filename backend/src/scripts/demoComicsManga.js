@@ -14,7 +14,7 @@ const CATALOG = {
       549,
       '9788418382369',
     ],
-    ['Batman: La broma asesina', 'Alan Moore', 'Ovni Press', 1988, 299, '9789877245455'],
+    ['Batman: La broma asesina', 'Alan Moore', 'ECC Ediciones', 1988, 299, '9788419972873'],
     ['Batman: El largo Halloween', 'Jeph Loeb', 'Planeta DeAgostini', 1996, 649, '9788467453980'],
     ['Batman: Silencio', 'Jeph Loeb', 'Planeta DeAgostini', 2002, 599, '9788408095903'],
     ['Superman: Hijo rojo', 'Mark Millar', 'Planeta DeAgostini', 2003, 449, '9788467475197'],

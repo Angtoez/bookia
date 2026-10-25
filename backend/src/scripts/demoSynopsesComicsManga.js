@@ -5,7 +5,7 @@ export const COMICS_MANGA_SYNOPSES = {
     'El primer año de Bruce Wayne como Batman y de James Gordon como policía honrado en una Gotham corrupta. Dos hombres solos que aprenden a confiar el uno en el otro.',
   9788418382369:
     'Con cincuenta y cinco años y retirado, Bruce Wayne vuelve a vestirse de Batman ante una ola de violencia en Gotham. Su regreso lo enfrenta a una banda de mutantes, al Joker y al propio Superman.',
-  9789877245455:
+  9788419972873:
     'El Joker secuestra al comisario Gordon para demostrar que basta un mal día para que cualquiera enloquezca. Una historia breve y perturbadora que sugiere un posible origen del villano.',
   9788467453980:
     'Durante un año, un asesino mata en cada día festivo a miembros de las familias mafiosas de Gotham. Batman, Gordon y el fiscal Harvey Dent intentan atraparlo antes de que la ciudad estalle.',
