@@ -54,6 +54,24 @@ describe('NavSearch', () => {
     await waitFor(() => expect(current).toBe('/?genre=novela&q=cien+a%C3%B1os'));
   });
 
+  it('desde otra página, al dejar de escribir lleva al catálogo y sigue con el foco', async () => {
+    const user = userEvent.setup();
+    renderSearch('/books/b1');
+    await user.click(screen.getByRole('button', { name: 'Buscar libros' }));
+    await user.type(screen.getByRole('searchbox'), 'Batman');
+    await waitFor(() => expect(current).toBe('/?q=Batman'));
+    expect(screen.getByRole('searchbox')).toHaveValue('Batman');
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+  });
+
+  it('abrir la lupa en otra página sin escribir no cambia de página', async () => {
+    const user = userEvent.setup();
+    renderSearch('/books/b1');
+    await user.click(screen.getByRole('button', { name: 'Buscar libros' }));
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    expect(current).toBe('/books/b1');
+  });
+
   it('desde otra página, Enter lleva al catálogo con la búsqueda', async () => {
     const user = userEvent.setup();
     renderSearch('/me/favorites');

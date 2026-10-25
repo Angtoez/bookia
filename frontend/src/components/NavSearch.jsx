@@ -1,6 +1,6 @@
-// Búsqueda de la cabecera: una lupa que despliega el campo. En el catálogo filtra mientras se
-// escribe (con la misma espera que SearchBar); en otra página, Enter lleva al catálogo con `q`.
-import { useEffect, useId, useState } from 'react';
+// Búsqueda de la cabecera: una lupa que despliega el campo. Busca mientras se escribe (con la
+// misma espera que SearchBar): en el catálogo filtra y desde otra página lleva a él con `q`.
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { applyParamChanges } from '../utils/searchParams.js';
 import { SEARCH_DEBOUNCE_MS } from './SearchBar.jsx';
@@ -42,14 +42,28 @@ export function NavSearch() {
     else if (!onCatalog) setOpen(false);
   }
 
+  // En el catálogo cambia `q` conservando el resto de filtros; desde otra página lleva al
+  // catálogo con la búsqueda. El campo sigue montado (está en la cabecera) y con el foco.
+  const search = useCallback(
+    (value) => {
+      if (onCatalog) {
+        setSearchParams((prev) => applyParamChanges(prev, { q: value }));
+        return;
+      }
+      const q = value.trim();
+      navigate(q ? `/?${new URLSearchParams({ q })}` : '/');
+    },
+    [onCatalog, setSearchParams, navigate],
+  );
+
+  // Busca al dejar de escribir, en cualquier página. Fuera del catálogo solo si hay texto: abrir
+  // la lupa en una ficha no debe sacarte de ella.
   useEffect(() => {
-    if (!onCatalog || text === urlQ) return undefined;
-    const timer = setTimeout(
-      () => setSearchParams((prev) => applyParamChanges(prev, { q: text })),
-      SEARCH_DEBOUNCE_MS,
-    );
+    const pending = onCatalog ? text !== urlQ : Boolean(text.trim());
+    if (!pending) return undefined;
+    const timer = setTimeout(() => search(text), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [onCatalog, text, urlQ, setSearchParams]);
+  }, [onCatalog, text, urlQ, search]);
 
   const close = () => {
     setOpen(false);
@@ -58,12 +72,7 @@ export function NavSearch() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (onCatalog) {
-      setSearchParams((prev) => applyParamChanges(prev, { q: text }));
-      return;
-    }
-    const q = text.trim();
-    navigate(q ? `/?${new URLSearchParams({ q })}` : '/');
+    search(text);
   };
 
   // Se pliega al salir del campo vacío, salvo si el foco pasa a su propio botón.
