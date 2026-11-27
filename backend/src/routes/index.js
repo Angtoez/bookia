@@ -1,5 +1,6 @@
 // Monta todos los routers de la API bajo /api.
 import { Router } from 'express';
+import { createAccountRouter } from './accountRoutes.js';
 import { createAuditLogsRouter } from './auditLogsRoutes.js';
 import { createAuthRouter } from './authRoutes.js';
 import { createBooksRouter } from './booksRoutes.js';
@@ -12,6 +13,7 @@ import { createUsersRouter } from './usersRoutes.js';
 export function createApiRouter() {
   const router = Router();
   router.use('/auth', createAuthRouter());
+  router.use('/account', createAccountRouter());
   router.use('/', createConfigRouter());
   router.use('/books', createBooksRouter());
   router.use('/stores', createStoresRouter());

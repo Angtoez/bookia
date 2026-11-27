@@ -87,6 +87,16 @@ describe('AuditLogPage', () => {
     expect(system.getByText('Reserva')).toBeInTheDocument();
   });
 
+  it('a la autora borrada la muestra como «Cuenta eliminada», no como «Sistema» (feature 002)', async () => {
+    listAuditLogs.mockResolvedValue(
+      page([log('l9', { user: null, user_deleted: true, entity_label: 'Cuenta eliminada' })]),
+    );
+    renderPage();
+    const row = await rowOf('Cuenta eliminada');
+    expect(row.getAllByText('Cuenta eliminada')).toHaveLength(2);
+    expect(row.queryByText('Sistema')).toBeNull();
+  });
+
   it('al desplegar una fila muestra solo los campos que cambian', async () => {
     const user = userEvent.setup();
     renderPage();

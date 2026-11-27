@@ -3,7 +3,7 @@
 Aplicación web para consultar libros y saber en qué puntos de venta están disponibles. Este repositorio contiene la **API REST** (Node.js + Express 5 + Mongoose 8 sobre MongoDB Atlas) y la **SPA** (React 19 + Vite + React Router 7 + Tailwind 4). Las siete historias de la feature `001` están implementadas en ambos lados.
 
 - Constitución del proyecto: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
-- Especificación, modelo de datos y contrato: [`specs/001-book-catalog-stores/`](specs/001-book-catalog-stores/)
+- Especificación, modelo de datos y contrato: [`specs/001-book-catalog-stores/`](specs/001-book-catalog-stores/) y, para «Mi cuenta», [`specs/002-my-account/`](specs/002-my-account/)
 - Guía de arranque y escenarios de validación manual: [`quickstart.md`](specs/001-book-catalog-stores/quickstart.md). Las secciones 1 a 4 de este README la resumen.
 
 ## Estado de la implementación
@@ -30,7 +30,10 @@ Aplicación web para consultar libros y saber en qué puntos de venta están dis
 | SPA: gestión de usuarios (rol y estado) y consulta de la auditoría con el detalle de cada cambio (US7) | ✅ |
 | SPA: cabecera con búsqueda y menú lateral (con los géneros), portada de estilo editorial (banner y carruseles) y ficha del libro en tres columnas con sinopsis | ✅ |
 | Pulido transversal (fase 10): lint, cobertura, licencias, accesibilidad y móvil a 360 px, y este README | ✅ |
-| Pulido transversal (fase 10): pruebas de autorización por rol y de rendimiento, y recorrido manual de `quickstart.md` | ⏳ pendiente |
+| Pulido transversal (fase 10): pruebas de autorización por rol y de rendimiento | ✅ |
+| Recorrido manual de `quickstart.md` (T135) | ⏳ pendiente |
+| Política de privacidad (`/privacidad`) y aviso en el registro | ✅ |
+| Mi cuenta (feature 002): ver y cambiar el nombre, cambiar la contraseña cerrando las demás sesiones, descargar los datos y borrar la cuenta | ✅ |
 
 Las valoraciones con estrellas (carrusel «Los mejor valorados» y ficha del libro) son **provisionales**: Bookia aún no tiene reseñas propias y usa valoraciones reales de Open Library guardadas en `frontend/src/services/topRatedSample.js`. Cuando exista el endpoint de reseñas, solo hay que cambiar `reviewsService.js`.
 
@@ -246,6 +249,22 @@ curl.exe -b usuario.txt -X DELETE http://localhost:3000/api/favorites/<id libro>
 
 Con sesión, `GET /api/books` y `GET /api/books/<id>` añaden `is_favorite` a cada libro.
 
+### Mi cuenta
+
+Con la sesión de cualquier usuario o administrador (feature 002, [contrato](specs/002-my-account/contracts/rest-api.md)):
+
+```powershell
+curl.exe -b usuario.txt http://localhost:3000/api/account                                  # mis datos
+'{"name": "Ana María"}' | Out-File -Encoding ascii nombre.json
+curl.exe -b usuario.txt -X PATCH -H "Content-Type: application/json" -d "@nombre.json" http://localhost:3000/api/account   # cambiar el nombre → 200
+curl.exe -b usuario.txt -OJ http://localhost:3000/api/account/export                       # descarga bookia-mis-datos-AAAA-MM-DD.json
+```
+
+- **`POST /api/account/password`** recibe `{"current_password", "new_password"}`. Responde `204` con una cookie nueva, y las demás sesiones de la cuenta dejan de valer.
+- **`DELETE /api/account`** recibe `{"password"}`. Cancela las reservas activas, borra los favoritos y la cuenta, y quita el nombre y el correo de la auditoría.
+- **Contraseña incorrecta**: las dos operaciones responden `400 WRONG_PASSWORD`, sin contar para el bloqueo del inicio de sesión.
+- **Último administrador**: el último administrador activo no puede borrar su cuenta (`409 LAST_ADMIN`).
+
 ### Usuarios y auditoría (administrador)
 
 Con la sesión de administrador (`cookies.txt`):
@@ -257,7 +276,7 @@ curl.exe -b cookies.txt -X PATCH -H "Content-Type: application/json" -d "@rol.js
 curl.exe -b cookies.txt "http://localhost:3000/api/auditLogs?entity_type=user"          # auditoría, de la más reciente a la más antigua
 ```
 
-El cuerpo del `PATCH` admite `role` (`user` o `admin`) y `status` (`active` o `disabled`). Los cambios se aplican en la siguiente petición del usuario afectado. Desactivar una cuenta corta su sesión y cancela sus reservas activas. Si el cambio dejaría el sistema sin administradores activos, la API responde `409 LAST_ADMIN`. La auditoría es de solo lectura: no hay rutas para modificarla ni borrarla.
+El cuerpo del `PATCH` admite `role` (`user` o `admin`) y `status` (`active` o `disabled`). Los cambios se aplican en la siguiente petición del usuario afectado. Desactivar una cuenta corta su sesión y cancela sus reservas activas. Si el cambio dejaría el sistema sin administradores activos, la API responde `409 LAST_ADMIN`. La auditoría es de solo lectura: no hay rutas para modificarla ni borrarla. La única escritura sobre entradas ya creadas es la anonimización al borrar una cuenta (`AuditLog.anonymizeAccount`).
 
 ### Errores
 

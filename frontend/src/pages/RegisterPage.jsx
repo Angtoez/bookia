@@ -6,13 +6,10 @@ import { LockIcon, MailIcon, UserIcon } from '../components/AuthIcons.jsx';
 import { AuthLayout } from '../components/AuthLayout.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { FormField } from '../components/FormField.jsx';
+import { ConfirmHint, PasswordChecklist } from '../components/PasswordHints.jsx';
 import { ButtonSpinner } from '../components/Spinner.jsx';
 import { useAuth } from '../hooks/useAuth.js';
-import {
-  PASSWORD_POLICY_MESSAGE,
-  PASSWORD_RULES,
-  meetsPasswordPolicy,
-} from '../utils/passwordPolicy.js';
+import { PASSWORD_POLICY_MESSAGE, meetsPasswordPolicy } from '../utils/passwordPolicy.js';
 import { safeNext } from '../utils/safeNext.js';
 
 const FIELDS = ['name', 'email', 'password', 'confirm'];
@@ -28,40 +25,6 @@ export function validateRegistration({ name, email, password, confirm }) {
   if (!meetsPasswordPolicy(password)) errors.password = PASSWORD_POLICY_MESSAGE;
   if (confirm !== password) errors.confirm = 'Las contraseñas no coinciden';
   return errors;
-}
-
-/** Requisitos de la contraseña, marcados según se cumplen mientras se escribe. */
-function PasswordChecklist({ password }) {
-  return (
-    <ul className="mt-1 space-y-0.5">
-      {PASSWORD_RULES.map((rule) => {
-        const ok = rule.test(password);
-        return (
-          <li
-            key={rule.label}
-            className={`flex items-center gap-1.5 ${ok ? 'text-emerald-700' : ''}`}
-          >
-            <span aria-hidden="true" className="w-3 text-center">
-              {ok ? '✓' : '○'}
-            </span>
-            {rule.label}
-            <span className="sr-only">{ok ? '(cumplido)' : '(pendiente)'}</span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-/** Indica bajo la confirmación si ya coincide con la contraseña. */
-function ConfirmHint({ password, confirm }) {
-  const matches = confirm === password;
-  return (
-    <span role="status" className={matches ? 'text-emerald-700' : ''}>
-      <span aria-hidden="true">{matches ? '✓ ' : '○ '}</span>
-      {matches ? 'Las contraseñas coinciden' : 'Aún no coinciden'}
-    </span>
-  );
 }
 
 /** Convierte un ApiError en errores por campo y, si no encaja en ninguno, en un error general. */

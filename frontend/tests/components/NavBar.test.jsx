@@ -107,6 +107,10 @@ describe('NavBar', () => {
     renderNav();
     const dialog = await openMenu(user);
     expect(within(dialog).getByRole('link', { name: 'Auditoría' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('link', { name: 'Mi cuenta' })).toHaveAttribute(
+      'href',
+      '/me/account',
+    );
     expect(within(dialog).queryByRole('link', { name: 'Mis favoritos' })).not.toBeInTheDocument();
     expect(within(dialog).queryByRole('link', { name: 'Mis reservas' })).not.toBeInTheDocument();
   });

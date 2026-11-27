@@ -79,6 +79,17 @@ export function toUserMe(user) {
 }
 
 /** Usuario en la gestión de administración: nunca incluye la contraseña. */
+/** Account (feature 002): los datos que la propia cuenta ve en Mi cuenta. */
+export function toAccount(user) {
+  return {
+    id: String(user._id),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    created_at: user.created_at,
+  };
+}
+
 export function toUserAdmin(user) {
   return {
     id: String(user._id),
@@ -90,12 +101,17 @@ export function toUserAdmin(user) {
   };
 }
 
-/** AuditLogItem: requiere user_id poblado con el nombre; null si la acción es del sistema. */
-export function toAuditLog(log) {
-  const user = log.user_id?._id ? { id: String(log.user_id._id), name: log.user_id.name } : null;
+/**
+ * AuditLogItem. `usersById` tiene los autores que existen: sin user_id la acción es del sistema;
+ * con user_id pero sin autor, la cuenta se borró (`user_deleted`, feature 002).
+ * @param {Map<string, {_id: any, name: string}>} usersById
+ */
+export function toAuditLog(log, usersById = new Map()) {
+  const author = log.user_id ? usersById.get(String(log.user_id)) : null;
   return {
     id: String(log._id),
-    user,
+    user: author ? { id: String(author._id), name: author.name } : null,
+    user_deleted: Boolean(log.user_id) && !author,
     action: log.action,
     entity_type: log.entity_type,
     entity_id: String(log.entity_id),

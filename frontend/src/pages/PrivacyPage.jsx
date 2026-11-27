@@ -39,6 +39,17 @@ function Section({ id, title, children }) {
 
 const LIST = 'list-disc space-y-1.5 pl-5';
 
+function AccountLink() {
+  return (
+    <Link
+      to="/me/account"
+      className="font-medium text-primary-700 underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+    >
+      Mi cuenta
+    </Link>
+  );
+}
+
 export function PrivacyPage() {
   useEffect(() => {
     document.title = 'Política de privacidad · Bookia';
@@ -148,8 +159,13 @@ export function PrivacyPage() {
       <Section id="conservacion" title="6. Cuánto tiempo los guardamos">
         <p>
           Conservamos los datos de tu cuenta, tus reservas y tus favoritos mientras tu cuenta
-          exista. Si un libro se retira del catálogo, desaparece de tus favoritos. Si pides que
-          borremos tu cuenta, eliminaremos tus datos salvo los que la ley nos obligue a conservar.
+          exista. Si un libro se retira del catálogo, desaparece de tus favoritos.
+        </p>
+        <p>
+          Si borras tu cuenta desde <AccountLink />, tu nombre, tu correo y tu contraseña se
+          eliminan en ese momento, tus reservas activas se cancelan y tus favoritos se borran. Las
+          reservas ya cerradas se conservan para el historial de las librerías, pero sin ningún dato
+          que te identifique, y el registro de actividad deja de mostrar tu nombre y tu correo.
         </p>
       </Section>
 
@@ -173,10 +189,11 @@ export function PrivacyPage() {
           </li>
         </ul>
         <p>
-          Para ejercerlos, escribe a <Owner field="email" label="correo de contacto" /> desde el
-          correo de tu cuenta e indica qué derecho quieres ejercer. Te responderemos en los plazos
-          que marca la ley. Si no quedas conforme, puedes reclamar ante la autoridad de protección
-          de datos competente.
+          Desde <AccountLink /> puedes ver y corregir tus datos, descargarlos en un archivo y borrar
+          tu cuenta. Para cualquier otra petición, escribe a{' '}
+          <Owner field="email" label="correo de contacto" /> desde el correo de tu cuenta e indica
+          qué derecho quieres ejercer. Te responderemos en los plazos que marca la ley. Si no quedas
+          conforme, puedes reclamar ante la autoridad de protección de datos competente.
         </p>
       </Section>
 

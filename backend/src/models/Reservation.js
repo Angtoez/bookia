@@ -10,6 +10,7 @@ export const CANCEL_REASONS = [
   'book_deleted',
   'store_deleted',
   'account_deactivated',
+  'account_deleted',
 ];
 
 const { ObjectId } = mongoose.Schema.Types;

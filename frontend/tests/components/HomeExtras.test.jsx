@@ -88,6 +88,10 @@ describe('SiteFooter', () => {
     useAuth.mockReturnValue({ user: { name: 'Ana', role: 'user' }, status: 'authenticated' });
     const { unmount } = renderAt(<SiteFooter />);
     const mine = screen.getByRole('navigation', { name: 'Mi cuenta' });
+    expect(within(mine).getByRole('link', { name: 'Mi cuenta' })).toHaveAttribute(
+      'href',
+      '/me/account',
+    );
     expect(within(mine).getByRole('link', { name: 'Mis reservas' })).toBeInTheDocument();
     unmount();
 

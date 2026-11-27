@@ -9,7 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Estado del proyecto
 
-- Existen la constitución y la feature `001-book-catalog-stores` (spec, plan y tareas). El repositorio git trabaja en la rama `main`.
+- Existen la constitución y las features `001-book-catalog-stores` y `002-my-account` (spec, plan y tareas). El repositorio git trabaja en la rama `main`; cada cambio va en una rama con su PR.
+- Feature 002, «Mi cuenta», implementada (`/api/account` y `/me/account`): datos y nombre, contraseña, descarga de datos y borrado de la cuenta. Solo falta su recorrido manual (T046 de `specs/002-my-account/tasks.md`).
 - Backend implementado: base (config, conexión, errores, validación), sesión y roles, auditoría, catálogo (US1) y CRUD de libros, tiendas e inventario (US2, US3), registro y bloqueo de cuentas (US4), reservas (US5), favoritos (US6) y usuarios y auditoría (US7). Frontend: base de la SPA, login, catálogo (US1), registro (US4), administración de libros, tiendas e inventario (US2, US3), reservas (US5), favoritos (US6) y usuarios y auditoría (US7). De la fase 10 de `tasks.md` (pulido transversal) solo falta la T135, el recorrido manual de `quickstart.md`, que hace el usuario con sus cuentas. Detalle en `README.md`.
 - Fuera de `tasks.md`, ya hechos: género Manga y 83 cómics y mangas de demostración, sinopsis de todos los libros de demostración, y un rediseño del frontend (cabecera con búsqueda y menú lateral, portada de estilo editorial y ficha del libro en tres columnas). Ver «Frontend» más abajo.
 - Este directorio (`bookia/`) es la raíz del proyecto Spec Kit: ejecuta aquí los scripts y crea aquí el código. Desde el directorio padre, `Get-RepoRoot` resuelve una ruta equivocada.
@@ -38,6 +39,8 @@ Definidos en `specs/001-book-catalog-stores/plan.md`. Hoy existen `dev`, `start`
 - `npm run dev -w backend` usa `node --watch-path=src`: el proyecto está en OneDrive, que toca archivos de `node_modules` al sincronizar, y con `--watch` a secas la API se reiniciaba sola y cortaba peticiones.
 - MongoDB tiene que ser un *replica set* (las reservas y la auditoría usan transacciones); las pruebas usan `MongoMemoryReplSet`.
 - La API usa campos JSON en `snake_case` y rutas en `camelCase`. El contrato está en `specs/001-book-catalog-stores/contracts/`.
+- Sesión: el JWT lleva `{sub, ver}` y `authenticate` rechaza el token si `ver` no coincide con `users.session_version`, que sube al cambiar la contraseña. `session_version` nunca sale en una respuesta ni en la exportación. `setSessionCookie(res, user)` recibe el documento, no el id.
+- `audit_logs` es inmutable (hooks del modelo). La única excepción es `AuditLog.anonymizeAccount`, que al borrar una cuenta quita su nombre y su correo. `GET /auditLogs` no usa `populate`: así distingue el sistema (sin `user_id`) de una cuenta borrada (`user_deleted`).
 - Frontend:
   - `react-router` se mantiene en la 7.x, como fija el plan, aunque ya exista la 8.
   - No se usa `eslint-plugin-react` porque no admite ESLint 10. La prohibición del atributo `style` se hace con `no-restricted-syntax` en `eslint.config.js`, y las reglas de hooks vienen de `eslint-plugin-react-hooks`.

@@ -186,6 +186,9 @@ export function toPublic(reservation) {
   const user = reservation.user_id;
   if (user && typeof user === 'object' && 'email' in user) {
     result.user = { id: idOf(user._id), name: user.name, email: user.email };
+  } else if (user === null) {
+    // Poblado pero sin documento: la cuenta se borró (feature 002, research R6).
+    result.user = null;
   }
   return result;
 }

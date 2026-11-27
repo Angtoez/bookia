@@ -76,7 +76,8 @@ export async function loginAs(app, user, password = DEFAULT_PASSWORD) {
 
 /** Cookie de sesión firmada sin pasar por /login (útil cuando el límite por IP estorba). */
 export function sessionCookieFor(user) {
-  const token = jwt.sign({ sub: String(user._id) }, ENV.JWT_SECRET, {
+  const payload = { sub: String(user._id), ver: user.session_version ?? 0 };
+  const token = jwt.sign(payload, ENV.JWT_SECRET, {
     algorithm: 'HS256',
     expiresIn: '1h',
   });

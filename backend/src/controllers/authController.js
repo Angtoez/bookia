@@ -22,7 +22,7 @@ export async function register(req, res) {
   const passwordHash = await bcrypt.hash(password, ENV.BCRYPT_ROUNDS);
   // Un correo repetido viola el índice único y el errorHandler responde 409 EMAIL_TAKEN.
   const user = await User.create({ name, email, password_hash: passwordHash, role: 'user' });
-  setSessionCookie(res, user._id);
+  setSessionCookie(res, user);
   res.status(201).json(toUserMe(user));
 }
 
@@ -65,7 +65,7 @@ export async function login(req, res) {
       { $set: { failed_login_count: 0, locked_until: null } },
     );
   }
-  setSessionCookie(res, user._id);
+  setSessionCookie(res, user);
   res.json(toUserMe(user));
 }
 

@@ -96,7 +96,7 @@ describe('login', () => {
       { _id: 'u1' },
       { $set: { failed_login_count: 0, locked_until: null } },
     );
-    expect(setSessionCookie).toHaveBeenCalledWith(res, 'u1');
+    expect(setSessionCookie).toHaveBeenCalledWith(res, expect.objectContaining({ _id: 'u1' }));
     expect(res.json).toHaveBeenCalledWith({
       id: 'u1',
       name: 'Ana',
@@ -126,7 +126,7 @@ describe('register', () => {
       password_hash: 'nuevo-hash',
       role: 'user',
     });
-    expect(setSessionCookie).toHaveBeenCalledWith(res, 'u1');
+    expect(setSessionCookie).toHaveBeenCalledWith(res, expect.objectContaining({ _id: 'u1' }));
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json.mock.calls[0][0]).not.toHaveProperty('password_hash');
   });

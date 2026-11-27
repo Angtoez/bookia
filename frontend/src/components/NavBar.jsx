@@ -179,16 +179,23 @@ export function NavBar() {
                     </NavLink>
                   </Section>
                 )}
-                {/* El administrador no reserva ni guarda favoritos: gestiona las reservas desde
-                    Administración. */}
-                {user && user.role !== 'admin' && (
+                {/* Mi cuenta es de cualquier rol. El administrador no reserva ni guarda
+                    favoritos: gestiona las reservas desde Administración. */}
+                {user && (
                   <Section title="Mi cuenta">
-                    <NavLink to="/me/reservations" className={linkClass}>
-                      Mis reservas
+                    <NavLink to="/me/account" className={linkClass}>
+                      Mi cuenta
                     </NavLink>
-                    <NavLink to="/me/favorites" className={linkClass}>
-                      Mis favoritos
-                    </NavLink>
+                    {user.role !== 'admin' && (
+                      <>
+                        <NavLink to="/me/reservations" className={linkClass}>
+                          Mis reservas
+                        </NavLink>
+                        <NavLink to="/me/favorites" className={linkClass}>
+                          Mis favoritos
+                        </NavLink>
+                      </>
+                    )}
                   </Section>
                 )}
                 {user?.role === 'admin' && (

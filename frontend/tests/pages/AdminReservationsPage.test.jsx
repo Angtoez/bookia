@@ -86,6 +86,16 @@ describe('AdminReservationsPage', () => {
     expect(cancelled.getByText('por el usuario')).toBeInTheDocument();
   });
 
+  it('una reserva de una cuenta borrada muestra «Cuenta eliminada» (feature 002)', async () => {
+    service.listReservations.mockResolvedValue(
+      page([reservation('r4', 'cancelled', { user: null, cancel_reason: 'account_deleted' })]),
+    );
+    renderPage();
+    const row = await rowOf('Libro r4');
+    expect(row.getByText('Cuenta eliminada')).toBeInTheDocument();
+    expect(row.getByText('cuenta eliminada')).toBeInTheDocument();
+  });
+
   it('marca una reserva como lista tras confirmar y recarga', async () => {
     const user = userEvent.setup();
     service.markReady.mockResolvedValue(reservation('r1', 'ready'));
