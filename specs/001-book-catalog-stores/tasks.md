@@ -167,7 +167,7 @@ description: "Lista de tareas de la feature 001-book-catalog-stores"
 - [ ] T026 Crea `backend/src/scripts/seed.js`. Debe ser idempotente:
   1. Conecta a la base de datos.
   2. Hace `syncIndexes()` de todos los modelos importados desde `models/`.
-  3. Hace *upsert* por `slug` de estos géneros: Novela, Ciencia ficción, Fantasía, Misterio y suspense, Romántica, Novela histórica, Poesía, Teatro, Ensayo, Biografía y memorias, Infantil, Juvenil, Cómic y novela gráfica, Autoayuda, Ciencia y divulgación, Historia, Filosofía, Arte, Cocina y Viajes.
+  3. Hace *upsert* por `slug` de estos géneros: Novela, Ciencia ficción, Fantasía, Misterio y suspense, Romántica, Novela histórica, Poesía, Teatro, Ensayo, Biografía y memorias, Infantil, Juvenil, Cómic y novela gráfica, Manga, Autoayuda, Ciencia y divulgación, Historia, Filosofía, Arte, Cocina y Viajes.
   4. Crea el administrador inicial con `ADMIN_NAME`, `ADMIN_EMAIL` y `ADMIN_PASSWORD` (hash con `ENV.BCRYPT_ROUNDS`, `role: 'admin'`) si no existe ningún usuario con ese correo.
   5. Desconecta.
 

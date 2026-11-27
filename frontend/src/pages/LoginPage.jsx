@@ -1,10 +1,16 @@
 // Inicio de sesión con correo y contraseña; vuelve a `next` o al catálogo.
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
+import { LockIcon, MailIcon } from '../components/AuthIcons.jsx';
+import { AuthLayout } from '../components/AuthLayout.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { FormField } from '../components/FormField.jsx';
+import { ButtonSpinner } from '../components/Spinner.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { safeNext } from '../utils/safeNext.js';
+
+// Portadas del panel: libros del catálogo de demostración (solo se usa el ISBN).
+const COVERS = ['9789877254112', '9789681902551', '9788408053040'];
 
 export function LoginPage() {
   const { login, status } = useAuth();
@@ -38,16 +44,31 @@ export function LoginPage() {
   };
 
   return (
-    <section className="mx-auto max-w-sm space-y-6 py-6">
-      <h1 className="text-2xl font-bold text-stone-900">Iniciar sesión</h1>
+    <AuthLayout
+      title="Iniciar sesión"
+      subtitle="Entra para reservar libros y ver tus favoritos."
+      panelTitle="Apártalo hoy, recógelo en tu librería"
+      panelText="Busca un libro, mira en qué librería está disponible y resérvalo sin prisas."
+      covers={COVERS}
+    >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <ErrorMessage error={error && !error.details?.length ? error : null} />
+        {error?.code === 'INVALID_CREDENTIALS' && (
+          // La API no dice si la cuenta está bloqueada (FR-003): se avisa de la regla a cualquiera
+          // que falle. Los valores repiten MAX_FAILED_LOGINS y LOCK_DURATION_MS del backend (FR-004).
+          <p className="rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-700">
+            Por seguridad, tras 5 intentos fallidos seguidos la cuenta se bloquea durante 15
+            minutos. Si te ocurre, espera ese tiempo y vuelve a intentarlo.
+          </p>
+        )}
         <FormField
           label="Correo electrónico"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="tu@correo.com"
           required
+          icon={<MailIcon />}
           value={form.email}
           onChange={update}
           error={fieldErrors.email}
@@ -58,6 +79,8 @@ export function LoginPage() {
           type="password"
           autoComplete="current-password"
           required
+          revealable
+          icon={<LockIcon />}
           value={form.password}
           onChange={update}
           error={fieldErrors.password}
@@ -65,20 +88,21 @@ export function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-primary-700 px-4 py-2.5 font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:opacity-60"
         >
+          {submitting && <ButtonSpinner />}
           {submitting ? 'Entrando…' : 'Entrar'}
         </button>
       </form>
-      <p className="text-center text-sm text-stone-700">
+      <p className="border-t border-stone-200 pt-6 text-center text-sm text-stone-700">
         ¿No tienes cuenta?{' '}
         <Link
           to={searchParams.get('next') ? `/register?next=${encodeURIComponent(next)}` : '/register'}
-          className="font-medium text-teal-800 underline underline-offset-2"
+          className="font-medium text-primary-800 underline underline-offset-2"
         >
           Crea una
         </Link>
       </p>
-    </section>
+    </AuthLayout>
   );
 }

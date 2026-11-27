@@ -14,7 +14,7 @@ import { plural } from '../../utils/plural.js';
 
 const ACTION =
   'rounded-md border px-3 py-1.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60';
-const NEUTRAL = `${ACTION} border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-teal-700`;
+const NEUTRAL = `${ACTION} border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-primary-700`;
 
 /** Lo que se pierde al borrar una tienda; los libros siguen en el catálogo (FR-021). */
 function ImpactSummary({ impact }) {
@@ -146,7 +146,7 @@ export function AdminStoresPage() {
         <h1 className="text-2xl font-bold text-stone-900">Establecimientos</h1>
         <Link
           to="/admin/stores/new"
-          className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+          className="rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
         >
           Nuevo establecimiento
         </Link>

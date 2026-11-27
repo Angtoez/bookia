@@ -37,7 +37,7 @@ export function SearchBar({
         maxLength={100}
         onChange={(event) => setText(event.target.value)}
         placeholder={placeholder}
-        className="block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700"
+        className="block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-700"
       />
     </div>
   );

@@ -172,7 +172,7 @@ export function AdminUsersPage() {
                           type="button"
                           onClick={() => ask(user, 'role')}
                           aria-label={`${role.label}: ${user.name}`}
-                          className={`${ACTION} border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-teal-700`}
+                          className={`${ACTION} border-stone-300 text-stone-800 hover:bg-stone-100 focus-visible:outline-primary-700`}
                         >
                           {role.label}
                         </button>
@@ -183,7 +183,7 @@ export function AdminUsersPage() {
                           className={`${ACTION} ${
                             status.danger
                               ? 'border-red-300 text-red-800 hover:bg-red-50 focus-visible:outline-red-700'
-                              : 'border-teal-700 text-teal-900 hover:bg-teal-50 focus-visible:outline-teal-700'
+                              : 'border-primary-700 text-primary-900 hover:bg-primary-50 focus-visible:outline-primary-700'
                           }`}
                         >
                           {status.label}

@@ -1,0 +1,206 @@
+// Cómics y mangas de demostración. Como en demoCatalog.js, los ISBN son de ediciones reales en
+// español con portada en Open Library y la editorial es la de esa edición; el año es el de la
+// obra original. Va en un archivo aparte para no mover los índices del reparto de demoCatalog.js.
+
+// slug del género → [título, autor, editorial, año, precio en pesos, ISBN].
+const CATALOG = {
+  'comic-y-novela-grafica': [
+    ['Batman: Año uno', 'Frank Miller', 'Panini Cómics', 1987, 349, '9788415520351'],
+    [
+      'Batman: El regreso del Caballero Oscuro',
+      'Frank Miller',
+      'ECC Ediciones',
+      1986,
+      549,
+      '9788418382369',
+    ],
+    ['Batman: La broma asesina', 'Alan Moore', 'ECC Ediciones', 1988, 299, '9788419972873'],
+    ['Batman: El largo Halloween', 'Jeph Loeb', 'Planeta DeAgostini', 1996, 649, '9788467453980'],
+    ['Batman: Silencio', 'Jeph Loeb', 'Planeta DeAgostini', 2002, 599, '9788408095903'],
+    ['Superman: Hijo rojo', 'Mark Millar', 'Planeta DeAgostini', 2003, 449, '9788467475197'],
+    ['All-Star Superman', 'Grant Morrison', 'Ovni Press', 2005, 599, '9789878190150'],
+    ['Kingdom Come', 'Mark Waid', 'Ovni Press', 1996, 549, '9789877246919'],
+    ['Sandman: Preludios y nocturnos', 'Neil Gaiman', 'ECC Ediciones', 1989, 699, '9788418326592'],
+    ['From Hell', 'Alan Moore', 'Planeta', 1989, 899, '9788413422978'],
+    ['Sin City', 'Frank Miller', 'Norma Editorial', 1991, 449, '9788484312895'],
+    ['300', 'Frank Miller', 'Norma Editorial', 1998, 399, '9788498473469'],
+    ['Daredevil: Born Again', 'Frank Miller', 'Panini Cómics', 1986, 499, '9788498854756'],
+    ['Civil War', 'Mark Millar', 'Panini Cómics', 2006, 549, '9788498855142'],
+    ['Los muertos vivientes', 'Robert Kirkman', 'Planeta Cómic', 2003, 399, '9788468402765'],
+    [
+      'Hellboy: Semilla de destrucción',
+      'Mike Mignola',
+      'Norma Editorial',
+      1994,
+      349,
+      '9788484314578',
+    ],
+    ['Blacksad', 'Juan Díaz Canales', 'Utopía Editorial', 2000, 499, '9789874068644'],
+    ['Astérix el galo', 'René Goscinny', 'Salvat', 1961, 249, '9788434567191'],
+    ['Astérix legionario', 'René Goscinny', 'Salvat', 1967, 249, '9788434567283'],
+    ['Tintín en el Tíbet', 'Hergé', 'Juventud', 1960, 279, '9788426103826'],
+    ['El loto azul', 'Hergé', 'Juventud', 1936, 279, '9788426114181'],
+    ['Calvin y Hobbes', 'Bill Watterson', 'Promexa', 1987, 299, '9789683901804'],
+    [
+      'Mortadelo y Filemón: Mundial 2022',
+      'Francisco Ibáñez',
+      'Bruguera',
+      2022,
+      229,
+      '9788402426949',
+    ],
+    ['Bone: Lejos de Boneville', 'Jeff Smith', 'Astiberri', 1991, 349, '9788492769476'],
+    ['Fun Home', 'Alison Bechdel', 'Random House Mondadori', 2006, 449, '9788439721048'],
+    ['Blankets', 'Craig Thompson', '', 2003, 699, '9788495825636'],
+    ['El Eternauta', 'Héctor Germán Oesterheld', 'Planeta Cómic', 1957, 599, '9789504977117'],
+    ['Kick-Ass', 'Mark Millar', 'Panini Cómics', 2008, 399, '9788498851649'],
+    ['Predicador', 'Garth Ennis', 'ECC Ediciones', 1995, 799, '9788418043192'],
+    [
+      'Scott Pilgrim: su vida y sus cosas',
+      "Bryan Lee O'Malley",
+      'Debolsillo',
+      2004,
+      299,
+      '9788490323991',
+    ],
+    ['Todo Paracuellos', 'Carlos Giménez', 'Random House Mondadori', 1977, 899, '9788483463246'],
+    [
+      'Corto Maltés: La balada del mar salado',
+      'Hugo Pratt',
+      'Norma Editorial',
+      1967,
+      599,
+      '9788498470888',
+    ],
+    ['Agujero negro', 'Charles Burns', 'La Cúpula', 2005, 699, '9788416400058'],
+    ['Ghost World', 'Daniel Clowes', 'La Cúpula', 1997, 399, '9788415724438'],
+    [
+      'La Cosa del Pantano de Alan Moore',
+      'Alan Moore',
+      'ECC Ediciones',
+      1984,
+      799,
+      '9788417665609',
+    ],
+    ['Los 4 Fantásticos', 'Stan Lee', 'Panini Cómics', 1961, 499, '9788498857597'],
+    ['Crisis en tierras infinitas', 'Marv Wolfman', 'ECC Ediciones', 1985, 749, '9788416070572'],
+    ['El Incal', 'Alejandro Jodorowsky', 'Reservoir Books', 1981, 799, '9788416709298'],
+    ['Aquí', 'Richard McGuire', 'Salamandra', 2014, 649, '9788416131167'],
+    [
+      'La Patrulla-X: La saga de Fénix Oscura',
+      'Chris Claremont',
+      'Panini Cómics',
+      1980,
+      549,
+      '9788491676034',
+    ],
+    ['La última cacería de Kraven', 'J. M. DeMatteis', 'Panini Cómics', 1987, 399, '9788496734869'],
+    ['La familia Burrón', 'Gabriel Vargas', 'Porrúa', 1948, 249, '9789700770864'],
+  ],
+  manga: [
+    ['Naruto 1', 'Masashi Kishimoto', 'Planeta Cómic', 1999, 199, '9788416401932'],
+    ['One Piece 1', 'Eiichiro Oda', 'Planeta Cómic', 1997, 199, '9788468480114'],
+    ['Dr. Slump 1', 'Akira Toriyama', 'Planeta Cómic', 1980, 199, '9788416401895'],
+    ['Akira 1', 'Katsuhiro Otomo', 'Ovni Press', 1984, 599, '9789877246520'],
+    ['Death Note 1', 'Tsugumi Ohba', 'Norma Editorial', 2004, 199, '9788467917031'],
+    ['Fullmetal Alchemist 1', 'Hiromu Arakawa', 'Norma Editorial', 2002, 199, '9788498148749'],
+    ['Bleach 1', 'Tite Kubo', 'Glénat', 2002, 179, '9788484499763'],
+    [
+      'Ataque a los titanes: Antes de la caída 1',
+      'Ryō Suzukaze',
+      'Norma Editorial',
+      2013,
+      199,
+      '9788467916119',
+    ],
+    ['My Hero Academia 1', 'Kohei Horikoshi', 'Planeta Cómic', 2014, 199, '9788416693504'],
+    // La edición española se titula «Guardianes de la noche»; en México se conoce por el
+    // título original.
+    [
+      'Demon Slayer: Kimetsu no Yaiba 1',
+      'Koyoharu Gotouge',
+      'Norma Editorial',
+      2016,
+      199,
+      '9788467935110',
+    ],
+    ['Jujutsu Kaisen 0', 'Gege Akutami', 'Norma Editorial', 2018, 199, '9788467941920'],
+    ['Jujutsu Kaisen 1', 'Gege Akutami', 'Norma Editorial', 2018, 199, '9788467940657'],
+    ['Spy x Family 1', 'Tatsuya Endo', 'Ivrea', 2019, 199, '9788418271236'],
+    ['Tokyo Ghoul 1', 'Sui Ishida', 'Norma Editorial', 2012, 199, '9788467918892'],
+    ['Tokyo Ghoul:re 1', 'Sui Ishida', 'Norma Editorial', 2015, 199, '9788467923520'],
+    ['Maximum Berserk 1', 'Kentaro Miura', 'Panini Manga', 1990, 449, '9788491670155'],
+    ['Vagabond 1', 'Takehiko Inoue', 'Ivrea', 1999, 179, '9789871071685'],
+    ['Slam Dunk 1', 'Takehiko Inoue', 'Ivrea', 1991, 179, '9789871071616'],
+    ['Monster 1 (edición kanzenban)', 'Naoki Urasawa', 'Ivrea', 1995, 349, '9788419096418'],
+    [
+      'Pretty Guardian Sailor Moon 1',
+      'Naoko Takeuchi',
+      'Norma Editorial',
+      1992,
+      249,
+      '9788467908688',
+    ],
+    ['Card Captor Sakura 1', 'CLAMP', 'Ivrea', 1996, 179, '9789879882009'],
+    ['Inuyasha 1', 'Rumiko Takahashi', 'Ivrea', 1997, 249, '9788418963391'],
+    ['Hunter x Hunter 1', 'Yoshihiro Togashi', 'Panini Manga', 1998, 179, '9788490242070'],
+    ['Fruits Basket 1', 'Natsuki Takaya', 'Norma Editorial', 1999, 199, '9788496415133'],
+    ['Doraemon', 'Fujiko F. Fujio', 'Planeta Cómic', 1974, 199, '9788416244010'],
+    [
+      'Neon Genesis Evangelion 1',
+      'Yoshiyuki Sadamoto',
+      'Norma Editorial',
+      1995,
+      199,
+      '9788484317432',
+    ],
+    ['Haikyu!! 1', 'Haruichi Furudate', 'Planeta Cómic', 2012, 199, '9788413426259'],
+    ['Vinland Saga 1', 'Makoto Yukimura', 'Ovni Press', 2006, 249, '9789878194028'],
+    ['Frieren: Más allá del final 1', 'Kanehito Yamada', 'Ivrea', 2020, 199, '9788419185266'],
+    ['Uzumaki', 'Junji Ito', 'Ivrea', 1998, 699, '9788417490270'],
+    ['Buenas noches, Punpun 1', 'Inio Asano', 'Norma Editorial', 2007, 249, '9788467920574'],
+    ['Saint Seiya 1', 'Masami Kurumada', 'Glénat', 1986, 179, '9788484490531'],
+    ['Captain Tsubasa 1', 'Yoichi Takahashi', 'Glénat', 1981, 179, '9788484494027'],
+    ["JoJo's Bizarre Adventure: Parte III", 'Hirohiko Araki', 'Ivrea', 1989, 249, '9788417537968'],
+    ['Gantz 1', 'Hiroya Oku', 'Glénat', 2000, 199, '9788484492696'],
+    ['Dr. Stone 1', 'Riichiro Inagaki', 'Ivrea', 2017, 199, '9788417490096'],
+    ['Mob Psycho 100 1', 'ONE', 'Ivrea', 2012, 199, '9788416905164'],
+    ['Look Back', 'Tatsuki Fujimoto', 'Norma Editorial', 2021, 249, '9788467959697'],
+    ['A Silent Voice 1', 'Yoshitoki Oima', 'Milky Way Ediciones', 2013, 199, '9788494354014'],
+    ['Yotsuba! 1', 'Kiyohiko Azuma', 'Norma Editorial', 2003, 199, '9788498143607'],
+    [
+      'Boruto: Naruto Next Generations',
+      'Ukyō Kodachi',
+      'Planeta Cómic',
+      2016,
+      199,
+      '9788491730439',
+    ],
+  ],
+};
+
+export const COMICS_MANGA_BOOKS = Object.entries(CATALOG)
+  .flatMap(([genre, rows]) => rows.map((row) => [genre, ...row]))
+  .map(([genre, title, author, publisher, year, pesos, isbn]) => ({
+    title,
+    author,
+    genre,
+    isbn,
+    price_cents: pesos * 100,
+    publisher,
+    publication_year: year,
+  }));
+
+// Índices de DEMO_STORES: 0 Centro, 1 La Ceiba, 2 Mercado, 3 Biblio Café Necaxa.
+// El Biblio Café es la tienda de cómic y manga: lo tiene todo, con más stock. Cada título está
+// además en La Ceiba o en Centro, alternando, y uno de cada cinco también en el Mercado. Uno de
+// cada nueve está agotado en la segunda tienda y uno de cada seis tiene precio propio en el Café.
+export const COMICS_MANGA_STORE_BOOKS = COMICS_MANGA_BOOKS.flatMap((book, index) => {
+  const storePrice = index % 6 === 0 ? book.price_cents - 3000 : null;
+  const rows = [
+    [3, book.isbn, 3 + (index % 5), storePrice],
+    [index % 2 === 0 ? 1 : 0, book.isbn, index % 9 === 0 ? 0 : 1 + (index % 3), null],
+  ];
+  if (index % 5 === 0) rows.push([2, book.isbn, 1 + (index % 2), null]);
+  return rows;
+});

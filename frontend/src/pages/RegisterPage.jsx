@@ -2,14 +2,23 @@
 // los errores que devuelva el servidor. Tras registrarse, la sesión queda iniciada.
 import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
+import { LockIcon, MailIcon, UserIcon } from '../components/AuthIcons.jsx';
+import { AuthLayout } from '../components/AuthLayout.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { FormField } from '../components/FormField.jsx';
+import { ButtonSpinner } from '../components/Spinner.jsx';
 import { useAuth } from '../hooks/useAuth.js';
-import { PASSWORD_POLICY_MESSAGE, meetsPasswordPolicy } from '../utils/passwordPolicy.js';
+import {
+  PASSWORD_POLICY_MESSAGE,
+  PASSWORD_RULES,
+  meetsPasswordPolicy,
+} from '../utils/passwordPolicy.js';
 import { safeNext } from '../utils/safeNext.js';
 
 const FIELDS = ['name', 'email', 'password', 'confirm'];
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Portadas del panel: libros del catálogo de demostración (solo se usa el ISBN).
+const COVERS = ['9788416998722', '9788439720713', '9788498381498'];
 
 export function validateRegistration({ name, email, password, confirm }) {
   const errors = {};
@@ -19,6 +28,40 @@ export function validateRegistration({ name, email, password, confirm }) {
   if (!meetsPasswordPolicy(password)) errors.password = PASSWORD_POLICY_MESSAGE;
   if (confirm !== password) errors.confirm = 'Las contraseñas no coinciden';
   return errors;
+}
+
+/** Requisitos de la contraseña, marcados según se cumplen mientras se escribe. */
+function PasswordChecklist({ password }) {
+  return (
+    <ul className="mt-1 space-y-0.5">
+      {PASSWORD_RULES.map((rule) => {
+        const ok = rule.test(password);
+        return (
+          <li
+            key={rule.label}
+            className={`flex items-center gap-1.5 ${ok ? 'text-emerald-700' : ''}`}
+          >
+            <span aria-hidden="true" className="w-3 text-center">
+              {ok ? '✓' : '○'}
+            </span>
+            {rule.label}
+            <span className="sr-only">{ok ? '(cumplido)' : '(pendiente)'}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Indica bajo la confirmación si ya coincide con la contraseña. */
+function ConfirmHint({ password, confirm }) {
+  const matches = confirm === password;
+  return (
+    <span role="status" className={matches ? 'text-emerald-700' : ''}>
+      <span aria-hidden="true">{matches ? '✓ ' : '○ '}</span>
+      {matches ? 'Las contraseñas coinciden' : 'Aún no coinciden'}
+    </span>
+  );
 }
 
 /** Convierte un ApiError en errores por campo y, si no encaja en ninguno, en un error general. */
@@ -85,8 +128,13 @@ export function RegisterPage() {
   const loginHref = rawNext ? `/login?next=${encodeURIComponent(next)}` : '/login';
 
   return (
-    <section className="mx-auto max-w-sm space-y-6 py-6">
-      <h1 className="text-2xl font-bold text-stone-900">Crear cuenta</h1>
+    <AuthLayout
+      title="Crear cuenta"
+      subtitle="Únete a Bookia y reserva en tu librería."
+      panelTitle="Tu próxima lectura te espera"
+      panelText="Más de 80 cómics y mangas y cientos de libros en las librerías de Huauchinango."
+      covers={COVERS}
+    >
       <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
         <ErrorMessage error={generalError} />
         <FormField
@@ -95,6 +143,7 @@ export function RegisterPage() {
           autoComplete="name"
           maxLength={100}
           required
+          icon={<UserIcon />}
           value={form.name}
           onChange={update}
           error={errors.name}
@@ -104,7 +153,9 @@ export function RegisterPage() {
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="tu@correo.com"
           required
+          icon={<MailIcon />}
           value={form.email}
           onChange={update}
           error={errors.email}
@@ -115,7 +166,9 @@ export function RegisterPage() {
           type="password"
           autoComplete="new-password"
           required
-          hint="Al menos 8 caracteres, con letras y números."
+          revealable
+          icon={<LockIcon />}
+          hint={<PasswordChecklist password={form.password} />}
           value={form.password}
           onChange={update}
           error={errors.password}
@@ -126,6 +179,13 @@ export function RegisterPage() {
           type="password"
           autoComplete="new-password"
           required
+          revealable
+          icon={<LockIcon />}
+          hint={
+            form.confirm && !errors.confirm ? (
+              <ConfirmHint password={form.password} confirm={form.confirm} />
+            ) : null
+          }
           value={form.confirm}
           onChange={update}
           error={errors.confirm}
@@ -133,17 +193,18 @@ export function RegisterPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-primary-700 px-4 py-2.5 font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:opacity-60"
         >
+          {submitting && <ButtonSpinner />}
           {submitting ? 'Creando la cuenta…' : 'Crear cuenta'}
         </button>
       </form>
-      <p className="text-center text-sm text-stone-700">
+      <p className="border-t border-stone-200 pt-6 text-center text-sm text-stone-700">
         ¿Ya tienes cuenta?{' '}
-        <Link to={loginHref} className="font-medium text-teal-800 underline underline-offset-2">
+        <Link to={loginHref} className="font-medium text-primary-800 underline underline-offset-2">
           Inicia sesión
         </Link>
       </p>
-    </section>
+    </AuthLayout>
   );
 }

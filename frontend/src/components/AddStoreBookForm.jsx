@@ -62,7 +62,7 @@ export function AddStoreBookForm({ currency, excludedIds, onAdd, onCancel }) {
             <button
               type="button"
               onClick={() => setBook(null)}
-              className="rounded-sm font-medium text-teal-800 underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+              className="rounded-sm font-medium text-primary-800 underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
             >
               Cambiar
             </button>
@@ -92,14 +92,14 @@ export function AddStoreBookForm({ currency, excludedIds, onAdd, onCancel }) {
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+              className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:opacity-60"
+              className="rounded-md bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700 disabled:opacity-60"
             >
               {submitting ? 'Añadiendo…' : 'Añadir al inventario'}
             </button>
@@ -111,7 +111,7 @@ export function AddStoreBookForm({ currency, excludedIds, onAdd, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+            className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
           >
             Cancelar
           </button>

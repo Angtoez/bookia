@@ -81,7 +81,7 @@ export function MyReservationsPage() {
         </p>
         <Link
           to="/"
-          className="inline-block font-medium text-teal-800 underline underline-offset-2"
+          className="inline-block font-medium text-primary-800 underline underline-offset-2"
         >
           Ir al catálogo
         </Link>
@@ -151,7 +151,7 @@ export function MyReservationsPage() {
             id={filterId}
             value={params.status}
             onChange={(event) => setParams({ status: event.target.value })}
-            className="block rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700"
+            className="block rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-700"
           >
             <option value="">Todos</option>
             {RESERVATION_STATUSES.map((status) => (

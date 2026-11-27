@@ -66,6 +66,20 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Correo o contraseña incorrectos');
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeEnabled();
+    expect(screen.getByText(/la cuenta se bloquea durante 15/)).toBeInTheDocument();
+  });
+
+  it('el botón del ojo muestra y oculta la contraseña', async () => {
+    const user = userEvent.setup();
+    renderApp('/login');
+    const password = screen.getByLabelText(/contraseña/i);
+    const toggle = screen.getByRole('button', { name: 'Mostrar contraseña' });
+    expect(password).toHaveAttribute('type', 'password');
+    await user.click(toggle);
+    expect(password).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await user.click(toggle);
+    expect(password).toHaveAttribute('type', 'password');
   });
 
   it('ignora un next externo', async () => {

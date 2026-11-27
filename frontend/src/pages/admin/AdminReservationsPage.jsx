@@ -46,7 +46,7 @@ const ACTIONS = {
 };
 
 const SELECT =
-  'block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700';
+  'block w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-700';
 
 // La API admite hasta 50 por página; basta para el selector de tiendas.
 const fetchStoreOptions = () => listStores({ limit: 50 });
@@ -170,7 +170,7 @@ export function AdminReservationsPage() {
                             className={`rounded-md border px-3 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 ${
                               key === 'cancel'
                                 ? 'border-red-300 text-red-800 hover:bg-red-50 focus-visible:outline-red-700'
-                                : 'border-teal-700 text-teal-900 hover:bg-teal-50 focus-visible:outline-teal-700'
+                                : 'border-primary-700 text-primary-900 hover:bg-primary-50 focus-visible:outline-primary-700'
                             }`}
                           >
                             {action.label}

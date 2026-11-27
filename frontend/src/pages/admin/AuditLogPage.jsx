@@ -133,7 +133,7 @@ export function AuditLogPage() {
                           aria-expanded={open}
                           aria-controls={detailId}
                           aria-label={`${open ? 'Ocultar' : 'Ver'} cambios: ${auditActionLabel(log.action)} de «${log.entity_label}»`}
-                          className="rounded-md border border-stone-300 px-3 py-1.5 text-sm font-medium whitespace-nowrap text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
+                          className="rounded-md border border-stone-300 px-3 py-1.5 text-sm font-medium whitespace-nowrap text-stone-800 hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                         >
                           {open ? 'Ocultar' : 'Ver cambios'}
                         </button>
@@ -176,7 +176,7 @@ export function AuditLogPage() {
             id={filterId}
             value={entityType}
             onChange={(event) => setParams({ entity_type: event.target.value })}
-            className="block rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700"
+            className="block rounded-md border border-stone-300 bg-white px-3 py-2 text-base shadow-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-700"
           >
             <option value="">Todos</option>
             {ENTITY_TYPES.map((type) => (

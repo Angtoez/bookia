@@ -12,9 +12,20 @@ export function getConfig() {
   return configPromise;
 }
 
-export const listGenres = () => apiRequest('/genres');
+// Los géneros son de solo lectura en la API (se cargan con el seed): también se piden una vez,
+// aunque los usen a la vez el menú y el catálogo.
+let genresPromise = null;
 
-/** Solo para las pruebas: olvida la configuración cacheada. */
+export function listGenres() {
+  genresPromise ??= apiRequest('/genres').catch((error) => {
+    genresPromise = null;
+    throw error;
+  });
+  return genresPromise;
+}
+
+/** Solo para las pruebas: olvida la configuración y los géneros cacheados. */
 export function resetConfigCache() {
   configPromise = null;
+  genresPromise = null;
 }

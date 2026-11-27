@@ -33,6 +33,7 @@ const GENRE_COLORS = {
   infantil: 'bg-orange-700',
   juvenil: 'bg-sky-700',
   'comic-y-novela-grafica': 'bg-rose-700',
+  manga: 'bg-indigo-700',
   autoayuda: 'bg-emerald-700',
   'ciencia-y-divulgacion': 'bg-indigo-700',
   historia: 'bg-amber-700',

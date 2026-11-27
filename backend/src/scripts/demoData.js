@@ -2,6 +2,9 @@
 // ubicados en Huauchinango, Puebla. Los ISBN son de ediciones reales en español, comprobados en
 // Open Library, y la editorial es la de esa edición. El año es el de la obra original.
 import { CATALOG_BOOKS, CATALOG_STORE_BOOKS } from './demoCatalog.js';
+import { COMICS_MANGA_BOOKS, COMICS_MANGA_STORE_BOOKS } from './demoComicsManga.js';
+import { CATALOG_SYNOPSES } from './demoSynopses.js';
+import { COMICS_MANGA_SYNOPSES } from './demoSynopsesComicsManga.js';
 
 export const DEMO_STORES = [
   {
@@ -31,8 +34,9 @@ export const DEMO_STORES = [
 ];
 
 // genre: slug de scripts/genres.js. price_cents: precio de referencia en céntimos.
-export const DEMO_BOOKS = [
+const BOOKS = [
   ...CATALOG_BOOKS,
+  ...COMICS_MANGA_BOOKS,
   {
     title: 'Cien años de soledad',
     author: 'Gabriel García Márquez',
@@ -145,9 +149,18 @@ export const DEMO_BOOKS = [
   },
 ];
 
+const SYNOPSES = { ...CATALOG_SYNOPSES, ...COMICS_MANGA_SYNOPSES };
+
+// La sinopsis va en `description`; la que esté escrita arriba tiene prioridad.
+export const DEMO_BOOKS = BOOKS.map((book) => ({
+  ...book,
+  description: book.description ?? SYNOPSES[book.isbn],
+}));
+
 // [índice de tienda, ISBN, stock, precio propio en céntimos o null].
 export const DEMO_STORE_BOOKS = [
   ...CATALOG_STORE_BOOKS,
+  ...COMICS_MANGA_STORE_BOOKS,
   [0, '9780307474728', 5, 29900],
   [1, '9780307474728', 2, null],
   [2, '9780307474728', 0, null], // agotado

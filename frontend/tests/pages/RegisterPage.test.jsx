@@ -60,6 +60,19 @@ describe('RegisterPage', () => {
     expect(screen.getByText('Las contraseñas no coinciden')).toBeInTheDocument();
   });
 
+  it('marca los requisitos de la contraseña y la coincidencia mientras se escribe', async () => {
+    const user = userEvent.setup();
+    renderAt();
+    await user.type(screen.getByLabelText(/^contraseña/i), 'abcdefgh');
+    expect(screen.getByText('Al menos 8 caracteres')).toHaveTextContent('(cumplido)');
+    expect(screen.getByText('Contiene letras')).toHaveTextContent('(cumplido)');
+    expect(screen.getByText('Contiene números')).toHaveTextContent('(pendiente)');
+    await user.type(screen.getByLabelText(/repite/i), 'abcd');
+    expect(screen.getByRole('status')).toHaveTextContent('Aún no coinciden');
+    await user.type(screen.getByLabelText(/repite/i), 'efgh');
+    expect(screen.getByRole('status')).toHaveTextContent('Las contraseñas coinciden');
+  });
+
   it('exige nombre, correo válido y que coincidan las contraseñas', async () => {
     const user = userEvent.setup();
     renderAt();

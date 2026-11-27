@@ -47,7 +47,7 @@ export function ConfirmDialog({
   const confirmTone =
     tone === 'danger'
       ? 'bg-red-700 text-white hover:bg-red-800 focus-visible:outline-red-700'
-      : 'bg-teal-700 text-white hover:bg-teal-800 focus-visible:outline-teal-700';
+      : 'bg-primary-700 text-white hover:bg-primary-800 focus-visible:outline-primary-700';
 
   return (
     <dialog
@@ -72,7 +72,7 @@ export function ConfirmDialog({
               type="button"
               onClick={onCancel}
               disabled={busy}
-              className={`${BUTTON} border border-stone-300 bg-white text-stone-800 hover:bg-stone-100 focus-visible:outline-teal-700`}
+              className={`${BUTTON} border border-stone-300 bg-white text-stone-800 hover:bg-stone-100 focus-visible:outline-primary-700`}
             >
               {cancelLabel}
             </button>
