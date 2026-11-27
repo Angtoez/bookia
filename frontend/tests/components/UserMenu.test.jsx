@@ -78,7 +78,7 @@ describe('UserMenu', () => {
       'href',
       '/admin/audit',
     );
-    expect(screen.getByRole('link', { name: 'Mis favoritos' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Mis favoritos' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Mis reservas' })).not.toBeInTheDocument();
   });
 
