@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
 import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NavSearch } from '../../src/components/NavSearch.jsx';
 
 let current = '';
@@ -101,5 +101,47 @@ describe('NavSearch', () => {
   it('con una búsqueda en la URL aparece desplegado y con su texto', () => {
     renderSearch('/?q=dune');
     expect(screen.getByRole('searchbox')).toHaveValue('dune');
+  });
+});
+
+describe('NavSearch en escritorio', () => {
+  beforeEach(() => {
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    });
+  });
+  afterEach(() => {
+    delete window.matchMedia;
+  });
+
+  it('la barra está siempre visible, sin lupa y sin robar el foco', () => {
+    renderSearch('/books/b1');
+    expect(screen.getByRole('searchbox', { name: 'Buscar por título o autor' })).not.toHaveFocus();
+    expect(screen.queryByRole('button', { name: 'Buscar libros' })).not.toBeInTheDocument();
+  });
+
+  it('busca al escribir y Esc borra el texto sin plegar la barra', async () => {
+    const user = userEvent.setup();
+    renderSearch('/');
+    await user.type(screen.getByRole('searchbox'), 'dune');
+    await waitFor(() => expect(current).toBe('/?q=dune'));
+    await user.keyboard('{Escape}');
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+  });
+
+  it('sigue visible al salir del campo vacío', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <NavSearch />
+        <button type="button">Otro</button>
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByRole('searchbox'));
+    await user.click(screen.getByRole('button', { name: 'Otro' }));
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
   });
 });

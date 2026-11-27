@@ -1,7 +1,9 @@
-// Búsqueda de la cabecera: una lupa que despliega el campo. Busca mientras se escribe (con la
-// misma espera que SearchBar): en el catálogo filtra y desde otra página lleva a él con `q`.
+// Búsqueda de la cabecera. En escritorio es una barra siempre visible en el centro; en móvil,
+// una lupa que despliega el campo sobre la cabecera. Busca mientras se escribe (con la misma
+// espera que SearchBar): en el catálogo filtra y desde otra página lleva a él con `q`.
 import { useCallback, useEffect, useId, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { DESKTOP_QUERY, useMediaQuery } from '../hooks/useMediaQuery.js';
 import { applyParamChanges } from '../utils/searchParams.js';
 import { SEARCH_DEBOUNCE_MS } from './SearchBar.jsx';
 
@@ -31,6 +33,8 @@ export function NavSearch() {
   const [external, setExternal] = useState(urlQ);
   const [open, setOpen] = useState(Boolean(urlQ));
   const [refocus, setRefocus] = useState(false);
+  const desktop = useMediaQuery(DESKTOP_QUERY);
+  const shown = desktop || open;
 
   // Si la URL cambia desde fuera (Atrás, "Limpiar filtros", otra página), el campo la sigue.
   if (urlQ !== external) {
@@ -85,11 +89,20 @@ export function NavSearch() {
     setRefocus(true);
   };
 
-  // En pantallas estrechas, abierto ocupa toda la barra de la cabecera (que es `relative`) y
-  // lleva su propio botón de cerrar; desde sm vuelve a ser un campo junto al usuario.
-  const overlay = open
-    ? 'absolute inset-0 z-20 gap-2 bg-primary-700 px-4 sm:static sm:inset-auto sm:bg-transparent sm:px-0'
-    : '';
+  // En escritorio Esc solo borra el texto: la barra no se pliega y el foco sigue en ella.
+  const handleKeyDown = (event) => {
+    if (event.key !== 'Escape') return;
+    if (desktop) setText('');
+    else closeAndRefocus();
+  };
+
+  // En móvil, abierto ocupa toda la barra de la cabecera (que es `relative`) y lleva su propio
+  // botón de cerrar. En escritorio ocupa el centro de la cabecera.
+  const overlay = desktop
+    ? 'flex-1 justify-center px-4'
+    : open
+      ? 'absolute inset-0 z-20 gap-2 bg-primary-700 px-4'
+      : '';
 
   return (
     <form
@@ -98,28 +111,27 @@ export function NavSearch() {
       onBlur={handleBlur}
       className={`flex items-center ${overlay}`}
     >
-      {open ? (
-        <div className="relative flex-1 sm:flex-none">
+      {shown ? (
+        <div className="relative w-full flex-1 sm:max-w-xl">
           <label htmlFor={id} className="sr-only">
             Buscar por título o autor
           </label>
           <input
             id={id}
             type="search"
-            // Se monta al pulsar la lupa: el foco pasa directamente al campo.
-            autoFocus
+            // En móvil se monta al pulsar la lupa: el foco pasa directamente al campo. En
+            // escritorio está siempre y no debe robar el foco al cargar la página.
+            autoFocus={!desktop}
             value={text}
             maxLength={100}
             onChange={(event) => setText(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Escape') closeAndRefocus();
-            }}
-            placeholder="Título o autor"
-            className="w-full rounded-full bg-white py-1.5 pr-3 pl-9 text-sm text-stone-900 placeholder:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-56"
+            onKeyDown={handleKeyDown}
+            placeholder="Busca por título o autor"
+            className="w-full rounded-full bg-white py-2 pr-4 pl-10 text-sm text-stone-900 shadow-sm placeholder:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           />
           <button
             type="submit"
-            className="absolute inset-y-0 left-0 flex items-center rounded-l-full pr-1 pl-2.5 text-stone-500 hover:text-primary-700"
+            className="absolute inset-y-0 left-0 flex items-center rounded-l-full pr-1 pl-3 text-stone-500 hover:text-primary-700"
           >
             <SearchIcon className="size-5" />
             <span className="sr-only">Buscar</span>
@@ -127,13 +139,13 @@ export function NavSearch() {
         </div>
       ) : null}
       {/* Claves distintas: si React reutilizara el mismo <button>, el autoFocus de la lupa no
-          se aplicaría al cerrar. */}
-      {open ? (
+          se aplicaría al cerrar. En escritorio no hay lupa ni botón de cerrar. */}
+      {desktop ? null : open ? (
         <button
           key="cerrar"
           type="button"
           onClick={closeAndRefocus}
-          className="rounded-md p-2 text-primary-50 hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:hidden"
+          className="rounded-md p-2 text-primary-50 hover:bg-primary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <svg
             viewBox="0 0 24 24"

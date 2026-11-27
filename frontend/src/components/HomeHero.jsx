@@ -82,9 +82,12 @@ export function HomeHero() {
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
       }}
-      // Separado de la cabecera unos 1,5 cm: 24 px del padding de <main> más mt-7 (28 px).
-      className="relative mx-[calc(50%-50vw)] mt-7 overflow-hidden"
+      // Pegado a la cabecera: -mt-6 anula el padding superior de <main>.
+      className="relative mx-[calc(50%-50vw)] -mt-6 overflow-hidden"
     >
+      {/* Título principal de la portada. Las diapositivas cambian, así que no puede ser el de una
+          de ellas: existe para los lectores de pantalla y los buscadores. */}
+      <h1 className="sr-only">Bookia: descubre todos los libros y en qué librería recogerlos</h1>
       {/* Con el avance automático, los cambios no se anuncian; en pausa, sí. */}
       <div aria-live={running ? 'off' : 'polite'}>
         <div

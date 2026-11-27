@@ -4,9 +4,11 @@ import { useEffect } from 'react';
 import { BookCard } from '../components/BookCard.jsx';
 import { BookGridSkeleton } from '../components/BookSkeletons.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import { GenreChips } from '../components/GenreChips.jsx';
 import { Pagination } from '../components/Pagination.jsx';
 import { HomeHero } from '../components/HomeHero.jsx';
 import { ComicsMangaShelf, TopRatedShelf } from '../components/HomeShelves.jsx';
+import { HowItWorks } from '../components/HowItWorks.jsx';
 import { useApiQuery } from '../hooks/useApiQuery.js';
 import { useBooks } from '../hooks/useBooks.js';
 import { useConfig } from '../hooks/useConfig.js';
@@ -83,27 +85,20 @@ export function CatalogPage() {
     </p>
   );
 
-  // Portada, al estilo de las webs editoriales: banner, bienvenida, secciones con carrusel y, al
-  // final, todo el catálogo.
+  // Portada, al estilo de las webs editoriales: banner, cómo funciona, secciones con carrusel y,
+  // al final, todo el catálogo con los géneros como chips.
   if (showFeatured) {
     return (
       <>
+        {/* El título principal (h1) está en el banner. */}
         <HomeHero />
-        <div className="mx-auto max-w-3xl px-2 py-10 text-center sm:py-12">
-          <h1 className="font-sans text-2xl font-bold text-stone-900 sm:text-4xl">
-            Descubre todos los libros de Bookia
-          </h1>
-          <p className="mt-3 text-stone-600">
-            Bienvenido/a a nuestra comunidad lectora: aquí encontrarás tu próxima lectura y en qué
-            librería recogerla.
-          </p>
-        </div>
+        <HowItWorks />
         <TopRatedShelf />
         <ComicsMangaShelf />
         <section
           id="todos-los-libros"
           aria-labelledby="todos-los-libros-titulo"
-          className="scroll-mt-4 space-y-6 pt-10 sm:pt-12"
+          className="scroll-mt-20 space-y-6 pt-10 sm:pt-12"
         >
           <div className="text-center">
             <h2
@@ -114,6 +109,7 @@ export function CatalogPage() {
             </h2>
             <div className="mt-2 flex justify-center">{summary}</div>
           </div>
+          <GenreChips />
           {content}
         </section>
       </>
@@ -141,6 +137,7 @@ export function CatalogPage() {
           )}
         </div>
       </div>
+      <GenreChips />
       {content}
     </section>
   );

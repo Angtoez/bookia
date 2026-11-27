@@ -8,13 +8,14 @@ vi.mock('../../src/services/configService.js', () => ({ listGenres: vi.fn() }));
 
 const { useAuth } = await import('../../src/hooks/useAuth.js');
 const { listGenres } = await import('../../src/services/configService.js');
-const { NavBar, NavUser } = await import('../../src/components/NavBar.jsx');
+const { NavBar } = await import('../../src/components/NavBar.jsx');
+const { UserMenu } = await import('../../src/components/UserMenu.jsx');
 
 function renderNav(url = '/') {
   return render(
     <MemoryRouter initialEntries={[url]}>
       <NavBar />
-      <NavUser />
+      <UserMenu />
     </MemoryRouter>,
   );
 }

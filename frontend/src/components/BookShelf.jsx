@@ -3,6 +3,8 @@
 // desliza con el dedo, la rueda o las flechas, sin avance automático.
 import { useCallback, useId, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { useConfig } from '../hooks/useConfig.js';
+import { formatPrice } from '../utils/formatPrice.js';
 import { BookCover } from './BookCover.jsx';
 
 const ARROW = { prev: 'M15 5l-7 7 7 7', next: 'M9 5l7 7-7 7' };
@@ -34,8 +36,8 @@ function ArrowButton({ direction, disabled, controls, onClick }) {
   );
 }
 
-/** Tarjeta: un único enlace al detalle, con la portada, el título, el autor y la llamada. */
-function ShelfCard({ book, badge, meta }) {
+/** Tarjeta: un único enlace al detalle, con la portada, el título, el autor y el precio. */
+function ShelfCard({ book, badge, meta, currency }) {
   return (
     <Link
       to={`/books/${book.id}`}
@@ -56,11 +58,11 @@ function ShelfCard({ book, badge, meta }) {
       </h3>
       <p className="mt-1 truncate text-sm text-primary-700">{book.author}</p>
       {meta && <div className="mt-1 text-sm text-stone-600">{meta}</div>}
-      <span className="mt-auto self-start pt-3">
-        <span className="inline-block rounded-md bg-primary-600 px-3 py-1 text-sm font-bold text-white transition group-hover:bg-primary-700">
-          Ver disponibilidad
-        </span>
-      </span>
+      {book.price_cents != null && (
+        <p className="mt-auto pt-2 text-sm font-semibold text-stone-900">
+          {formatPrice(book.price_cents, currency)}
+        </p>
+      )}
     </Link>
   );
 }
@@ -90,6 +92,7 @@ export function BookShelf({ id, title, subtitle, tone = 'white', items, actions 
   const trackId = useId();
   const trackRef = useRef(null);
   const [view, setView] = useState({ page: 0, pages: 1, atStart: true, atEnd: false });
+  const config = useConfig();
 
   // Calcula la página visible y cuántas hay a partir del scroll; también al cambiar el tamaño.
   const measure = useCallback(() => {
@@ -138,7 +141,7 @@ export function BookShelf({ id, title, subtitle, tone = 'white', items, actions 
     <section
       id={id}
       aria-labelledby={titleId}
-      className={`mx-[calc(50%-50vw)] scroll-mt-4 py-10 sm:py-12 ${tone === 'muted' ? 'bg-stone-100' : 'bg-white'}`}
+      className={`mx-[calc(50%-50vw)] scroll-mt-20 py-10 sm:py-12 ${tone === 'muted' ? 'bg-stone-100' : 'bg-white'}`}
     >
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-3xl text-center">
@@ -172,7 +175,7 @@ export function BookShelf({ id, title, subtitle, tone = 'white', items, actions 
                     // En móvil, 40 % del ancho: asoma la tercera tarjeta y se ve que hay más.
                     className="w-[40%] shrink-0 snap-start sm:w-44 lg:w-[calc((100%-7.5rem)/6)]"
                   >
-                    <ShelfCard book={book} badge={badge} meta={meta} />
+                    <ShelfCard book={book} badge={badge} meta={meta} currency={config?.currency} />
                   </li>
                 ))}
               </ul>

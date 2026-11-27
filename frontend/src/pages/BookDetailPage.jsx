@@ -139,7 +139,7 @@ export function BookDetailPage() {
             <BookRating isbn={book.isbn} />
           </header>
 
-          <div className="[grid-area:box] lg:sticky lg:top-6 lg:self-start">
+          <div className="[grid-area:box] lg:sticky lg:top-24 lg:self-start">
             <BookAvailabilityBox
               stores={book.stores}
               currency={config?.currency}
