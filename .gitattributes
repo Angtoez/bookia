@@ -1,0 +1,3 @@
+# Finales de línea LF en el repositorio y en la copia de trabajo, también en Windows: Prettier
+# exige LF y, con core.autocrlf=true, git escribía CRLF al cambiar de rama.
+* text=auto eol=lf
