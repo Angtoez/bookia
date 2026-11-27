@@ -21,6 +21,10 @@ describe('PrivacyPage', () => {
     }
     expect(screen.getByText('bookia_session')).toBeInTheDocument();
     expect(document.title).toBe('Política de privacidad · Bookia');
+    // Los derechos se ejercen desde Mi cuenta (feature 002).
+    for (const link of screen.getAllByRole('link', { name: 'Mi cuenta' })) {
+      expect(link).toHaveAttribute('href', '/me/account');
+    }
   });
 
   it('marca como pendientes los datos del responsable que faltan', () => {

@@ -36,6 +36,16 @@ const ADMIN_ROUTES = [
   ['get', '/api/auditLogs'],
 ];
 
+// Mi cuenta (feature 002): de cualquier rol, sobre la propia cuenta. Con un cuerpo vacío no se
+// cambia ni se borra nada: las escrituras se quedan en 400 de validación.
+const ACCOUNT_ROUTES = [
+  ['get', '/api/account'],
+  ['patch', '/api/account'],
+  ['post', '/api/account/password'],
+  ['get', '/api/account/export'],
+  ['delete', '/api/account'],
+];
+
 let userCookie;
 let adminCookie;
 
@@ -60,6 +70,17 @@ describe.each(ADMIN_ROUTES)('%s %s', (method, path) => {
     const admin = await call(method, path, adminCookie);
     expect([401, 403]).not.toContain(admin.status);
     expect(admin.status).toBeLessThan(500);
+  });
+});
+
+describe.each(ACCOUNT_ROUTES)('%s %s', (method, path) => {
+  it('anónimo → 401; user y admin pasan el control de acceso (no 403)', async () => {
+    expect((await call(method, path)).status).toBe(401);
+    for (const cookie of [userCookie, adminCookie]) {
+      const res = await call(method, path, cookie);
+      expect([401, 403]).not.toContain(res.status);
+      expect([200, 400]).toContain(res.status);
+    }
   });
 });
 

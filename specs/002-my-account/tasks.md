@@ -288,14 +288,14 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T042 [P] Amplía `backend/tests/integration/authorization.test.js`: añade `GET /api/account`, `PATCH /api/account`, `POST /api/account/password`, `GET /api/account/export` y `DELETE /api/account` a la tabla, con `401` para el anónimo y `200`, `204` o `400` (no `403`) para `user` y `admin`. La comprobación de la pila (`authenticate` implica `requireRole`) debe cubrir el router nuevo.
-- [ ] T043 [P] Actualiza `frontend/src/pages/PrivacyPage.jsx`:
+- [X] T042 [P] Amplía `backend/tests/integration/authorization.test.js`: añade `GET /api/account`, `PATCH /api/account`, `POST /api/account/password`, `GET /api/account/export` y `DELETE /api/account` a la tabla, con `401` para el anónimo y `200`, `204` o `400` (no `403`) para `user` y `admin`. La comprobación de la pila (`authenticate` implica `requireRole`) debe cubrir el router nuevo.
+- [X] T043 [P] Actualiza `frontend/src/pages/PrivacyPage.jsx`:
   - § 6, Conservación: al borrar la cuenta desde «Mi cuenta», los datos personales se eliminan al momento; las reservas cerradas se conservan sin datos que te identifiquen y la auditoría, sin tu nombre ni tu correo.
   - § 7, Derechos: indica que se pueden ejercer desde «Mi cuenta» (enlace a `/me/account`), además de por correo.
 
   Cambia `PRIVACY_UPDATED` a la fecha del cambio y actualiza su prueba.
-- [ ] T044 Actualiza `CLAUDE.md` (estado del proyecto y frontend: `/me/account`, `session_version` en el JWT y la regla de no exponerlo) y `README.md` (sección de funcionalidades).
-- [ ] T045 Ejecuta `npm run lint` y `npm test`. Corrige los avisos, comprueba que ningún archivo pasa de 300 líneas y que la cobertura sigue por encima del 70 %.
+- [X] T044 Actualiza `CLAUDE.md` (estado del proyecto y frontend: `/me/account`, `session_version` en el JWT y la regla de no exponerlo) y `README.md` (sección de funcionalidades).
+- [X] T045 Ejecuta `npm run lint` y `npm test`. Corrige los avisos, comprueba que ningún archivo pasa de 300 líneas y que la cobertura sigue por encima del 70 %.
 - [ ] T046 Recorre los 6 pasos del [quickstart](./quickstart.md) § Recorrido manual con cuentas de prueba y anota las diferencias en `specs/002-my-account/checklists/validation.md`.
 
 ---
