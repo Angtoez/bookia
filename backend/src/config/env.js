@@ -24,6 +24,10 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: intWithDefault(12, 10),
   PORT: intWithDefault(3000, 1),
   CORS_ORIGIN: optionalString,
+  // Número de proxies delante de la API (Railway: 1), para que el rate limit vea la IP real.
+  TRUST_PROXY: intWithDefault(0, 0),
+  // En producción, la API sirve también la SPA compilada (frontend/dist).
+  SERVE_FRONTEND: z.preprocess((v) => v === 'true', z.boolean()),
   CURRENCY: z.preprocess(
     (v) => (v === '' ? undefined : v),
     z
