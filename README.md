@@ -121,6 +121,17 @@ npm run licenses     # licencias de las dependencias según la constitución
 
 Las pruebas **no usan Atlas**: levantan un MongoDB temporal en memoria (`mongodb-memory-server`). La primera ejecución descarga su binario.
 
+## Despliegue en Railway
+
+Un único servicio sirve la API y la SPA desde el mismo dominio, así que la cookie de sesión funciona sin CORS. `railway.json` fija la compilación (`npm run build`), el arranque (`npm start`) y la comprobación de salud (`GET /api/config`).
+
+1. En Railway, crea un proyecto desde el repositorio de GitHub (rama `main`).
+2. Define las variables del servicio: `MONGODB_URI`, `MONGODB_DB_NAME`, `JWT_SECRET` (uno nuevo, distinto del local), `CURRENCY`, `SERVE_FRONTEND=true` y `TRUST_PROXY=1`. `PORT` la pone Railway.
+3. En MongoDB Atlas → Network Access, permite `0.0.0.0/0`: Railway no tiene IP fija de salida.
+4. En Settings → Networking, genera un dominio público.
+
+La base de datos es la de Atlas: si ya tiene datos, no hace falta volver a ejecutar los *seeds*.
+
 ## 5. Probar la API a mano
 
 Los ejemplos usan `curl.exe` (incluido en Windows 11). Guardan la cookie de sesión en `cookies.txt`; curl la envía también a `http://localhost` aunque sea `secure`. En PowerShell, `curl` a secas es un alias de `Invoke-WebRequest`; usa `curl.exe`.
