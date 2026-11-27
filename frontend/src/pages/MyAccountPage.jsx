@@ -1,6 +1,7 @@
 // Mi cuenta (feature 002, contracts/ui-routes.md): datos y nombre, contraseña, descarga de los
 // datos y borrado de la cuenta. Para usuarios y administradores.
 import { useEffect } from 'react';
+import { AccountDataDownload } from '../components/AccountDataDownload.jsx';
 import { AccountProfileForm } from '../components/AccountProfileForm.jsx';
 import { ChangePasswordForm } from '../components/ChangePasswordForm.jsx';
 import { DeleteAccountSection } from '../components/DeleteAccountSection.jsx';
@@ -33,6 +34,7 @@ export function MyAccountPage() {
       <>
         <AccountProfileForm account={account} />
         <ChangePasswordForm />
+        <AccountDataDownload />
         <DeleteAccountSection />
       </>
     );

@@ -23,11 +23,17 @@ const { record } = await import('../../../src/services/auditService.js');
 const { default: bcrypt } = await import('bcrypt');
 const { clearSessionCookie, setSessionCookie } =
   await import('../../../src/utils/sessionCookie.js');
-const { deleteAccountCascade } = await import('../../../src/services/accountService.js');
-const { changePassword, deleteAccount, getAccount, updateAccount } =
+const { buildAccountExport, deleteAccountCascade } =
+  await import('../../../src/services/accountService.js');
+const { changePassword, deleteAccount, exportAccount, getAccount, updateAccount } =
   await import('../../../src/controllers/accountController.js');
 
-const mockRes = () => ({ json: vi.fn(), status: vi.fn().mockReturnThis(), end: vi.fn() });
+const mockRes = () => ({
+  json: vi.fn(),
+  status: vi.fn().mockReturnThis(),
+  end: vi.fn(),
+  set: vi.fn(),
+});
 
 const account = (fields = {}) => ({
   _id: 'u1',
@@ -151,5 +157,26 @@ describe('borrado', () => {
     expect(deleteAccountCascade).toHaveBeenCalledWith(user, 'session');
     expect(clearSessionCookie).toHaveBeenCalledWith(res);
     expect(res.status).toHaveBeenCalledWith(204);
+  });
+});
+
+describe('exportación', () => {
+  it('descarga el documento como adjunto con la fecha en el nombre', async () => {
+    const data = {
+      exported_at: '2026-11-26T10:00:00.000Z',
+      account: {},
+      reservations: [],
+      favorites: [],
+    };
+    buildAccountExport.mockResolvedValue(data);
+    const user = account();
+    const res = mockRes();
+    await exportAccount({ user }, res);
+    expect(buildAccountExport).toHaveBeenCalledWith(user);
+    expect(res.set).toHaveBeenCalledWith(
+      'Content-Disposition',
+      'attachment; filename="bookia-mis-datos-2026-11-26.json"',
+    );
+    expect(res.json).toHaveBeenCalledWith(data);
   });
 });

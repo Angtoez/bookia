@@ -3,7 +3,7 @@
 import bcrypt from 'bcrypt';
 import { ENV } from '../config/env.js';
 import { User } from '../models/User.js';
-import { deleteAccountCascade } from '../services/accountService.js';
+import { buildAccountExport, deleteAccountCascade } from '../services/accountService.js';
 import { record } from '../services/auditService.js';
 import { runInTransaction } from '../services/transaction.js';
 import { HttpError } from '../utils/httpError.js';
@@ -106,4 +106,12 @@ export async function deleteAccount(req, res) {
   await runInTransaction((session) => deleteAccountCascade(user, session));
   clearSessionCookie(res);
   res.status(204).end();
+}
+
+/** Descarga los datos de la cuenta en JSON (FR-021): bookia-mis-datos-AAAA-MM-DD.json. */
+export async function exportAccount(req, res) {
+  const data = await buildAccountExport(req.user);
+  const filename = `bookia-mis-datos-${data.exported_at.slice(0, 10)}.json`;
+  res.set('Content-Disposition', `attachment; filename="${filename}"`);
+  res.json(data);
 }

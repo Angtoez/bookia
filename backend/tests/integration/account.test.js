@@ -4,9 +4,16 @@ import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../src/app.js';
 import { AuditLog } from '../../src/models/AuditLog.js';
+import { Favorite } from '../../src/models/Favorite.js';
 import { User } from '../../src/models/User.js';
 import { clearDb, startDb, stopDb } from '../helpers/db.js';
-import { createUser, sessionCookieFor } from '../helpers/factories.js';
+import {
+  createBook,
+  createStore,
+  createStoreBook,
+  createUser,
+  sessionCookieFor,
+} from '../helpers/factories.js';
 
 const app = createApp();
 
@@ -162,5 +169,77 @@ describe('contraseña', () => {
       message: 'La nueva contraseña debe ser distinta de la actual',
     });
     expect(await AuditLog.countDocuments()).toBe(0);
+  });
+});
+
+describe('exportación', () => {
+  const exportAs = (cookie) => request(app).get('/api/account/export').set('Cookie', cookie);
+
+  it('descarga la cuenta, sus reservas y sus favoritos, sin datos de seguridad ni de otros', async () => {
+    const store = await createStore({ name: 'Librería Centro' });
+    const books = [await createBook({ title: 'Primero' }), await createBook({ title: 'Segundo' })];
+    for (const book of books) {
+      await createStoreBook({ book_id: book._id, store_id: store._id, stock: 2 });
+    }
+    const user = await createUser({ name: 'Ana Export' });
+    const other = await createUser();
+    const cookie = sessionCookieFor(user);
+    for (const book of books) {
+      const res = await request(app)
+        .post('/api/reservations')
+        .set('Cookie', cookie)
+        .send({ book_id: String(book._id), store_id: String(store._id) });
+      expect(res.status).toBe(201);
+    }
+    await request(app)
+      .post('/api/reservations')
+      .set('Cookie', sessionCookieFor(other))
+      .send({ book_id: String(books[0]._id), store_id: String(store._id) });
+    await Favorite.create({ user_id: user._id, book_id: books[1]._id });
+    await Favorite.create({ user_id: other._id, book_id: books[0]._id });
+
+    const res = await exportAs(cookie);
+    expect(res.status).toBe(200);
+    const today = new Date().toISOString().slice(0, 10);
+    expect(res.headers['content-disposition']).toBe(
+      `attachment; filename="bookia-mis-datos-${today}.json"`,
+    );
+    expect(res.body.exported_at).toBeTruthy();
+    expect(res.body.account).toEqual({
+      name: 'Ana Export',
+      email: user.email,
+      role: 'user',
+      created_at: user.created_at.toISOString(),
+    });
+    expect(res.body.reservations.map((r) => r.book_title)).toEqual(['Segundo', 'Primero']);
+    expect(res.body.reservations[0]).toMatchObject({
+      book_isbn: books[1].isbn,
+      store_name: 'Librería Centro',
+      status: 'pending',
+      cancel_reason: null,
+    });
+    expect(res.body.favorites).toEqual([
+      expect.objectContaining({ title: 'Segundo', author: books[1].author, isbn: books[1].isbn }),
+    ]);
+    expect(res.body.favorites[0].added_at).toBeTruthy();
+
+    const text = JSON.stringify(res.body);
+    for (const field of [
+      'password_hash',
+      'failed_login_count',
+      'locked_until',
+      'session_version',
+      '_id',
+      '"id"',
+    ]) {
+      expect(text).not.toContain(field);
+    }
+    expect(text).not.toContain(other.email);
+  });
+
+  it('una cuenta sin reservas ni favoritos recibe listas vacías', async () => {
+    const user = await createUser();
+    const res = await exportAs(sessionCookieFor(user));
+    expect(res.body).toMatchObject({ reservations: [], favorites: [] });
   });
 });

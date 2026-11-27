@@ -4,6 +4,7 @@ import { Router } from 'express';
 import {
   changePassword,
   deleteAccount,
+  exportAccount,
   getAccount,
   updateAccount,
 } from '../controllers/accountController.js';
@@ -24,6 +25,7 @@ export function createAccountRouter() {
   router.use(authenticate, requireRole('user', 'admin'));
 
   router.get('/', getAccount);
+  router.get('/export', exportAccount);
   router.patch('/', validate({ body: updateAccountSchema }), updateAccount);
   router.post(
     '/password',

@@ -258,24 +258,24 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Pruebas de la historia 4
 
-- [ ] T038 [P] [US4] Añade a `backend/tests/integration/account.test.js` el bloque «exportación»:
+- [X] T038 [P] [US4] Añade a `backend/tests/integration/account.test.js` el bloque «exportación»:
   - `GET /api/account/export` responde `200` con `content-disposition` `attachment; filename="bookia-mis-datos-AAAA-MM-DD.json"` (fecha de hoy).
   - El cuerpo tiene `exported_at`, `account` (`{name, email, role, created_at}`), las 2 reservas del usuario (con `book_title`, `book_isbn`, `store_name`, `store_address`, `price_cents`, `status` y fechas), en orden de creación descendente, y su favorito (`{title, author, isbn, added_at}`).
   - No contiene reservas ni favoritos de otro usuario.
   - `JSON.stringify(body)` no contiene `password_hash`, `failed_login_count`, `locked_until`, `session_version` ni `_id`.
   - Una cuenta sin reservas ni favoritos recibe listas vacías.
-- [ ] T039 [P] [US4] Añade a `accountController.test.js` el bloque «exportación», con `buildAccountExport` mockeado: comprueba la cabecera y el nombre del archivo.
+- [X] T039 [P] [US4] Añade a `accountController.test.js` el bloque «exportación», con `buildAccountExport` mockeado: comprueba la cabecera y el nombre del archivo.
 
 ### Implementación de la historia 4
 
-- [ ] T040 [US4] Añade `buildAccountExport(user)` a `backend/src/services/accountService.js`:
+- [X] T040 [US4] Añade `buildAccountExport(user)` a `backend/src/services/accountService.js`:
   - Hace `Reservation.find({user_id}).sort({created_at: -1}).populate('book_id', 'isbn').lean()`.
   - Hace `Favorite.find({user_id}).populate('book_id', 'title author isbn').lean()`.
   - Construye campo a campo el documento de [data-model § Exportación](./data-model.md#exportación-no-se-guarda), sin copiar objetos enteros.
   - `book_isbn` es `null` si el libro se borró, y los favoritos de libros borrados se omiten.
 
   Añade `exportAccount` a `accountController.js`: pone la cabecera `Content-Disposition` y responde `json`. Añade la ruta `GET /export` a `accountRoutes.js`.
-- [ ] T041 [US4] Crea `frontend/src/components/AccountDataDownload.jsx`:
+- [X] T041 [US4] Crea `frontend/src/components/AccountDataDownload.jsx`:
   - Una explicación breve de qué incluye el archivo.
   - Un enlace con aspecto de botón a `ACCOUNT_EXPORT_URL` con el atributo `download` y el texto «Descargar mis datos».
   - Un enlace a `/privacidad`.

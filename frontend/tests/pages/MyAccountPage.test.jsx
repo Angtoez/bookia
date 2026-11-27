@@ -98,3 +98,14 @@ describe('MyAccountPage: perfil', () => {
     expect(await screen.findByText('Administrador')).toBeInTheDocument();
   });
 });
+
+describe('MyAccountPage: secciones', () => {
+  it('ofrece la descarga de los datos, el cambio de contraseña y el borrado', async () => {
+    renderPage();
+    const link = await screen.findByRole('link', { name: 'Descargar mis datos' });
+    expect(link).toHaveAttribute('href', '/api/account/export');
+    expect(link).toHaveAttribute('download');
+    expect(screen.getByRole('heading', { name: 'Contraseña' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Borrar mi cuenta' })).toBeInTheDocument();
+  });
+});
