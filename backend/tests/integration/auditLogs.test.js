@@ -48,6 +48,7 @@ describe('GET /api/auditLogs', () => {
     expect(res.body.items[0]).toEqual({
       id: String(recent._id),
       user: { id: String(admin._id), name: 'Ana Admin' },
+      user_deleted: false,
       action: 'create',
       entity_type: 'book',
       entity_id: String(recent.entity_id),
@@ -105,5 +106,35 @@ describe('inmutabilidad (FR-028)', () => {
     ).rejects.toThrow('audit_logs es inmutable');
     await expect(AuditLog.deleteOne({ _id: log._id })).rejects.toThrow('audit_logs es inmutable');
     expect((await AuditLog.findById(log._id).lean()).entity_label).toBe('Libro');
+    // Pasar la opción a mano en otra operación tampoco sirve: solo la acepta updateMany.
+    await expect(
+      AuditLog.deleteMany({ _id: log._id }, { bookiaAnonymizeAccount: false }),
+    ).rejects.toThrow('audit_logs es inmutable');
+  });
+
+  it('anonymizeAccount solo quita el nombre y el correo de las entradas de la cuenta (feature 002)', async () => {
+    const userId = new mongoose.Types.ObjectId();
+    const about = await createLog({
+      user_id: userId,
+      entity_type: 'user',
+      entity_id: userId,
+      action: 'role_change',
+      entity_label: 'Ana',
+      before: { name: 'Ana', email: 'ana@example.com', role: 'user' },
+      after: { name: 'Ana', role: 'admin' },
+    });
+    const other = await createLog({ entity_label: 'Libro de otro' });
+    await AuditLog.anonymizeAccount(userId);
+    const fresh = await AuditLog.findById(about._id).lean();
+    expect(fresh).toMatchObject({
+      action: 'role_change',
+      entity_label: 'Cuenta eliminada',
+      before: { role: 'user' },
+      after: { role: 'admin' },
+    });
+    expect(fresh.user_id).toEqual(userId);
+    expect(fresh.before).not.toHaveProperty('name');
+    expect(fresh.before).not.toHaveProperty('email');
+    expect((await AuditLog.findById(other._id).lean()).entity_label).toBe('Libro de otro');
   });
 });

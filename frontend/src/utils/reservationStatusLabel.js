@@ -22,6 +22,7 @@ const REASON_LABELS = {
   book_deleted: { owner: 'libro retirado', admin: 'libro retirado' },
   store_deleted: { owner: 'establecimiento cerrado', admin: 'establecimiento cerrado' },
   account_deactivated: { owner: 'cuenta desactivada', admin: 'cuenta desactivada' },
+  account_deleted: { owner: 'cuenta eliminada', admin: 'cuenta eliminada' },
 };
 
 /** @param {'owner'|'admin'} [viewer] quién lee el motivo. */

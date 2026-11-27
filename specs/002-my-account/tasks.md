@@ -186,7 +186,7 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Pruebas de la historia 3
 
-- [ ] T028 [P] [US3] Escribe `backend/tests/integration/account.delete.test.js`:
+- [X] T028 [P] [US3] Escribe `backend/tests/integration/account.delete.test.js`:
   - **Cascada**: un usuario con una reserva `pending`, otra `ready`, otra `picked_up` y un favorito. `DELETE /api/account {password}` responde `204` y borra la cookie, y después:
     - las dos activas quedan `cancelled` con `cancel_reason: 'account_deleted'`, el `reserved_count` de su `StoreBook` baja y la `picked_up` se conserva;
     - `Favorite.countDocuments({user_id}) === 0`;
@@ -199,8 +199,8 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
   - **Contraseña incorrecta**: `400 WRONG_PASSWORD`; la cuenta y sus reservas siguen igual.
   - **Último administrador**: con un solo admin activo, `409 LAST_ADMIN` con «No puedes borrar tu cuenta: eres el último administrador activo».
   - **Concurrencia**: dos admins activos lanzan su `DELETE` a la vez con `Promise.all`. Exactamente uno recibe `204`, el otro `409`, y queda 1 admin activo (SC-005).
-- [ ] T029 [P] [US3] Añade a `accountController.test.js` el bloque «borrado», con `accountService` mockeado: no llama a `deleteAccountCascade` si la contraseña falla, y llama a `clearSessionCookie` y responde `204` si va bien.
-- [ ] T030 [P] [US3] Escribe `frontend/tests/components/DeleteAccountSection.test.jsx`:
+- [X] T029 [P] [US3] Añade a `accountController.test.js` el bloque «borrado», con `accountService` mockeado: no llama a `deleteAccountCascade` si la contraseña falla, y llama a `clearSessionCookie` y responde `204` si va bien.
+- [X] T030 [P] [US3] Escribe `frontend/tests/components/DeleteAccountSection.test.jsx`:
   - El botón abre el diálogo con las consecuencias y el campo de contraseña.
   - Cancelar no llama a la API.
   - Un `WRONG_PASSWORD` sale junto al campo y un `LAST_ADMIN` como mensaje del diálogo.
@@ -208,20 +208,20 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Implementación de la historia 3
 
-- [ ] T031 [US3] Crea `backend/src/services/accountService.js` con `deleteAccountCascade(user, session)`. En orden:
+- [X] T031 [US3] Crea `backend/src/services/accountService.js` con `deleteAccountCascade(user, session)`. En orden:
   1. Si `user.role === 'admin' && user.status === 'active'`, llama a `assertAnotherActiveAdmin(user._id, session, 'No puedes borrar tu cuenta: eres el último administrador activo')`.
   2. `cancelActiveFor({ user_id: user._id }, 'account_deleted', user._id, session)`.
   3. `Favorite.deleteMany({ user_id: user._id }).session(session)`.
   4. `AuditLog.updateMany({ entity_type: 'user', entity_id: user._id }, [{ $set: { entity_label: 'Cuenta eliminada' } }, { $unset: ['before.name', 'before.email', 'after.name', 'after.email'] }], { session })`.
   5. `record({ userId: user._id, action: 'delete', entityType: 'user', entityId: user._id, entityLabel: 'Cuenta eliminada', before: { role: user.role, created_at: user.created_at } }, session)`.
   6. `User.deleteOne({ _id: user._id }).session(session)`.
-- [ ] T032 [US3] Añade `deleteAccount` a `accountController.js`:
+- [X] T032 [US3] Añade `deleteAccount` a `accountController.js`:
   - Compara la contraseña con `bcrypt` fuera de la transacción; si falla, lanza el mismo `400 WRONG_PASSWORD`, con `details` en `password`.
   - Ejecuta `runInTransaction((s) => deleteAccountCascade(user, s))`.
   - Llama a `clearSessionCookie(res)` y responde `204`.
 
   Añade la ruta `DELETE /` a `accountRoutes.js`, con el límite de intentos y `validate({ body: deleteAccountSchema })`.
-- [ ] T033 [US3] Cambia `listAuditLogs` en `backend/src/controllers/auditLogsController.js`:
+- [X] T033 [US3] Cambia `listAuditLogs` en `backend/src/controllers/auditLogsController.js`:
   - Pagina sin `populate`.
   - Reúne los `user_id` distintos de la página y los busca con una sola `User.find({_id: {$in: ids}}, 'name')`.
   - `toAuditLog(log, usersById)` en `presenters.js` devuelve:
@@ -230,16 +230,16 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
     - `user: null` con `user_deleted: false` si `user_id` es nulo.
 
   Las pruebas de `auditLogs.test.js` deben seguir pasando.
-- [ ] T034 [P] [US3] Añade `deleteAccount({password})` a `frontend/src/services/accountService.js`. Añade `clearSession()` a `frontend/src/context/AuthContext.jsx`: vacía `user` sin llamar a la API y sin el evento de `401`. Exponlo en el valor del contexto.
-- [ ] T035 [US3] Crea `frontend/src/components/DeleteAccountSection.jsx`:
+- [X] T034 [P] [US3] Añade `deleteAccount({password})` a `frontend/src/services/accountService.js`. Añade `clearSession()` a `frontend/src/context/AuthContext.jsx`: vacía `user` sin llamar a la API y sin el evento de `401`. Exponlo en el valor del contexto.
+- [X] T035 [US3] Crea `frontend/src/components/DeleteAccountSection.jsx`:
   - Una tarjeta con borde rojo, título «Borrar la cuenta» y la lista de consecuencias: «Se cancelarán tus reservas activas», «Se borrarán tus favoritos», «No se puede deshacer».
   - El botón «Borrar mi cuenta» abre un `ConfirmDialog` con un `FormField` de contraseña.
   - Al confirmar, llama a `deleteAccount`, después a `clearSession()` y luego a `navigate('/', { state: { notice: 'Tu cuenta se ha borrado' } })`.
   - Los errores se muestran dentro del diálogo.
 
   El campo va como `children` de `ConfirmDialog`, que ya lo admite. Añade la sección como última de `MyAccountPage.jsx`.
-- [ ] T036 [US3] En `frontend/src/components/Layout.jsx`, si `location.state?.notice` existe, muestra un aviso en `role="status"` encima del contenido, con un botón de cerrar. El aviso se limpia al navegar (`navigate(location.pathname, { replace: true, state: null })`).
-- [ ] T037 [P] [US3] Muestra «Cuenta eliminada» en las pantallas de administración:
+- [X] T036 [US3] En `frontend/src/components/Layout.jsx`, si `location.state?.notice` existe, muestra un aviso en `role="status"` encima del contenido, con un botón de cerrar. El aviso se limpia al navegar (`navigate(location.pathname, { replace: true, state: null })`).
+- [X] T037 [P] [US3] Muestra «Cuenta eliminada» en las pantallas de administración:
   - En `frontend/src/pages/admin/AuditLogPage.jsx`, cuando `user_deleted` es verdadero, en lugar de «Sistema».
   - En `frontend/src/pages/admin/AdminReservationsPage.jsx`, cuando `reservation.user` es `null`, incluido el `aria-label` de las acciones.
   - En `frontend/src/utils/reservationStatusLabel.js`, añade `account_deleted: { owner: 'cuenta eliminada', admin: 'cuenta eliminada' }`.

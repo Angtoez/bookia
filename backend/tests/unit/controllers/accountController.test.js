@@ -10,6 +10,10 @@ vi.mock('../../../src/utils/sessionCookie.js', () => ({
   clearSessionCookie: vi.fn(),
 }));
 vi.mock('../../../src/services/auditService.js', () => ({ record: vi.fn() }));
+vi.mock('../../../src/services/accountService.js', () => ({
+  deleteAccountCascade: vi.fn(),
+  buildAccountExport: vi.fn(),
+}));
 vi.mock('../../../src/services/transaction.js', () => ({
   runInTransaction: vi.fn((fn) => fn('session')),
 }));
@@ -17,8 +21,10 @@ vi.mock('../../../src/services/transaction.js', () => ({
 const { User } = await import('../../../src/models/User.js');
 const { record } = await import('../../../src/services/auditService.js');
 const { default: bcrypt } = await import('bcrypt');
-const { setSessionCookie } = await import('../../../src/utils/sessionCookie.js');
-const { changePassword, getAccount, updateAccount } =
+const { clearSessionCookie, setSessionCookie } =
+  await import('../../../src/utils/sessionCookie.js');
+const { deleteAccountCascade } = await import('../../../src/services/accountService.js');
+const { changePassword, deleteAccount, getAccount, updateAccount } =
   await import('../../../src/controllers/accountController.js');
 
 const mockRes = () => ({ json: vi.fn(), status: vi.fn().mockReturnThis(), end: vi.fn() });
@@ -116,6 +122,34 @@ describe('contraseña', () => {
       'session',
     );
     expect(setSessionCookie).toHaveBeenCalledWith(res, updated);
+    expect(res.status).toHaveBeenCalledWith(204);
+  });
+});
+
+describe('borrado', () => {
+  const withHash = () =>
+    User.findById.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ ...account(), password_hash: 'hash' }),
+    });
+
+  it('no borra nada si la contraseña no coincide', async () => {
+    withHash();
+    bcrypt.compare.mockResolvedValue(false);
+    await expect(
+      deleteAccount({ user: account(), validated: { body: { password: 'x' } } }, mockRes()),
+    ).rejects.toMatchObject({ status: 400, code: 'WRONG_PASSWORD' });
+    expect(deleteAccountCascade).not.toHaveBeenCalled();
+    expect(clearSessionCookie).not.toHaveBeenCalled();
+  });
+
+  it('borra en una transacción, cierra la sesión y responde 204', async () => {
+    withHash();
+    bcrypt.compare.mockResolvedValue(true);
+    const user = account();
+    const res = mockRes();
+    await deleteAccount({ user, validated: { body: { password: 'secreto123' } } }, res);
+    expect(deleteAccountCascade).toHaveBeenCalledWith(user, 'session');
+    expect(clearSessionCookie).toHaveBeenCalledWith(res);
     expect(res.status).toHaveBeenCalledWith(204);
   });
 });

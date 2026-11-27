@@ -2,6 +2,7 @@
 // contenido principal.
 import { Link, Outlet } from 'react-router';
 import { BookIcon } from './BookIcon.jsx';
+import { FlashNotice } from './FlashNotice.jsx';
 import { NavBar } from './NavBar.jsx';
 import { NavSearch } from './NavSearch.jsx';
 import { SiteFooter } from './SiteFooter.jsx';
@@ -39,6 +40,7 @@ export function Layout({ children }) {
           </div>
         </div>
       </header>
+      <FlashNotice />
       <main
         id="contenido"
         tabIndex={-1}

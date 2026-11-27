@@ -1,12 +1,21 @@
 // Mi cuenta (feature 002, contracts/rest-api.md). Ninguna ruta recibe un id: todas actúan sobre la
 // cuenta de la sesión (FR-003). Las que piden la contraseña comparten un límite por IP (FR-024).
 import { Router } from 'express';
-import { changePassword, getAccount, updateAccount } from '../controllers/accountController.js';
+import {
+  changePassword,
+  deleteAccount,
+  getAccount,
+  updateAccount,
+} from '../controllers/accountController.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { createAuthRateLimit } from '../middlewares/rateLimit.js';
 import { requireRole } from '../middlewares/requireRole.js';
 import { validate } from '../middlewares/validate.js';
-import { changePasswordSchema, updateAccountSchema } from '../validators/accountValidators.js';
+import {
+  changePasswordSchema,
+  deleteAccountSchema,
+  updateAccountSchema,
+} from '../validators/accountValidators.js';
 
 export function createAccountRouter() {
   const router = Router();
@@ -22,5 +31,6 @@ export function createAccountRouter() {
     validate({ body: changePasswordSchema }),
     changePassword,
   );
+  router.delete('/', passwordRateLimit, validate({ body: deleteAccountSchema }), deleteAccount);
   return router;
 }

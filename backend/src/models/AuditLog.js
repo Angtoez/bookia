@@ -25,8 +25,12 @@ const auditLogSchema = new mongoose.Schema(
 auditLogSchema.index({ created_at: -1 });
 auditLogSchema.index({ entity_type: 1, created_at: -1 });
 
-// La auditoría no se puede modificar ni borrar desde la aplicación.
-const immutable = () => {
+// La auditoría no se puede modificar ni borrar desde la aplicación. La única excepción es
+// anonymizeAccount (abajo), que solo quita el nombre y el correo de una cuenta borrada.
+const ANONYMIZE_OPTION = 'bookiaAnonymizeAccount';
+const immutable = function immutable() {
+  if (typeof this?.getOptions === 'function' && this.getOptions()[ANONYMIZE_OPTION] === true)
+    return;
   throw new Error('audit_logs es inmutable');
 };
 const QUERY_OPERATIONS = [
@@ -45,5 +49,23 @@ for (const op of ['updateOne', 'deleteOne']) {
 auditLogSchema.pre('save', function onlyInserts() {
   if (!this.isNew) immutable();
 });
+
+export const DELETED_ACCOUNT_LABEL = 'Cuenta eliminada';
+
+/**
+ * Quita el nombre y el correo de las entradas sobre una cuenta que se borra (feature 002,
+ * FR-017, research R5). Es la única escritura permitida sobre entradas ya creadas: solo cambia
+ * entity_label y elimina name y email de before y after; acción, autor y fechas no se tocan.
+ */
+auditLogSchema.statics.anonymizeAccount = function anonymizeAccount(userId, session) {
+  return this.updateMany(
+    { entity_type: 'user', entity_id: userId },
+    [
+      { $set: { entity_label: DELETED_ACCOUNT_LABEL } },
+      { $unset: ['before.name', 'before.email', 'after.name', 'after.email'] },
+    ],
+    { session, [ANONYMIZE_OPTION]: true },
+  );
+};
 
 export const AuditLog = mongoose.model('AuditLog', auditLogSchema);

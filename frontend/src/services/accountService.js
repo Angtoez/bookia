@@ -15,3 +15,7 @@ export const updateAccount = ({ name }) =>
 /** Cambia la contraseña (FR-008 a FR-011). La API renueva la cookie de esta sesión: 204. */
 export const changePassword = ({ current_password, new_password }) =>
   apiRequest('/account/password', { method: 'POST', body: { current_password, new_password } });
+
+/** Borra la cuenta de forma definitiva (FR-012 a FR-020); la API borra la cookie: 204. */
+export const deleteAccount = ({ password }) =>
+  apiRequest('/account', { method: 'DELETE', body: { password } });

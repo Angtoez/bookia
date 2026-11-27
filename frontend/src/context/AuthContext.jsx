@@ -67,9 +67,16 @@ export function AuthProvider({ children, onUnauthorized }) {
     setStatus(current ? 'authenticated' : 'anonymous');
   }, []);
 
+  // Tras borrar la cuenta (feature 002): la API ya borró la cookie, así que no se llama a
+  // /auth/logout ni se trata como una sesión caducada.
+  const clearSession = useCallback(() => {
+    setUser(null);
+    setStatus('anonymous');
+  }, []);
+
   const value = useMemo(
-    () => ({ user, status, login, register, logout, setUser: updateUser }),
-    [user, status, login, register, logout, updateUser],
+    () => ({ user, status, login, register, logout, setUser: updateUser, clearSession }),
+    [user, status, login, register, logout, updateUser, clearSession],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

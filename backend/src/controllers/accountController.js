@@ -3,11 +3,12 @@
 import bcrypt from 'bcrypt';
 import { ENV } from '../config/env.js';
 import { User } from '../models/User.js';
+import { deleteAccountCascade } from '../services/accountService.js';
 import { record } from '../services/auditService.js';
 import { runInTransaction } from '../services/transaction.js';
 import { HttpError } from '../utils/httpError.js';
 import { toAccount } from '../utils/presenters.js';
-import { setSessionCookie } from '../utils/sessionCookie.js';
+import { clearSessionCookie, setSessionCookie } from '../utils/sessionCookie.js';
 
 const WRONG_PASSWORD_MESSAGE = 'La contraseña actual no es correcta';
 
@@ -95,5 +96,14 @@ export async function changePassword(req, res) {
     return doc;
   });
   setSessionCookie(res, updated);
+  res.status(204).end();
+}
+
+/** Borra la cuenta de forma definitiva tras confirmar la contraseña (FR-012 a FR-020). */
+export async function deleteAccount(req, res) {
+  const user = req.user;
+  await verifyPassword(user._id, req.validated.body.password, 'password');
+  await runInTransaction((session) => deleteAccountCascade(user, session));
+  clearSessionCookie(res);
   res.status(204).end();
 }

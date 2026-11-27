@@ -76,6 +76,7 @@ Decisiones técnicas de la feature 002. Parte del stack y de las decisiones de l
   - Con `populate`, un usuario que no existe se convierte en `null` y se confundiría con «Sistema».
   - Lo único que guardaba el nombre era `entity_label` y el `before`/`after` de las entradas de tipo `user`. Las de reservas llevan el título del libro y su copia de la reserva solo tiene `user_id`.
   - Borrar las entradas iría contra el principio VII: el registro de cambios tiene que seguir completo.
+- **Inmutabilidad (añadido al implementar)**: el modelo `AuditLog` de la 001 rechaza cualquier modificación o borrado de las entradas. Para no abrir esa protección, la anonimización tiene una única vía: el método estático `AuditLog.anonymizeAccount(userId, session)`. Ese método lanza el `updateMany` con la opción `bookiaAnonymizeAccount`, que el *hook* de la guarda acepta solo en esa operación. Solo cambia `entity_label` y quita `name` y `email` de `before` y `after`. El resto de escrituras siguen prohibidas, y lo comprueban `auditLogs.test.js` y `stores.test.js`.
 - **Alternatives considered**: guardar en cada entrada un `user_deleted` en el momento del borrado. Obliga a actualizar todas las entradas de las que la cuenta es autora, que pueden ser muchas en el caso de un administrador, sin aportar nada a la búsqueda.
 
 ## R6. Reservas cerradas de una cuenta borrada (FR-016)

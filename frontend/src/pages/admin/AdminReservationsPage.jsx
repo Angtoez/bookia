@@ -17,6 +17,9 @@ import {
   reservationStatusLabel,
 } from '../../utils/reservationStatusLabel.js';
 
+// Reserva de una cuenta que se borró: la API devuelve user null (feature 002).
+const DELETED_ACCOUNT = 'Cuenta eliminada';
+
 // Acciones posibles en cada estado (data-model § Transiciones de estado).
 const ACTIONS = {
   ready: {
@@ -137,10 +140,16 @@ export function AdminReservationsPage() {
                       {reservation.book_title}
                     </th>
                     <td className="px-4 py-3 text-stone-700">
-                      <span className="block">{reservation.user?.name}</span>
-                      <span className="block text-xs text-stone-500">
-                        {reservation.user?.email}
-                      </span>
+                      {reservation.user ? (
+                        <>
+                          <span className="block">{reservation.user.name}</span>
+                          <span className="block text-xs text-stone-500">
+                            {reservation.user.email}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-stone-500 italic">{DELETED_ACCOUNT}</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-stone-700">{reservation.store_name}</td>
                     <td className="px-4 py-3">
@@ -166,7 +175,7 @@ export function AdminReservationsPage() {
                               setNotice(null);
                               setPending({ reservation, action: key });
                             }}
-                            aria-label={`${action.label}: reserva de «${reservation.book_title}» de ${reservation.user?.name ?? 'usuario'}`}
+                            aria-label={`${action.label}: reserva de «${reservation.book_title}» de ${reservation.user?.name ?? DELETED_ACCOUNT}`}
                             className={`rounded-md border px-3 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 ${
                               key === 'cancel'
                                 ? 'border-red-300 text-red-800 hover:bg-red-50 focus-visible:outline-red-700'
@@ -251,8 +260,9 @@ export function AdminReservationsPage() {
       >
         {pending && (
           <p>
-            Reserva de «{pending.reservation.book_title}» de {pending.reservation.user?.name} en{' '}
-            {pending.reservation.store_name}. {action.explain}
+            Reserva de «{pending.reservation.book_title}» de{' '}
+            {pending.reservation.user?.name ?? DELETED_ACCOUNT} en {pending.reservation.store_name}.{' '}
+            {action.explain}
           </p>
         )}
         <ErrorMessage error={pending?.error} />

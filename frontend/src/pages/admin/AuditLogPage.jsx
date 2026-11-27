@@ -116,7 +116,9 @@ export function AuditLogPage() {
                         {log.user ? (
                           log.user.name
                         ) : (
-                          <span className="text-stone-500 italic">Sistema</span>
+                          <span className="text-stone-500 italic">
+                            {log.user_deleted ? 'Cuenta eliminada' : 'Sistema'}
+                          </span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-stone-700">{auditActionLabel(log.action)}</td>

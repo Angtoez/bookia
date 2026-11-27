@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { AccountProfileForm } from '../components/AccountProfileForm.jsx';
 import { ChangePasswordForm } from '../components/ChangePasswordForm.jsx';
+import { DeleteAccountSection } from '../components/DeleteAccountSection.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { useApiQuery } from '../hooks/useApiQuery.js';
 import { getAccount } from '../services/accountService.js';
@@ -32,6 +33,7 @@ export function MyAccountPage() {
       <>
         <AccountProfileForm account={account} />
         <ChangePasswordForm />
+        <DeleteAccountSection />
       </>
     );
   }

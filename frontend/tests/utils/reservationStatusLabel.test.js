@@ -22,6 +22,7 @@ describe('reservationStatusLabel', () => {
     expect(cancelReasonLabel('book_deleted')).toBe('libro retirado');
     expect(cancelReasonLabel('store_deleted')).toBe('establecimiento cerrado');
     expect(cancelReasonLabel('account_deactivated')).toBe('cuenta desactivada');
+    expect(cancelReasonLabel('account_deleted', 'admin')).toBe('cuenta eliminada');
     expect(cancelReasonLabel(null)).toBeNull();
   });
 
