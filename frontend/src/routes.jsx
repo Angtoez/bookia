@@ -15,6 +15,7 @@ import { BookDetailPage } from './pages/BookDetailPage.jsx';
 import { CatalogPage } from './pages/CatalogPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { MyFavoritesPage } from './pages/MyFavoritesPage.jsx';
+import { PrivacyPage } from './pages/PrivacyPage.jsx';
 import { MyReservationsPage } from './pages/MyReservationsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
@@ -27,6 +28,7 @@ export const routes = [
       { path: 'books/:id', element: <BookDetailPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      { path: 'privacidad', element: <PrivacyPage /> },
       {
         path: 'me',
         element: <RequireAuth />,

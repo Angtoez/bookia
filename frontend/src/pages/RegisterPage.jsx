@@ -190,6 +190,22 @@ export function RegisterPage() {
           onChange={update}
           error={errors.confirm}
         />
+        {/* Información en el momento de recoger los datos (GDPR y normativa local). El enlace abre
+            otra pestaña para no perder lo escrito en el formulario. */}
+        <p className="text-xs text-stone-600">
+          Usaremos tu nombre y tu correo para gestionar tu cuenta, tus reservas y tus favoritos. Más
+          información en la{' '}
+          <Link
+            to="/privacidad"
+            target="_blank"
+            rel="noopener"
+            className="font-medium text-primary-800 underline underline-offset-2"
+          >
+            política de privacidad
+            <span className="sr-only"> (se abre en otra pestaña)</span>
+          </Link>
+          .
+        </p>
         <button
           type="submit"
           disabled={submitting}

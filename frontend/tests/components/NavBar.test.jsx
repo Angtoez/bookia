@@ -97,7 +97,7 @@ describe('NavBar', () => {
     expect(logout).toHaveBeenCalled();
   });
 
-  it('a un administrador le muestra la administración y sus favoritos', async () => {
+  it('a un administrador le muestra la administración, sin reservas ni favoritos propios', async () => {
     const user = userEvent.setup();
     useAuth.mockReturnValue({
       user: { name: 'Admin', email: 'admin@example.com', role: 'admin' },
@@ -107,10 +107,7 @@ describe('NavBar', () => {
     renderNav();
     const dialog = await openMenu(user);
     expect(within(dialog).getByRole('link', { name: 'Auditoría' })).toBeInTheDocument();
-    expect(within(dialog).getByRole('link', { name: 'Mis favoritos' })).toHaveAttribute(
-      'href',
-      '/me/favorites',
-    );
+    expect(within(dialog).queryByRole('link', { name: 'Mis favoritos' })).not.toBeInTheDocument();
     expect(within(dialog).queryByRole('link', { name: 'Mis reservas' })).not.toBeInTheDocument();
   });
 });

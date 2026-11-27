@@ -121,7 +121,8 @@ export function BookDetailPage() {
             <div className="mx-auto w-40 shadow-lg sm:w-full">
               <BookCover book={book} size="fill" />
             </div>
-            <div className="mx-auto w-56 sm:w-full">
+            {/* empty:hidden: al administrador no se le muestra el botón y no debe quedar el hueco. */}
+            <div className="mx-auto w-56 empty:hidden sm:w-full">
               <FavoriteButton book={book} withLabel />
             </div>
           </div>

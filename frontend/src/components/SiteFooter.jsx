@@ -34,21 +34,30 @@ export function SiteFooter() {
     { to: '/?genre=novela', label: 'Novela' },
   ];
   let account;
+  let accountTitle = 'Mi cuenta';
   if (!user) {
+    accountTitle = 'Cuenta';
     account = [
       { to: '/login', label: 'Iniciar sesión' },
       { to: '/register', label: 'Crear cuenta' },
     ];
+  } else if (user.role === 'admin') {
+    // El administrador no reserva ni guarda favoritos: gestiona el catálogo y las reservas.
+    accountTitle = 'Administración';
+    account = [
+      { to: '/admin/books', label: 'Libros' },
+      { to: '/admin/reservations', label: 'Reservas' },
+    ];
   } else {
     account = [
-      // El administrador no reserva: gestiona las reservas desde Administración.
-      user.role === 'admin'
-        ? { to: '/admin/reservations', label: 'Reservas' }
-        : { to: '/me/reservations', label: 'Mis reservas' },
+      { to: '/me/reservations', label: 'Mis reservas' },
       { to: '/me/favorites', label: 'Mis favoritos' },
     ];
   }
-  const help = [{ to: '/#como-funciona', label: 'Cómo reservar' }];
+  const help = [
+    { to: '/#como-funciona', label: 'Cómo reservar' },
+    { to: '/privacidad', label: 'Política de privacidad' },
+  ];
 
   return (
     <footer className="bg-primary-900 text-primary-50">
@@ -66,7 +75,7 @@ export function SiteFooter() {
           </p>
         </div>
         <Column title="Explorar" links={explore} />
-        <Column title={user ? 'Mi cuenta' : 'Cuenta'} links={account} />
+        <Column title={accountTitle} links={account} />
         <Column title="Ayuda" links={help} />
       </div>
       <p className="border-t border-white/10 py-4 text-center text-xs text-primary-200">

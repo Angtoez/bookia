@@ -1,4 +1,5 @@
-// Corazón para marcar un libro como favorito. Un visitante va al login y vuelve aquí.
+// Corazón para marcar un libro como favorito. Un visitante va al login y vuelve aquí; al
+// administrador no se le muestra, porque no guarda favoritos.
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../hooks/useAuth.js';
 import { useFavoriteToggle } from '../hooks/useFavorites.js';
@@ -32,13 +33,15 @@ const LABELED =
  *   withLabel: muestra el texto junto al corazón.
  */
 export function FavoriteButton({ book, onChange, withLabel = false }) {
-  const { status } = useAuth();
+  const { status, user } = useAuth();
   const location = useLocation();
   const { isFavorite, pending, error, toggle } = useFavoriteToggle(
     book.id,
     book.is_favorite,
     onChange,
   );
+
+  if (user?.role === 'admin') return null;
 
   if (status !== 'authenticated') {
     return (

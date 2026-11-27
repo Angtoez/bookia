@@ -84,7 +84,7 @@ describe('SiteFooter', () => {
     );
   });
 
-  it('con sesión enlaza a la cuenta; al administrador, a la gestión de reservas', () => {
+  it('con sesión enlaza a la cuenta; al administrador, a la administración y sin favoritos', () => {
     useAuth.mockReturnValue({ user: { name: 'Ana', role: 'user' }, status: 'authenticated' });
     const { unmount } = renderAt(<SiteFooter />);
     const mine = screen.getByRole('navigation', { name: 'Mi cuenta' });
@@ -93,10 +93,11 @@ describe('SiteFooter', () => {
 
     useAuth.mockReturnValue({ user: { name: 'Admin', role: 'admin' }, status: 'authenticated' });
     renderAt(<SiteFooter />);
-    const admin = screen.getByRole('navigation', { name: 'Mi cuenta' });
+    const admin = screen.getByRole('navigation', { name: 'Administración' });
     expect(within(admin).getByRole('link', { name: 'Reservas' })).toHaveAttribute(
       'href',
       '/admin/reservations',
     );
+    expect(screen.queryByRole('link', { name: 'Mis favoritos' })).not.toBeInTheDocument();
   });
 });
