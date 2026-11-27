@@ -14,6 +14,7 @@ import { StoreInventoryPage } from './pages/admin/StoreInventoryPage.jsx';
 import { BookDetailPage } from './pages/BookDetailPage.jsx';
 import { CatalogPage } from './pages/CatalogPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { MyAccountPage } from './pages/MyAccountPage.jsx';
 import { MyFavoritesPage } from './pages/MyFavoritesPage.jsx';
 import { PrivacyPage } from './pages/PrivacyPage.jsx';
 import { MyReservationsPage } from './pages/MyReservationsPage.jsx';
@@ -33,6 +34,7 @@ export const routes = [
         path: 'me',
         element: <RequireAuth />,
         children: [
+          { path: 'account', element: <MyAccountPage /> },
           { path: 'reservations', element: <MyReservationsPage /> },
           { path: 'favorites', element: <MyFavoritesPage /> },
         ],

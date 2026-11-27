@@ -45,11 +45,13 @@ export function SiteFooter() {
     // El administrador no reserva ni guarda favoritos: gestiona el catálogo y las reservas.
     accountTitle = 'Administración';
     account = [
+      { to: '/me/account', label: 'Mi cuenta' },
       { to: '/admin/books', label: 'Libros' },
       { to: '/admin/reservations', label: 'Reservas' },
     ];
   } else {
     account = [
+      { to: '/me/account', label: 'Mi cuenta' },
       { to: '/me/reservations', label: 'Mis reservas' },
       { to: '/me/favorites', label: 'Mis favoritos' },
     ];

@@ -89,37 +89,37 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Pruebas de la historia 1
 
-- [ ] T014 [P] [US1] Escribe `backend/tests/integration/account.test.js` (bloque «perfil»):
+- [X] T014 [P] [US1] Escribe `backend/tests/integration/account.test.js` (bloque «perfil»):
   - `GET /api/account` devuelve `{id, name, email, role, created_at}`, sin `password_hash` ni `session_version`.
   - Sin sesión responde `401`.
   - `PATCH /api/account {name: '  Ana  '}` guarda «Ana» y crea una entrada de auditoría `update`, de `entity_type: 'user'`, con `before: {name}` y `after: {name}`, cuyo autor es el propio usuario.
   - Un nombre vacío o de 101 caracteres da `400 VALIDATION_ERROR`.
   - Un campo extra (`{name, role: 'admin'}`) da `400` y el rol no cambia.
   - El mismo nombre de antes responde `200` sin crear ninguna entrada de auditoría.
-- [ ] T015 [P] [US1] Escribe `backend/tests/unit/controllers/accountController.test.js` (bloque «perfil»), con `User` y `auditService` mockeados: `getAccount` presenta la cuenta, y `updateAccount` llama a `record` solo si el nombre cambia.
-- [ ] T016 [P] [US1] Escribe `frontend/tests/pages/MyAccountPage.test.jsx` (bloque «perfil»), con `accountService` y `useAuth` mockeados:
+- [X] T015 [P] [US1] Escribe `backend/tests/unit/controllers/accountController.test.js` (bloque «perfil»), con `User` y `auditService` mockeados: `getAccount` presenta la cuenta, y `updateAccount` llama a `record` solo si el nombre cambia.
+- [X] T016 [P] [US1] Escribe `frontend/tests/pages/MyAccountPage.test.jsx` (bloque «perfil»), con `accountService` y `useAuth` mockeados:
   - Muestra el nombre, el correo, el rol («Usuario» o «Administrador») y la fecha de alta.
   - Al guardar un nombre nuevo, llama a `updateAccount` y a `setUser` y muestra «Nombre guardado».
   - Un error `400` sale junto al campo, desde `details`.
 
 ### Implementación de la historia 1
 
-- [ ] T017 [US1] Añade `updateAccount` a `backend/src/controllers/accountController.js`:
+- [X] T017 [US1] Añade `updateAccount` a `backend/src/controllers/accountController.js`:
   - Si el nombre no cambia, responde `toAccount` sin escribir nada.
   - Si cambia, dentro de `runInTransaction`, guarda el nombre y llama a `record({userId: user._id, action: 'update', entityType: 'user', entityId: user._id, entityLabel: newName, before: {name: old}, after: {name: newName}}, session)`.
   - Añade a `accountRoutes.js` la ruta `PATCH /`, con `validate({ body: updateAccountSchema })`.
-- [ ] T018 [P] [US1] Añade `updateAccount({name})` a `frontend/src/services/accountService.js`.
-- [ ] T019 [P] [US1] Crea `frontend/src/components/AccountProfileForm.jsx`:
+- [X] T018 [P] [US1] Añade `updateAccount({name})` a `frontend/src/services/accountService.js`.
+- [X] T019 [P] [US1] Crea `frontend/src/components/AccountProfileForm.jsx`:
   - Correo, rol y fecha de alta de solo lectura (fecha con `utils/formatDate.js`), y un `FormField` «Nombre» con `maxLength={100}`.
   - Valida en el cliente que no esté vacío.
   - Al guardar, llama a `updateAccount` y a `setUser({...user, name})` de `useAuth`.
   - Muestra «Nombre guardado» en una región `role="status"` y los errores por campo desde `details`.
-- [ ] T020 [US1] Crea `frontend/src/pages/MyAccountPage.jsx`:
+- [X] T020 [US1] Crea `frontend/src/pages/MyAccountPage.jsx`:
   - `h1` «Mi cuenta» y `document.title` «Mi cuenta · Bookia».
   - Carga `getAccount` con `useApiQuery`, con esqueleto mientras carga y `ErrorMessage` si falla.
   - Una tarjeta por sección (de momento solo `AccountProfileForm`), con el mismo estilo de tarjetas que `PrivacyPage`.
   - Registra `/me/account` como hija de `me` (bajo `RequireAuth`) en `frontend/src/routes.jsx`.
-- [ ] T021 [US1] Añade el enlace «Mi cuenta» (`/me/account`) en estos tres sitios:
+- [X] T021 [US1] Añade el enlace «Mi cuenta» (`/me/account`) en estos tres sitios:
   - En `frontend/src/components/UserMenu.jsx`, como primer enlace para los dos roles: para el admin, en una sección «Mi cuenta» antes de «Administración».
   - En el menú lateral de `frontend/src/components/NavBar.jsx`: la sección «Mi cuenta» vuelve a mostrarse al admin, solo con «Mi cuenta»; el usuario ve además «Mis reservas» y «Mis favoritos».
   - En la columna de la cuenta de `frontend/src/components/SiteFooter.jsx`.

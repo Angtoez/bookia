@@ -7,3 +7,7 @@ export const ACCOUNT_EXPORT_URL = '/api/account/export';
 
 /** Account: {id, name, email, role, created_at}. */
 export const getAccount = () => apiRequest('/account');
+
+/** Cambia el nombre (FR-005); devuelve la Account actualizada. */
+export const updateAccount = ({ name }) =>
+  apiRequest('/account', { method: 'PATCH', body: { name } });

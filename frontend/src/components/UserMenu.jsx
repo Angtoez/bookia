@@ -167,19 +167,25 @@ export function UserMenu() {
               </p>
             )}
           </div>
-          {/* Como en el menú lateral: el administrador no reserva ni guarda favoritos. */}
-          {!isAdmin && (
-            <nav aria-label="Mi cuenta" className="py-1">
-              <Link to="/me/reservations" className={ITEM}>
-                Mis reservas
-              </Link>
-              <Link to="/me/favorites" className={ITEM}>
-                Mis favoritos
-              </Link>
-            </nav>
-          )}
+          {/* Como en el menú lateral: Mi cuenta para todos; el administrador no reserva ni guarda
+              favoritos. */}
+          <nav aria-label="Mi cuenta" className="py-1">
+            <Link to="/me/account" className={ITEM}>
+              Mi cuenta
+            </Link>
+            {!isAdmin && (
+              <>
+                <Link to="/me/reservations" className={ITEM}>
+                  Mis reservas
+                </Link>
+                <Link to="/me/favorites" className={ITEM}>
+                  Mis favoritos
+                </Link>
+              </>
+            )}
+          </nav>
           {isAdmin && (
-            <nav aria-label="Administración" className="py-1">
+            <nav aria-label="Administración" className="border-t border-stone-200 py-1">
               <p className="px-3 pt-2 pb-1 text-xs font-bold tracking-wider text-primary-700 uppercase">
                 Administración
               </p>

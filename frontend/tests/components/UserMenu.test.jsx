@@ -55,6 +55,7 @@ describe('UserMenu', () => {
     await user.click(toggle());
     expect(toggle()).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText('ana@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Mi cuenta' })).toHaveAttribute('href', '/me/account');
     expect(screen.getByRole('link', { name: 'Mis reservas' })).toHaveAttribute(
       'href',
       '/me/reservations',
@@ -78,6 +79,7 @@ describe('UserMenu', () => {
       'href',
       '/admin/audit',
     );
+    expect(screen.getByRole('link', { name: 'Mi cuenta' })).toHaveAttribute('href', '/me/account');
     expect(screen.queryByRole('link', { name: 'Mis favoritos' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Mis reservas' })).not.toBeInTheDocument();
   });
