@@ -44,6 +44,13 @@ beforeEach(() => {
 });
 
 describe('RegisterPage', () => {
+  it('informa del uso de los datos con un enlace a la política de privacidad', () => {
+    renderAt();
+    const link = screen.getByRole('link', { name: /política de privacidad/ });
+    expect(link).toHaveAttribute('href', '/privacidad');
+    expect(link).toHaveAttribute('target', '_blank');
+  });
+
   it('valida la política de contraseñas en el cliente con el mensaje de la API', async () => {
     const user = userEvent.setup();
     renderAt();
