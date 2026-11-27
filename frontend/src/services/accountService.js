@@ -11,3 +11,7 @@ export const getAccount = () => apiRequest('/account');
 /** Cambia el nombre (FR-005); devuelve la Account actualizada. */
 export const updateAccount = ({ name }) =>
   apiRequest('/account', { method: 'PATCH', body: { name } });
+
+/** Cambia la contraseña (FR-008 a FR-011). La API renueva la cookie de esta sesión: 204. */
+export const changePassword = ({ current_password, new_password }) =>
+  apiRequest('/account/password', { method: 'POST', body: { current_password, new_password } });

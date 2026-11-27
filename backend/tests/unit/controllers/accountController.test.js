@@ -1,7 +1,14 @@
 // Pruebas unitarias de Mi cuenta con los modelos y servicios mockeados (principio VI).
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../../src/models/User.js', () => ({ User: { updateOne: vi.fn() } }));
+vi.mock('../../../src/models/User.js', () => ({
+  User: { updateOne: vi.fn(), findById: vi.fn(), findOneAndUpdate: vi.fn() },
+}));
+vi.mock('bcrypt', () => ({ default: { compare: vi.fn(), hash: vi.fn() } }));
+vi.mock('../../../src/utils/sessionCookie.js', () => ({
+  setSessionCookie: vi.fn(),
+  clearSessionCookie: vi.fn(),
+}));
 vi.mock('../../../src/services/auditService.js', () => ({ record: vi.fn() }));
 vi.mock('../../../src/services/transaction.js', () => ({
   runInTransaction: vi.fn((fn) => fn('session')),
@@ -9,7 +16,10 @@ vi.mock('../../../src/services/transaction.js', () => ({
 
 const { User } = await import('../../../src/models/User.js');
 const { record } = await import('../../../src/services/auditService.js');
-const { getAccount, updateAccount } = await import('../../../src/controllers/accountController.js');
+const { default: bcrypt } = await import('bcrypt');
+const { setSessionCookie } = await import('../../../src/utils/sessionCookie.js');
+const { changePassword, getAccount, updateAccount } =
+  await import('../../../src/controllers/accountController.js');
 
 const mockRes = () => ({ json: vi.fn(), status: vi.fn().mockReturnThis(), end: vi.fn() });
 
@@ -68,5 +78,44 @@ describe('perfil', () => {
     expect(User.updateOne).not.toHaveBeenCalled();
     expect(record).not.toHaveBeenCalled();
     expect(res.json.mock.calls[0][0].name).toBe('Ana');
+  });
+});
+
+describe('contraseña', () => {
+  const body = { current_password: 'actual-1', new_password: 'nueva-clave9' };
+  const withHash = (user) =>
+    User.findById.mockReturnValue({
+      select: vi.fn().mockResolvedValue({ ...user, password_hash: 'hash' }),
+    });
+
+  it('no guarda nada si la contraseña actual no coincide', async () => {
+    withHash(account());
+    bcrypt.compare.mockResolvedValue(false);
+    await expect(
+      changePassword({ user: account(), validated: { body } }, mockRes()),
+    ).rejects.toMatchObject({ status: 400, code: 'WRONG_PASSWORD' });
+    expect(User.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(setSessionCookie).not.toHaveBeenCalled();
+  });
+
+  it('sube la versión de sesión, audita y renueva la cookie', async () => {
+    withHash(account());
+    bcrypt.compare.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    bcrypt.hash.mockResolvedValue('hash-nuevo');
+    const updated = account({ session_version: 1 });
+    User.findOneAndUpdate.mockResolvedValue(updated);
+    const res = mockRes();
+    await changePassword({ user: account(), validated: { body } }, res);
+    expect(User.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: 'u1' },
+      { $set: { password_hash: 'hash-nuevo' }, $inc: { session_version: 1 } },
+      { new: true, session: 'session' },
+    );
+    expect(record).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'update', before: null, after: { password: 'changed' } }),
+      'session',
+    );
+    expect(setSessionCookie).toHaveBeenCalledWith(res, updated);
+    expect(res.status).toHaveBeenCalledWith(204);
   });
 });

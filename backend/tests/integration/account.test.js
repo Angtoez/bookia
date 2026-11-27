@@ -80,3 +80,87 @@ describe('perfil', () => {
     expect((await User.findById(user._id)).role).toBe('user');
   });
 });
+
+describe('contraseña', () => {
+  const change = (cookie, body) =>
+    request(app).post('/api/account/password').set('Cookie', cookie).send(body);
+  const login = (email, password) => request(app).post('/api/auth/login').send({ email, password });
+
+  it('cambia la contraseña, mantiene esta sesión e invalida las demás', async () => {
+    const user = await createUser();
+    const thisSession = sessionCookieFor(user);
+    const otherSession = sessionCookieFor(user);
+    const res = await change(thisSession, {
+      current_password: 'secreto123',
+      new_password: 'nueva-clave9',
+    });
+    expect(res.status).toBe(204);
+    const renewed = res.headers['set-cookie'][0].split(';')[0];
+
+    expect((await request(app).get('/api/account').set('Cookie', renewed)).status).toBe(200);
+    expect((await request(app).get('/api/account').set('Cookie', otherSession)).status).toBe(401);
+    expect((await login(user.email, 'secreto123')).status).toBe(401);
+    expect((await login(user.email, 'nueva-clave9')).status).toBe(200);
+  });
+
+  it('audita el cambio sin la contraseña ni su hash', async () => {
+    const user = await createUser();
+    await change(sessionCookieFor(user), {
+      current_password: 'secreto123',
+      new_password: 'nueva-clave9',
+    });
+    const logs = await AuditLog.find({ entity_id: user._id }).lean();
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toMatchObject({
+      user_id: user._id,
+      action: 'update',
+      entity_type: 'user',
+      before: null,
+      after: { password: 'changed' },
+    });
+    const { password_hash: hash } = await User.findById(user._id).select('+password_hash').lean();
+    expect(JSON.stringify(logs)).not.toContain(hash);
+    expect(JSON.stringify(logs)).not.toContain('nueva-clave9');
+  });
+
+  it('con la contraseña actual errónea responde WRONG_PASSWORD sin tocar el bloqueo', async () => {
+    const user = await createUser();
+    const res = await change(sessionCookieFor(user), {
+      current_password: 'otra-clave1',
+      new_password: 'nueva-clave9',
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('WRONG_PASSWORD');
+    expect(res.body.error.details[0].field).toBe('current_password');
+    const fresh = await User.findById(user._id);
+    expect(fresh.failed_login_count).toBe(0);
+    expect(fresh.session_version).toBe(0);
+    expect((await login(user.email, 'secreto123')).status).toBe(200);
+  });
+
+  it('la nueva contraseña cumple la política y es distinta de la actual', async () => {
+    const user = await createUser();
+    const cookie = sessionCookieFor(user);
+    const weak = await change(cookie, {
+      current_password: 'secreto123',
+      new_password: 'sinnumeros',
+    });
+    expect(weak.status).toBe(400);
+    expect(weak.body.error.details[0]).toEqual({
+      field: 'new_password',
+      message: 'La contraseña debe tener al menos 8 caracteres, con letras y números',
+    });
+
+    const same = await change(cookie, {
+      current_password: 'secreto123',
+      new_password: 'secreto123',
+    });
+    expect(same.status).toBe(400);
+    expect(same.body.error.code).toBe('VALIDATION_ERROR');
+    expect(same.body.error.details[0]).toEqual({
+      field: 'new_password',
+      message: 'La nueva contraseña debe ser distinta de la actual',
+    });
+    expect(await AuditLog.countDocuments()).toBe(0);
+  });
+});

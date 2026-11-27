@@ -138,7 +138,7 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Pruebas de la historia 2
 
-- [ ] T022 [P] [US2] Añade a `backend/tests/integration/account.test.js` el bloque «contraseña»:
+- [X] T022 [P] [US2] Añade a `backend/tests/integration/account.test.js` el bloque «contraseña»:
   - Con datos correctos responde `204` con una `Set-Cookie` nueva:
     - con esa cookie, `GET /api/account` da `200`;
     - con la cookie anterior (la de otra «sesión»), da `401`;
@@ -147,8 +147,8 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
   - Con una `new_password` sin números, `400 VALIDATION_ERROR` con el mensaje de la política.
   - Con una `new_password` igual a la actual, `400 VALIDATION_ERROR` en `new_password` con «La nueva contraseña debe ser distinta de la actual».
   - Hay una entrada de auditoría `update` con `after: {password: 'changed'}`, y ni esa entrada ni la respuesta contienen el hash.
-- [ ] T023 [P] [US2] Añade a `accountController.test.js` el bloque «contraseña», con `bcrypt` mockeado: no llama a `save` si `compare` devuelve `false`, y sube `session_version` y llama a `setSessionCookie` si todo es correcto.
-- [ ] T024 [P] [US2] Escribe `frontend/tests/components/ChangePasswordForm.test.jsx`:
+- [X] T023 [P] [US2] Añade a `accountController.test.js` el bloque «contraseña», con `bcrypt` mockeado: no llama a `save` si `compare` devuelve `false`, y sube `session_version` y llama a `setSessionCookie` si todo es correcto.
+- [X] T024 [P] [US2] Escribe `frontend/tests/components/ChangePasswordForm.test.jsx`:
   - Marca los requisitos de `PASSWORD_RULES` mientras se escribe.
   - Muestra «Las contraseñas no coinciden» sin llamar a la API.
   - Un `WRONG_PASSWORD` sale junto a «Contraseña actual».
@@ -156,7 +156,7 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Implementación de la historia 2
 
-- [ ] T025 [US2] Añade `changePassword` a `accountController.js`:
+- [X] T025 [US2] Añade `changePassword` a `accountController.js`:
   1. Carga el usuario con `.select('+password_hash')`.
   2. Si `bcrypt.compare(current_password, hash)` es falso, lanza `HttpError(400, 'WRONG_PASSWORD', 'La contraseña actual no es correcta', [{field: 'current_password', message: 'La contraseña actual no es correcta'}])`.
   3. Si `bcrypt.compare(new_password, hash)` es verdadero, lanza un `400 VALIDATION_ERROR` en `new_password` con «La nueva contraseña debe ser distinta de la actual».
@@ -165,8 +165,8 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
   6. Llama a `setSessionCookie(res, updatedUser)` y responde `204`.
 
   Añade la ruta `POST /password` a `accountRoutes.js`, con el límite de intentos y `validate({ body: changePasswordSchema })`.
-- [ ] T026 [P] [US2] Añade `changePassword({current_password, new_password})` a `frontend/src/services/accountService.js`.
-- [ ] T027 [US2] Crea `frontend/src/components/ChangePasswordForm.jsx`:
+- [X] T026 [P] [US2] Añade `changePassword({current_password, new_password})` a `frontend/src/services/accountService.js`.
+- [X] T027 [US2] Crea `frontend/src/components/ChangePasswordForm.jsx`:
   - Tres `FormField` de tipo `password` («Contraseña actual», «Nueva contraseña» y «Repite la nueva contraseña»), con `autoComplete` `current-password` y `new-password`.
   - La lista de requisitos de `PASSWORD_RULES`, como en `RegisterPage`.
   - Valida en el cliente con `meetsPasswordPolicy` y `PASSWORD_POLICY_MESSAGE`.

@@ -2,6 +2,7 @@
 // datos y borrado de la cuenta. Para usuarios y administradores.
 import { useEffect } from 'react';
 import { AccountProfileForm } from '../components/AccountProfileForm.jsx';
+import { ChangePasswordForm } from '../components/ChangePasswordForm.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { useApiQuery } from '../hooks/useApiQuery.js';
 import { getAccount } from '../services/accountService.js';
@@ -26,7 +27,14 @@ export function MyAccountPage() {
   let content;
   if (error) content = <ErrorMessage error={error} onRetry={reload} />;
   else if (!account) content = <AccountSkeleton />;
-  else content = <AccountProfileForm account={account} />;
+  else {
+    content = (
+      <>
+        <AccountProfileForm account={account} />
+        <ChangePasswordForm />
+      </>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
