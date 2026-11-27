@@ -10,3 +10,13 @@ export function Spinner({ label = 'Cargando…' }) {
     </div>
   );
 }
+
+/** Rueda pequeña para dentro de un botón; el texto del botón ya dice qué está pasando. */
+export function ButtonSpinner() {
+  return (
+    <span
+      aria-hidden="true"
+      className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+    />
+  );
+}

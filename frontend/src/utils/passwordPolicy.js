@@ -5,12 +5,17 @@ export const PASSWORD_POLICY_MESSAGE =
 
 export const PASSWORD_MAX_LENGTH = 200;
 
+/** Requisitos que se muestran uno a uno en el registro mientras se escribe. */
+export const PASSWORD_RULES = [
+  { label: 'Al menos 8 caracteres', test: (password) => password.length >= 8 },
+  { label: 'Contiene letras', test: (password) => /[A-Za-z]/.test(password) },
+  { label: 'Contiene números', test: (password) => /[0-9]/.test(password) },
+];
+
 export function meetsPasswordPolicy(password) {
   return (
     typeof password === 'string' &&
-    password.length >= 8 &&
     password.length <= PASSWORD_MAX_LENGTH &&
-    /[A-Za-z]/.test(password) &&
-    /[0-9]/.test(password)
+    PASSWORD_RULES.every((rule) => rule.test(password))
   );
 }
