@@ -13,11 +13,18 @@ import { createApiRouter } from './routes/index.js';
 
 const FRONTEND_DIST = fileURLToPath(new URL('../../frontend/dist', import.meta.url));
 
-// Las portadas salen de Open Library, que redirige las imágenes a archive.org.
+// Las portadas salen de Open Library, que redirige las imágenes a archive.org y de ahí a
+// sus servidores (ia*.us.archive.org). El comodín *.archive.org no incluye el dominio raíz.
 const helmetOptions = {
   contentSecurityPolicy: {
     directives: {
-      'img-src': ["'self'", 'data:', 'https://covers.openlibrary.org', 'https://*.archive.org'],
+      'img-src': [
+        "'self'",
+        'data:',
+        'https://covers.openlibrary.org',
+        'https://archive.org',
+        'https://*.archive.org',
+      ],
     },
   },
 };
