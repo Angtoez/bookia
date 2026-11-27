@@ -1,6 +1,6 @@
 // Navegación principal en un panel lateral que se abre desde la izquierda con el botón de menú:
-// enlaces según la sesión y el rol, géneros del catálogo y cierre de sesión. En la cabecera solo
-// quedan la búsqueda y el usuario (NavUser). El panel es un <dialog> modal, como ConfirmDialog:
+// enlaces según la sesión y el rol, géneros del catálogo y cierre de sesión. En la cabecera quedan la
+// búsqueda (NavSearch) y el menú de usuario (UserMenu). El panel es un <dialog> modal, como ConfirmDialog:
 // el navegador gestiona el foco y la tecla Escape.
 import { useEffect, useId, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router';
@@ -35,7 +35,6 @@ function Icon({ path, className = 'size-6' }) {
 
 const MENU = 'M4 7h16M4 12h16M4 17h16';
 const CLOSE = 'M6 6l12 12M18 6L6 18';
-const USER = 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 20a7.5 7.5 0 0 1 15 0';
 
 function Section({ title, children }) {
   return (
@@ -236,30 +235,5 @@ export function NavBar() {
         )}
       </dialog>
     </>
-  );
-}
-
-/** Usuario de la sesión en la cabecera; sin sesión, el acceso a "Iniciar sesión". */
-export function NavUser() {
-  const { user, status } = useAuth();
-
-  if (status === 'anonymous') {
-    return (
-      <Link
-        to="/login"
-        className={`flex items-center gap-1.5 rounded-md p-2 text-sm font-medium text-primary-50 hover:bg-primary-800 ${FOCUS} focus-visible:outline-white`}
-      >
-        <Icon path={USER} />
-        <span className="sr-only sm:not-sr-only">Iniciar sesión</span>
-      </Link>
-    );
-  }
-  if (!user) return null;
-  return (
-    <span className="flex items-center gap-1.5 p-2 text-sm text-primary-50" title={user.email}>
-      <Icon path={USER} />
-      <span className="sr-only max-w-40 truncate sm:not-sr-only">{user.name}</span>
-      {user.role === 'admin' && <span className="sr-only"> (administrador)</span>}
-    </span>
   );
 }

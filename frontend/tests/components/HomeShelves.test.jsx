@@ -4,6 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../src/services/reviewsService.js', () => ({ listTopRated: vi.fn() }));
 vi.mock('../../src/services/booksService.js', () => ({ listBooks: vi.fn() }));
+vi.mock('../../src/services/configService.js', () => ({
+  getConfig: vi.fn().mockResolvedValue({ currency: 'MXN' }),
+}));
 
 const { listTopRated } = await import('../../src/services/reviewsService.js');
 const { listBooks } = await import('../../src/services/booksService.js');
@@ -15,6 +18,7 @@ const book = (id, slug = 'manga') => ({
   title: `Libro ${id}`,
   author: `Autor ${id}`,
   isbn: '9780307474728',
+  price_cents: 29900,
   genre: { name: slug, slug },
 });
 
@@ -51,7 +55,9 @@ describe('TopRatedShelf', () => {
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute('href', '/books/b1');
     expect(links[0]).toHaveTextContent('Nº 1');
-    expect(links[0]).toHaveTextContent('Ver disponibilidad');
+    // Sin botón de "Ver disponibilidad": la tarjeta entera es el enlace y muestra el precio.
+    expect(links[0]).not.toHaveTextContent('Ver disponibilidad');
+    expect(await within(links[0]).findByText(/299,00/)).toBeInTheDocument();
     expect(within(links[0]).getByRole('img', { name: 'Valoración: 4,6 de 5' })).toBeInTheDocument();
     expect(links[0]).toHaveTextContent('1203 reseñas');
     expect(within(links[1]).getByRole('img', { name: 'Valoración: 4,3 de 5' })).toBeInTheDocument();

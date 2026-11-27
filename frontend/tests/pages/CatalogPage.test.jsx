@@ -89,10 +89,11 @@ describe('CatalogPage', () => {
   it('sin filtros es la portada (banner, secciones y catálogo) y con filtros no', async () => {
     listBooks.mockResolvedValue(page([book(1)]));
     const { unmount } = renderCatalog();
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Descubre todos los libros de Bookia' }),
-    ).toBeInTheDocument();
+    // El título principal está en el banner y ya no hay banda de bienvenida.
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^Bookia: descubre/);
+    expect(screen.queryByText('Descubre todos los libros de Bookia')).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Destacados' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Cómo funciona' })).toBeInTheDocument();
     expect(screen.getByText('Sección: mejor valorados')).toBeInTheDocument();
     expect(screen.getByText('Sección: cómics y manga')).toBeInTheDocument();
     expect(

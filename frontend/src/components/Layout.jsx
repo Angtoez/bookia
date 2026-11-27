@@ -2,8 +2,10 @@
 // contenido principal.
 import { Link, Outlet } from 'react-router';
 import { BookIcon } from './BookIcon.jsx';
-import { NavBar, NavUser } from './NavBar.jsx';
+import { NavBar } from './NavBar.jsx';
 import { NavSearch } from './NavSearch.jsx';
+import { SiteFooter } from './SiteFooter.jsx';
+import { UserMenu } from './UserMenu.jsx';
 
 export function Layout({ children }) {
   return (
@@ -16,8 +18,10 @@ export function Layout({ children }) {
       >
         Saltar al contenido
       </a>
-      {/* relative: en móvil, la búsqueda abierta se superpone a toda la barra (NavSearch). */}
-      <header className="relative bg-primary-700 text-white shadow-sm">
+      {/* sticky: la cabecera, con la búsqueda, se queda arriba al hacer scroll. También sirve de
+          referencia (como `relative`) para la búsqueda abierta en móvil, que se superpone a toda
+          la barra (NavSearch). z-40: por encima del contenido, por debajo de los <dialog>. */}
+      <header className="sticky top-0 z-40 bg-primary-700 text-white shadow-md">
         <div className="mx-auto flex max-w-6xl items-center gap-1 px-4 py-3 sm:gap-2">
           <NavBar />
           {/* Hueco del logotipo de Bookia, cuando exista. */}
@@ -28,18 +32,21 @@ export function Layout({ children }) {
             <BookIcon className="size-7" />
             Bookia
           </Link>
-          <div className="ml-auto flex items-center gap-1">
+          {/* En escritorio la búsqueda ocupa el centro (flex-1); en móvil es una lupa a la derecha. */}
+          <div className="flex flex-1 items-center justify-end gap-1">
             <NavSearch />
-            <NavUser />
+            <UserMenu />
           </div>
         </div>
       </header>
-      <main id="contenido" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+      <main
+        id="contenido"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-12"
+      >
         {children ?? <Outlet />}
       </main>
-      <footer className="border-t border-stone-200 py-4 text-center text-xs text-stone-500">
-        Bookia · catálogo de libros y puntos de venta
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
