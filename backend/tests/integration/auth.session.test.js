@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../src/app.js';
 import { User } from '../../src/models/User.js';
 import { clearDb, startDb, stopDb } from '../helpers/db.js';
-import { createGenre, createUser, loginAs } from '../helpers/factories.js';
+import { createGenre, createUser, loginAs, sessionCookieFor } from '../helpers/factories.js';
 
 const app = createApp();
 
@@ -70,6 +70,19 @@ describe('sesión', () => {
     const res = await request(app).get('/api/auth/me').set('Cookie', cookie);
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe('UNAUTHENTICATED');
+  });
+
+  it('rechaza un token de una versión de sesión anterior (feature 002, R2)', async () => {
+    const user = await createUser();
+    const oldCookie = sessionCookieFor(user);
+    await User.updateOne({ _id: user._id }, { $inc: { session_version: 1 } });
+    const stale = await request(app).get('/api/auth/me').set('Cookie', oldCookie);
+    expect(stale.status).toBe(401);
+    expect(stale.headers['set-cookie'][0]).toMatch(/bookia_session=;/);
+
+    const fresh = await User.findById(user._id);
+    const ok = await request(app).get('/api/auth/me').set('Cookie', sessionCookieFor(fresh));
+    expect(ok.status).toBe(200);
   });
 
   it('rechaza un token manipulado', async () => {

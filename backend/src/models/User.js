@@ -27,11 +27,18 @@ const userSchema = new mongoose.Schema(
     failed_login_count: { type: Number, default: 0, min: 0 },
     locked_until: { type: Date, default: null },
     active_reservations: { type: Number, default: 0, min: 0 },
+    // Sube con cada cambio de contraseña; el JWT la lleva como `ver` (feature 002, research R2).
+    session_version: { type: Number, default: 0, min: 0 },
   },
   {
     collection: 'users',
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-    toJSON: toJSONOptions(['password_hash', 'failed_login_count', 'locked_until']),
+    toJSON: toJSONOptions([
+      'password_hash',
+      'failed_login_count',
+      'locked_until',
+      'session_version',
+    ]),
   },
 );
 

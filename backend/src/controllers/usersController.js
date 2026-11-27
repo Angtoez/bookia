@@ -1,11 +1,11 @@
 // Gestión de cuentas por el administrador: rol y estado, auditados (US7, FR-023 a FR-025).
-import mongoose from 'mongoose';
 import { User } from '../models/User.js';
+import { assertAnotherActiveAdmin } from '../services/adminGuard.js';
 import { record } from '../services/auditService.js';
 import { deactivateUserCascade } from '../services/cascadeService.js';
 import { runInTransaction } from '../services/transaction.js';
 import { escapeRegExp } from '../utils/escapeRegExp.js';
-import { HttpError, notFound } from '../utils/httpError.js';
+import { notFound } from '../utils/httpError.js';
 import { paginate } from '../utils/pagination.js';
 import { toUserAdmin } from '../utils/presenters.js';
 
@@ -30,22 +30,6 @@ export async function listUsers(req, res) {
     limit,
   });
   res.json({ ...result, items: result.items.map(toUserAdmin) });
-}
-
-/**
- * Comprueba que queda otro administrador activo (FR-024). En lugar de solo contarlos, los
- * actualiza: dos degradaciones simultáneas escriben los mismos documentos, así que una de
- * las transacciones choca, se reintenta y ya ve el cambio de la otra.
- */
-async function assertAnotherActiveAdmin(userId, session) {
-  const { matchedCount } = await User.updateMany(
-    { role: 'admin', status: 'active', _id: mongoose.trusted({ $ne: userId }) },
-    { $currentDate: { updated_at: true } },
-    { session, timestamps: false },
-  );
-  if (matchedCount === 0) {
-    throw new HttpError(409, 'LAST_ADMIN', 'Debe quedar al menos un administrador activo');
-  }
 }
 
 export async function updateUser(req, res) {

@@ -36,7 +36,7 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 **Purpose**: no hay infraestructura nueva. El monorepo, las herramientas y la base de pruebas son los de la 001.
 
-- [ ] T001 Comprueba que en `main` pasan `npm run lint` y `npm test`, para partir de una base verde.
+- [X] T001 Comprueba que en `main` pasan `npm run lint` y `npm test`, para partir de una base verde.
 
 ---
 
@@ -48,34 +48,34 @@ Son las de la [feature 001](../001-book-catalog-stores/tasks.md#convenciones-par
 
 ### Pruebas de la fase 2
 
-- [ ] T002 [P] Escribe `backend/tests/unit/utils/sessionCookie.test.js`:
+- [X] T002 [P] Escribe `backend/tests/unit/utils/sessionCookie.test.js`:
   - `setSessionCookie(res, user)` firma `{sub, ver}` con `ver = user.session_version`.
   - `readSession(token)` devuelve `{userId, version}`.
   - Un token sin `ver` se lee como `version: 0`.
   - Un token manipulado o caducado devuelve `null`.
-- [ ] T003 [P] Añade a `backend/tests/integration/auth.session.test.js` un caso: con un usuario de `session_version: 1`, un token con `ver: 0` recibe `401` en `GET /api/auth/me` y la respuesta borra la cookie. Si el token lleva `ver: 1`, recibe `200`.
+- [X] T003 [P] Añade a `backend/tests/integration/auth.session.test.js` un caso: con un usuario de `session_version: 1`, un token con `ver: 0` recibe `401` en `GET /api/auth/me` y la respuesta borra la cookie. Si el token lleva `ver: 1`, recibe `200`.
 
 ### Implementación de la fase 2
 
-- [ ] T004 [P] Añade a `backend/src/models/User.js` el campo `session_version: { type: Number, default: 0, min: 0 }`. Inclúyelo en la lista de campos que oculta `toJSONOptions`, junto con `password_hash`, `failed_login_count` y `locked_until`.
-- [ ] T005 [P] Añade `'account_deleted'` a `CANCEL_REASONS` en `backend/src/models/Reservation.js`.
-- [ ] T006 Cambia `backend/src/utils/sessionCookie.js`:
+- [X] T004 [P] Añade a `backend/src/models/User.js` el campo `session_version: { type: Number, default: 0, min: 0 }`. Inclúyelo en la lista de campos que oculta `toJSONOptions`, junto con `password_hash`, `failed_login_count` y `locked_until`.
+- [X] T005 [P] Añade `'account_deleted'` a `CANCEL_REASONS` en `backend/src/models/Reservation.js`.
+- [X] T006 Cambia `backend/src/utils/sessionCookie.js`:
   - `setSessionCookie(res, user)` recibe el documento y firma `{ sub: String(user._id), ver: user.session_version ?? 0 }`.
   - `readSessionUserId` se sustituye por `readSession(token)`, que devuelve `{userId, version}` (con `version = payload.ver ?? 0`) o `null`.
   - Actualiza las dos llamadas de `backend/src/controllers/authController.js` (`register` y `login`) para pasar `user`.
-- [ ] T007 Cambia `loadSessionUser` en `backend/src/middlewares/authenticate.js`: usa `readSession` y devuelve `null` si `user.session_version !== version`. Afecta también a `optionalAuthenticate`. Depende de T004 y T006.
-- [ ] T008 [P] Actualiza `sessionCookieFor(user)` en `backend/tests/helpers/factories.js` para que firme `ver: user.session_version ?? 0`.
-- [ ] T009 Mueve `assertAnotherActiveAdmin(userId, session)` de `backend/src/controllers/usersController.js` a `backend/src/services/adminGuard.js`, sin cambiar su lógica (`updateMany` sobre los demás administradores activos y `409 LAST_ADMIN` si no hay ninguno). Añade un segundo parámetro opcional, `message`, para el mensaje del error: por defecto, «Debe quedar al menos un administrador activo». `usersController.js` pasa a importarla. Las pruebas de `users.test.js` deben seguir pasando.
-- [ ] T010 Crea `backend/src/validators/accountValidators.js`, con todos los esquemas `.strict()`:
+- [X] T007 Cambia `loadSessionUser` en `backend/src/middlewares/authenticate.js`: usa `readSession` y devuelve `null` si `user.session_version !== version`. Afecta también a `optionalAuthenticate`. Depende de T004 y T006.
+- [X] T008 [P] Actualiza `sessionCookieFor(user)` en `backend/tests/helpers/factories.js` para que firme `ver: user.session_version ?? 0`.
+- [X] T009 Mueve `assertAnotherActiveAdmin(userId, session)` de `backend/src/controllers/usersController.js` a `backend/src/services/adminGuard.js`, sin cambiar su lógica (`updateMany` sobre los demás administradores activos y `409 LAST_ADMIN` si no hay ninguno). Añade un segundo parámetro opcional, `message`, para el mensaje del error: por defecto, «Debe quedar al menos un administrador activo». `usersController.js` pasa a importarla. Las pruebas de `users.test.js` deben seguir pasando.
+- [X] T010 Crea `backend/src/validators/accountValidators.js`, con todos los esquemas `.strict()`:
   - `updateAccountSchema`: `{name}`, recortado, de 1 a 100 caracteres, con los mismos mensajes que `registerSchema`.
   - `changePasswordSchema`: `{current_password, new_password}`. `current_password` es una cadena no vacía de hasta 200 caracteres. `new_password` sigue la política de `registerSchema`. Extrae su esquema de contraseña a un `passwordSchema` exportado en `backend/src/validators/authValidators.js` y reutilízalo aquí (al menos 8 caracteres, `/[A-Za-z]/` y `/[0-9]/`, como mucho 200, con el mensaje «La contraseña debe tener al menos 8 caracteres, con letras y números»).
   - `deleteAccountSchema`: `{password}`, una cadena no vacía de hasta 200 caracteres.
-- [ ] T011 Crea `backend/src/routes/accountRoutes.js` con `createAccountRouter()`:
+- [X] T011 Crea `backend/src/routes/accountRoutes.js` con `createAccountRouter()`:
   - `GET /` con `authenticate`, `requireRole('user', 'admin')` y `getAccount`.
   - Una instancia de `createAuthRateLimit()` para las rutas de contraseña, que se añaden en US2 y US3.
   - Móntalo en `backend/src/routes/index.js` como `/account`.
-- [ ] T012 Crea `backend/src/controllers/accountController.js` con `getAccount(req, res)`, que responde `toAccount(req.user)`. Añade `toAccount(user)` a `backend/src/utils/presenters.js`: `{id, name, email, role, created_at}`.
-- [ ] T013 [P] Crea `frontend/src/services/accountService.js`, con `getAccount()` y la constante `ACCOUNT_EXPORT_URL = '/api/account/export'`. Las demás funciones se añaden en cada historia.
+- [X] T012 Crea `backend/src/controllers/accountController.js` con `getAccount(req, res)`, que responde `toAccount(req.user)`. Añade `toAccount(user)` a `backend/src/utils/presenters.js`: `{id, name, email, role, created_at}`.
+- [X] T013 [P] Crea `frontend/src/services/accountService.js`, con `getAccount()` y la constante `ACCOUNT_EXPORT_URL = '/api/account/export'`. Las demás funciones se añaden en cada historia.
 
 **Checkpoint**: las sesiones tienen versión, existe `GET /api/account` y las pruebas de la 001 siguen pasando.
 

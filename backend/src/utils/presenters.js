@@ -79,6 +79,17 @@ export function toUserMe(user) {
 }
 
 /** Usuario en la gestión de administración: nunca incluye la contraseña. */
+/** Account (feature 002): los datos que la propia cuenta ve en Mi cuenta. */
+export function toAccount(user) {
+  return {
+    id: String(user._id),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    created_at: user.created_at,
+  };
+}
+
 export function toUserAdmin(user) {
   return {
     id: String(user._id),
